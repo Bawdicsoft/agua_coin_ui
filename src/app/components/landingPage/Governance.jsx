@@ -1,7 +1,5 @@
 "use client";
-import { MdOutlineSecurity } from "react-icons/md";
-import { GiVote } from "react-icons/gi";
-import { FaUsers } from "react-icons/fa";
+
 import { governancefeatures } from "@/app/content/data";
 
 

@@ -139,3 +139,52 @@ export const governancefeatures = [
       color: "from-[#000B1F] to-[#000B1F]",
     },
   ];
+
+
+  export const faqs = [
+      {
+        question: "What makes AGUA different from stablecoins?",
+        answer:
+          "AGUA is backed by tangible assets like gold and silver, offering stability beyond traditional stablecoins.",
+      },
+      {
+        question: "Can I redeem AGUA for physical gold & silver?",
+        answer:
+          "Yes! Soon, we'll enable direct redeemable certificates for AGUA holders.",
+      },
+      {
+        question: "Where can I store AGUA?",
+        answer:
+          "AGUA can be securely stored in supported crypto wallets with upcoming native integrations.",
+      },
+    ];
+
+
+     export const footernavLinks = [
+        {
+          title: "Company",
+          links: [
+            { name: "About", href: "#" },
+            { name: "Whitepaper", href: "#" },
+            { name: "Roadmap", href: "#" },
+            { name: "DAO", href: "#" },
+          ],
+        },
+        {
+          title: "Resources",
+          links: [
+            { name: "FAQ", href: "#" },
+            { name: "Support", href: "#" },
+            { name: "Documentation", href: "#" },
+            { name: "Compliance", href: "#" },
+          ],
+        },
+        {
+          title: "Legal",
+          links: [
+            { name: "Terms & Conditions", href: "#" },
+            { name: "Privacy Policy", href: "#" },
+            { name: "Risk Disclosure", href: "#" },
+          ],
+        },
+      ];

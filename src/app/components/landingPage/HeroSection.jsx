@@ -6,12 +6,12 @@ import Button from "../Button";
 function Herosection() {
   return (
     <div
-      className="relative z-0 min-h-screen flex flex-col items-center text-center px-4 md:px-10 lg:px-20 
-      bg-[url('/Agua-herosection-bg1.png')] bg-cover bg-center bg-no-repeat"
+      className="relative z-0 lg:min-h-screen -ml-1 md:py-12  py-24 flex flex-col items-center text-center px-4 md:px-10 lg:px-20 
+      bg-[url('/Agua-herosection-bg.png')] bg-cover bg-center bg-no-repeat"
     >
       <div className="absolute right-0 -bottom-10 custom-radial-gradient-purpleWhiteSmall opacity-60 z-0" />
 
-      <div className="pt-24 flex flex-col items-center w-full max-w-[90%] sm:max-w-[80%] md:max-w-[60%] lg:w-2/4 space-y-4 md:space-y-6 z-10">
+      <div className="lg:pt-42 md:pt-24 flex flex-col items-center w-full max-w-[90%] sm:max-w-[80%] md:max-w-[60%] lg:w-2/4 space-y-4 md:space-y-6 z-10">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
           The Future of Stable, Precious Metal-Backed Digital
         </h1>

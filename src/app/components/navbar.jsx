@@ -51,8 +51,9 @@ export default function Navbar() {
           <li>
             <Button
               onClick={() => handleNav("/signin")}
-              variant="secondary"
-              size="sm"
+             variant="outline"
+            size="md"
+            className="border-white bg-white text-[#207CFF] hover:bg-[#207CFF] hover:text-white"
             >
               Login / SignUp
             </Button>
@@ -63,8 +64,9 @@ export default function Navbar() {
         <div className="flex items-center gap-2 lg:hidden">
           <Button
             onClick={() => handleNav("/signin")}
-            variant="secondary"
-            size="sm"
+           variant="outline"
+            size="md"
+            className="border-white bg-white text-[#207CFF] hover:bg-[#207CFF] hover:text-white"
           >
             Login / SignUp
           </Button>
@@ -81,6 +83,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div
+      // 
         className={`lg:hidden bg-[#207CFF] overflow-hidden transition-all duration-300 ${
           isMenuOpen ? "max-h-[500px] py-4" : "max-h-0"
         }`}
