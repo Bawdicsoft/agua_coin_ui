@@ -1,9 +1,68 @@
 @import "tailwindcss";
 
-:root {
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
+} */
+/* :root {
+  --color-primary: #297EFF;
+  --color-primary-hover: #1f65d6;
+  --color-secondary-bg: #f3f4f6;
+  --color-secondary-text: #1f2937;
+  --color-outline-border: #297EFF;
+  --color-outline-hover: #e5f0ff;
+  --color-ghost-hover: #e5f0ff;
+} */
+
+
+:root {
+  /* Primary Colors */
+  --color-primary: #3b82f6; /* Blue */
+  --color-primary-hover: #2563eb;
+
+  --color-secondary-bg: #f1f5f9; /* Light Gray */
+  --color-secondary-text: #0f172a;
+  --color-secondary-hover: #e2e8f0;
+
+  --color-outline-border: #64748b; /* Slate */
+  --color-outline-hover: rgba(100, 116, 139, 0.1);
+
+  --color-ghost-hover: rgba(100, 116, 139, 0.1);
+
+  /* Success Colors */
+  --color-success: #22c55e;
+  --color-success-hover: #16a34a;
+
+  /* Danger Colors */
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+
+  /* Warning Colors */
+  --color-warning: #facc15;
+  --color-warning-hover: #eab308;
+
+  /* Additional Accent Colors (optional) */
+  --color-accent-purple: #8b5cf6;
+  --color-accent-purple-hover: #7c3aed;
+
+  --color-accent-pink: #ec4899;
+  --color-accent-pink-hover: #db2777;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
 
 @theme inline {
   --color-background: var(--background);
