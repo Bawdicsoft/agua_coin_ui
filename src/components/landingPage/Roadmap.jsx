@@ -1,4 +1,4 @@
-import { roadmapItems } from "@/app/content/data";
+import { roadmapItems } from "@/content/data";
 import { MdOutlineSecurity } from "react-icons/md";
 
 export default function Roadmap() {

@@ -14,34 +14,29 @@
   --color-ghost-hover: #e5f0ff;
 } */
 
+/* :root {
 
-:root {
-  /* Primary Colors */
-  --color-primary: #3b82f6; /* Blue */
+  --color-primary: #3b82f6;
   --color-primary-hover: #2563eb;
 
-  --color-secondary-bg: #f1f5f9; /* Light Gray */
+  --color-secondary-bg: #f1f5f9; 
   --color-secondary-text: #0f172a;
   --color-secondary-hover: #e2e8f0;
 
-  --color-outline-border: #64748b; /* Slate */
+  --color-outline-border: #64748b; 
   --color-outline-hover: rgba(100, 116, 139, 0.1);
 
   --color-ghost-hover: rgba(100, 116, 139, 0.1);
 
-  /* Success Colors */
   --color-success: #22c55e;
   --color-success-hover: #16a34a;
 
-  /* Danger Colors */
   --color-danger: #ef4444;
   --color-danger-hover: #dc2626;
 
-  /* Warning Colors */
   --color-warning: #facc15;
   --color-warning-hover: #eab308;
 
-  /* Additional Accent Colors (optional) */
   --color-accent-purple: #8b5cf6;
   --color-accent-purple-hover: #7c3aed;
 
@@ -49,20 +44,108 @@
   --color-accent-pink-hover: #db2777;
 
 
+} */
 
+:root {
+  --color-primary: #3b82f6;
+  --color-secondary: #facc15;
+  --color-danger: #ef4444;
 
-
-
-
-
-
-
-
-
-
-
+  /* Light Theme */
+  --background: #f9f9f9;
+  --foreground: #111;
+  --header-bg: #fff;
+  --header-border: #ddd;
+  --sidebar-bg: #fff;
+  --sidebar-border: #ddd;
+  --menu-active: #e2e8f0;
+  --border-color: #ccc;
+  --button-bg: #f5f5f5;
+  --accent-color: #ffb703;
+  --button-bg: #f4f4f5;
+  --border-color: #d1d5db;
+  --foreground: #1f2937;
+  --accent-color: #facc15;
 }
 
+[data-theme="dark"] {
+  --background: #121212;
+  --foreground: #fff;
+  --header-bg: #1a1a1a;
+  --header-border: #333;
+  --sidebar-bg: #1e1e1e;
+  --sidebar-border: #333;
+  --menu-active: #2e2e2e;
+  --border-color: #444;
+  --button-bg: #1e1e1e;
+  --accent-color: #ffb703;
+  --button-bg: #1f2937;
+  --border-color: #374151;
+  --foreground: #f4f4f5;
+  --accent-color: #60a5fa;
+}
+
+.theme-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(135deg, #facc15, #f59e0b, #0ea5e9, #1e40af);
+  background-size: 400% 400%;
+  animation: overlayShift 2s ease forwards;
+  z-index: 9999;
+  opacity: 0.6;
+  filter: blur(5px);
+}
+
+@keyframes overlayShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+.theme-fade {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--background); /* Matches theme background */
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 1s ease;
+  pointer-events: none;
+}
+
+
+  * {
+  transition: background-color 0.8s ease, color 0.8s ease, border-color 0.8s ease;
+}
+
+
+/* body.theme-transition {
+  transition: background-color 2s ease, color 2s ease, filter 2s ease;
+  filter: brightness(1.2) saturate(1.2) blur(2px);
+} */
+
+body.theme-transition {
+  background: linear-gradient(135deg, #facc15, #f59e0b, #0ea5e9, #1e40af);
+  background-size: 400% 400%;
+  animation: gradientShift 2s ease forwards;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
 
 @theme inline {
   --color-background: var(--background);

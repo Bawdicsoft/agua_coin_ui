@@ -1,4 +1,4 @@
-import { footernavLinks } from "@/app/content/data";
+import { footernavLinks } from "@/content/data";
 import Link from "next/link";
 import { FaTelegram, FaRedditAlien, FaFacebookF } from "react-icons/fa6";
 import { RiTwitterXFill } from "react-icons/ri";

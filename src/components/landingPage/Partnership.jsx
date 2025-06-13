@@ -1,7 +1,7 @@
 "use client";
 
 import { FaArrowRight } from "react-icons/fa6";
-import { partnershipfeatures, partnershipflow } from "@/app/content/data";
+import { partnershipfeatures, partnershipflow } from "@/content/data";
 
 const Card = ({ icon, title, desc, color = "#1D2839" }) => (
   <div className="bg-[#0F1A2C] shadow-sm rounded-lg p-4 space-y-3 text-start min-w-[180px]">

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { coreIntroductionParagraph, coreIntroductionfeatures, tableData, whatIsAgua } from "@/app/content/data";
+import { coreIntroductionParagraph, coreIntroductionfeatures, tableData, whatIsAgua } from "@/content/data";
 
 
 

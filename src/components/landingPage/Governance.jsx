@@ -1,6 +1,6 @@
 "use client";
 
-import { governancefeatures } from "@/app/content/data";
+import { governancefeatures } from "@/content/data";
 
 
 

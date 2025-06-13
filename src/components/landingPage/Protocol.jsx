@@ -1,5 +1,5 @@
 "use client";
-import { steps } from "@/app/content/data";
+import { steps } from "@/content/data";
 
 export default function Protocol() {
   return (

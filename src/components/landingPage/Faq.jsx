@@ -1,6 +1,6 @@
 "use client";
 
-import { faqs } from "@/app/content/data";
+import { faqs } from "@/content/data";
 import { useState } from "react";
 
 function Faq() {

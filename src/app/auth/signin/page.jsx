@@ -68,8 +68,8 @@ export default function SigninPage() {
         setUserDetail(user);
         {
           user.role === "user"
-            ? router.push("/userdashboard")
-            : router.push("/admindashboard");
+            ? router.push("/dashboard/user")
+            : router.push("/dashboard/admin");
         }
         showToast({ type: "success", message: `Welcome to ${user.name}` });
         setIsLoading(false);
