@@ -1,11 +1,18 @@
-import React from 'react'
+import EarningsChart from "@/components/EarningsChart";
+import RightSidebar from "@/components/RightSidebar";
+import SummaryCards from "@/components/user/SummaryCards";
 
-function page() {
+
+export default function Page() {
   return (
-    <div>
-      <p>User screen</p>
+    <div style={{ display: "grid", gridTemplateColumns: "3fr 1fr", gap: "1.5rem" }}>
+      <div>
+        <SummaryCards />
+        <EarningsChart />
+      </div>
+      <div>
+        <RightSidebar />
+      </div>
     </div>
-  )
+  );
 }
-
-export default page

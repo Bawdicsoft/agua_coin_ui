@@ -46,13 +46,13 @@
 
 } */
 
-:root {
+/* :root {
   --color-primary: #3b82f6;
   --color-secondary: #facc15;
-  --color-danger: #ef4444;
+  --color-danger: #ef4444; */
 
   /* Light Theme */
-  --background: #f9f9f9;
+  /* --background: #f9f9f9;
   --foreground: #111;
   --header-bg: #fff;
   --header-border: #ddd;
@@ -66,8 +66,8 @@
   --border-color: #d1d5db;
   --foreground: #1f2937;
   --accent-color: #facc15;
-}
-
+} */
+/* 
 [data-theme="dark"] {
   --background: #121212;
   --foreground: #fff;
@@ -83,7 +83,120 @@
   --border-color: #374151;
   --foreground: #f4f4f5;
   --accent-color: #60a5fa;
+} */
+
+
+
+:root {
+  /* Primary Brand Colors */
+  --color-primary: #3b82f6;           /* Blue */
+  --color-primary-hover: #2563eb;
+
+  --color-secondary: #facc15;         /* Yellow */
+  --color-secondary-hover: #eab308;
+
+  --color-accent: #ffb703;            /* Orange accent */
+  --color-accent-hover: #f59e0b;
+
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+
+  --color-success: #22c55e;
+  --color-success-hover: #16a34a;
+
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+
+  --color-purple: #8b5cf6;
+  --color-purple-hover: #7c3aed;
+
+  --color-pink: #ec4899;
+  --color-pink-hover: #db2777;
+
+  /* Backgrounds */
+  --background: #f9f9f9;
+  --foreground: #1f2937;
+
+  --header-bg: #fff;
+  --header-border: #ddd;
+
+  --sidebar-bg: #fff;
+  --sidebar-border: #ddd;
+
+  --button-bg: #f4f4f5;
+  --button-bg-hover: #e5e7eb;
+  --button-text: #1f2937;
+
+  --menu-active: #e2e8f0;
+
+  --modal-bg: #fff;
+
+    --text-primary: #1f2937; /* Add this if missing */
+  --text-secondary: #555;  /* Add for light mode (gray) */
+
+  --menu-background: #fff;      /* LIGHT mode background for all menus/dropdowns */
+  --menu-item-background: transparent;
+
+  /* Borders */
+  --border-color: #d1d5db;
+  --border-color-hover: #9ca3af;
+
+  /* Text */
+  --subtle-text: #555;
+  --subtle-text-hover: #333;
+ --tooltip-background: #f4f4f5; /* 👈 Slightly light gray background for light theme */
+  --tooltip-text: #111; /* 👈 Dark text for readability */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
+   --wallet-button-bg: var(--color-secondary); /* Yellow/orange for light theme */
+  --wallet-button-text: #111;
 }
+
+[data-theme="dark"] {
+  --background: #121212;
+  --foreground: #f4f4f5;
+
+  --header-bg: #1a1a1a;
+  --header-border: #333;
+
+  --sidebar-bg: #1e1e1e;
+  --sidebar-border: #333;
+
+  --button-bg: #1f2937;
+  --button-bg-hover: #334155;
+  --button-text: #f4f4f5;
+
+  --menu-active: #2e2e2e;
+
+  --modal-bg: #1e1e1e;
+
+  --border-color: #374151;
+  --border-color-hover: #475569;
+
+  --subtle-text: #bbb;
+  --subtle-text-hover: #ddd;
+
+    --text-primary: #f4f4f5;
+  --text-secondary: #bbb;  /* Light gray for axis text in dark mode */
+
+    --menu-background: #1f1f1f;   /* DARK mode background for all menus/dropdowns */
+  --menu-item-background: transparent;
+   --tooltip-background: #111;
+  --tooltip-text: #fff;
+
+  /* Shadows (adjusted for dark mode) */
+  --shadow-sm: 0 1px 2px rgba(255, 255, 255, 0.05);
+  --shadow-md: 0 2px 4px rgba(255, 255, 255, 0.08);
+  --shadow-lg: 0 4px 12px rgba(255, 255, 255, 0.1);
+   --wallet-button-bg: var(--color-primary); /* Blue for dark theme */
+  --wallet-button-text: #fff;
+
+}
+
+
 
 .theme-overlay {
   position: fixed;

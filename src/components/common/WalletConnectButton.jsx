@@ -1,30 +1,53 @@
+"use client";
 import { useState } from "react";
 import Modal from "@/components/common/Modal";
+import { MdAccountBalanceWallet } from "react-icons/md";
 
 export default function WalletConnectButton() {
   const [showWalletModal, setShowWalletModal] = useState(false);
 
   return (
-    <div>
+    <>
       <button
         onClick={() => setShowWalletModal(true)}
         style={{
-          background: "orange",
-          color: "#000",
-          padding: "0.5rem 1rem",
-          borderRadius: "6px",
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: "var(--color-primary)",
+          color: "#fff",
           border: "none",
+          borderRadius: "9999px", // Fully rounded
+          padding: "0.4rem 1rem",
+          fontSize: "0.9rem",
+          gap: "0.4rem",
           cursor: "pointer",
-          fontWeight: "bold",
+          transition: "background 0.3s",
         }}
       >
-        Connect Wallet
+        <MdAccountBalanceWallet size={18} />
+        <span>Connect Wallet</span>
       </button>
 
       <Modal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)}>
-        <h2>Connect Your Wallet</h2>
-        <p style={{ color: "#bbb" }}>Coming soon or integrate with MetaMask API</p>
+        <div style={{ padding: "1rem" }}>
+          <h2 style={{ marginBottom: "0.5rem" }}>Connect Your Wallet</h2>
+          <p>Coming soon. Integration with MetaMask or WalletConnect planned.</p>
+          <button
+            onClick={() => setShowWalletModal(false)}
+            style={{
+              marginTop: "1rem",
+              padding: "0.4rem 1rem",
+              borderRadius: "6px",
+              border: "none",
+              backgroundColor: "var(--color-danger, #f44336)",
+              color: "#fff",
+              cursor: "pointer",
+            }}
+          >
+            Close
+          </button>
+        </div>
       </Modal>
-    </div>
+    </>
   );
 }
