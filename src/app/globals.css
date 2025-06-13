@@ -131,6 +131,11 @@
 
   --modal-bg: #fff;
 
+  --button-bg: #f4f4f5;
+--button-bg-hover: #e5e7eb;
+--button-text: #1f2937;
+
+
     --text-primary: #1f2937; /* Add this if missing */
   --text-secondary: #555;  /* Add for light mode (gray) */
 
@@ -153,6 +158,7 @@
   --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
    --wallet-button-bg: var(--color-secondary); /* Yellow/orange for light theme */
   --wallet-button-text: #111;
+  
 }
 
 [data-theme="dark"] {
@@ -235,7 +241,11 @@
 }
 
 
-  * {
+  /* * {
+  transition: background-color 0.8s ease, color 0.8s ease, border-color 0.8s ease;
+} */
+
+* {
   transition: background-color 0.8s ease, color 0.8s ease, border-color 0.8s ease;
 }
 
@@ -278,4 +288,28 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+button {
+  opacity: 1 !important; /* Force it globally */
+}
+
+button:hover,
+button:focus,
+button:active {
+  opacity: 1 !important; /* Remove default hover/focus opacity */
+  outline: none;         /* Remove outline if undesired */
 }

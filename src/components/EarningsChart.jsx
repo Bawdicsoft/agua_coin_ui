@@ -332,6 +332,9 @@ const DATA = {
   },
 };
 
+
+// Mock data (same as yours, omitted for brevity)
+
 export default function EarningsChart() {
   const [filter, setFilter] = useState("year");
   const [category, setCategory] = useState("AG");
@@ -354,12 +357,12 @@ export default function EarningsChart() {
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: "1rem",
-          gap: "1rem",
-          flexWrap: "wrap",
+          gap: "0.75rem",
+          flexWrap: "wrap", // ✅ Enables wrapping on smaller screens
         }}
       >
         {/* Left: Category Tabs */}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
@@ -373,7 +376,7 @@ export default function EarningsChart() {
                 border: "1px solid var(--border-color)",
                 cursor: "pointer",
                 fontSize: "0.85rem",
-                minWidth: "70px",
+                minWidth: "65px",
               }}
             >
               {cat}
@@ -389,13 +392,14 @@ export default function EarningsChart() {
             textAlign: "center",
             flex: "1",
             minWidth: "150px",
+            fontSize: "1.1rem",
           }}
         >
           Earnings Overview
         </h3>
 
         {/* Right: Filters */}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
           {FILTERS.map((type) => (
             <button
               key={type}
@@ -404,9 +408,7 @@ export default function EarningsChart() {
                 padding: "0.4rem 1rem",
                 borderRadius: "6px",
                 backgroundColor:
-                  filter === type
-                    ? "var(--color-accent)"
-                    : "var(--button-bg)",
+                  filter === type ? "var(--color-accent)" : "var(--button-bg)",
                 color: filter === type ? "#fff" : "var(--button-text)",
                 border: "1px solid var(--border-color)",
                 cursor: "pointer",
@@ -428,12 +430,14 @@ export default function EarningsChart() {
           alignItems: "center",
           gap: "0.5rem",
           marginBottom: "0.5rem",
+          flexWrap: "wrap", // ✅ Makes this row responsive
         }}
       >
         <span
           style={{
             color: "var(--text-secondary)",
-            fontSize: "0.85rem",
+            fontSize: "0.8rem",
+            minWidth: "fit-content",
           }}
         >
           Show Last {TIME_LABELS[filter]}
@@ -450,6 +454,7 @@ export default function EarningsChart() {
             border: "1px solid var(--border-color)",
             cursor: "pointer",
             fontSize: "0.8rem",
+            minWidth: "55px",
           }}
         >
           {viewLast ? "ON" : "OFF"}
@@ -457,38 +462,40 @@ export default function EarningsChart() {
       </div>
 
       {/* Chart */}
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={currentData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-          <XAxis
-            dataKey="name"
-            stroke="var(--text-secondary)"
-            tick={{ fill: "var(--text-secondary)", fontSize: 12 }}
-          />
-          <YAxis
-            stroke="var(--text-secondary)"
-            tick={{ fill: "var(--text-secondary)", fontSize: 12 }}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "var(--tooltip-background)",
-              border: "1px solid var(--border-color)",
-              borderRadius: "6px",
-              color: "var(--tooltip-text)",
-            }}
-            itemStyle={{
-              color: "var(--tooltip-text)",
-              fontSize: "0.9rem",
-            }}
-            cursor={{ fill: "var(--accent-orange)", opacity: 0.1 }}
-          />
-          <Bar
-            dataKey="earnings"
-            fill="var(--accent-orange)"
-            radius={[8, 8, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+      <div style={{ width: "100%", height: "300px", minHeight: "250px" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={currentData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
+            <XAxis
+              dataKey="name"
+              stroke="var(--text-secondary)"
+              tick={{ fill: "var(--text-secondary)", fontSize: 12 }}
+            />
+            <YAxis
+              stroke="var(--text-secondary)"
+              tick={{ fill: "var(--text-secondary)", fontSize: 12 }}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "var(--tooltip-background)",
+                border: "1px solid var(--border-color)",
+                borderRadius: "6px",
+                color: "var(--tooltip-text)",
+              }}
+              itemStyle={{
+                color: "var(--tooltip-text)",
+                fontSize: "0.9rem",
+              }}
+              cursor={{ fill: "var(--accent-orange)", opacity: 0.1 }}
+            />
+            <Bar
+              dataKey="earnings"
+              fill="var(--accent-orange)"
+              radius={[8, 8, 0, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
