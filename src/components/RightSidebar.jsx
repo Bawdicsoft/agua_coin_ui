@@ -1,57 +1,34 @@
 "use client";
-import React from "react";
+
+import { useBreadcrumb } from "@/context/BreadcrumbContext";
 
 export default function RightSidebar() {
-  return (
-    <div
-      style={{
-        backgroundColor: "var(--menu-background)",
-        padding: "1rem",
-        borderRadius: "12px",
-        color: "var(--text-primary)",
-        width: "100%", // ✅ Always full width of container
-        maxWidth: "300px", // ✅ Limited to 300px when inside a larger container
-        boxSizing: "border-box",
-        alignSelf: "stretch", // ✅ Helps stretch in grid/flex layouts
-      }}
-    >
-      <h3
-        style={{
-          marginBottom: "1rem",
-          fontSize: "1.1rem",
-        }}
-      >
-        Quick Links
-      </h3>
+  const { setBreadcrumb } = useBreadcrumb();
 
-      <ul
-        style={{
-          listStyle: "none",
-          padding: 0,
-          margin: 0,
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.6rem",
-        }}
-      >
-        {[
-          "Profile Settings",
-          "Transaction History",
-          "Security Options",
-          "Support",
-        ].map((link) => (
-          <li key={link}>
+  const links = [
+    { label: "Profile Settings", href: "#" },
+    { label: "Transaction History", href: "#" },
+    { label: "Security Options", href: "#" },
+    { label: "Support", href: "#" },
+  ];
+
+  const handleClick = (label) => {
+    setBreadcrumb(label);
+  };
+
+  return (
+    <div className="h-full w-full bg-[var(--menu-background)] p-4 rounded-xl text-[var(--text-primary)] box-border self-stretch">
+      <h3 className="mb-4 text-lg font-medium">Quick Links</h3>
+
+      <ul className="flex flex-col gap-2">
+        {links.map(({ label, href }) => (
+          <li key={label}>
             <a
-              href="#"
-              style={{
-                color: "var(--accent-yellow)",
-                textDecoration: "none",
-                fontSize: "0.95rem",
-                display: "inline-block",
-                width: "100%", // ✅ Link takes full width
-              }}
+              href={href}
+              onClick={() => handleClick(label)}
+              className="block w-full text-[var(--accent-yellow)] text-[0.95rem] no-underline hover:underline transition"
             >
-              {link}
+              {label}
             </a>
           </li>
         ))}

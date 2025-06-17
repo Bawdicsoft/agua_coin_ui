@@ -3,7 +3,7 @@ import { steps } from "@/content/data";
 
 export default function Protocol() {
   return (
-    <div className="relative my-20 px-4 md:px-10 lg:px-20 space-y-4 ">
+    <div className="relative my-20 px-4 bg-white md:px-10 lg:px-20 space-y-4 ">
       {/* Intro Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-black px-4 md:px-10 lg:px-20 py-12">
         {/* Left: Heading */}
@@ -38,7 +38,7 @@ export default function Protocol() {
         <img
           src="/agua-pic2.png"
           alt="AGUA Protocol"
-          className="w-full max-w-5xl object-contain"
+          className="w-full max-w-6xl object-contain"
         />
       </div>
 

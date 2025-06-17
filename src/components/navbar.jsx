@@ -61,7 +61,7 @@ export default function Navbar({ setIsLoading }) {
               onClick={() => handleNav("/auth/signin")}
               variant="outline"
               size="md"
-              className="border-white bg-white text-[#207CFF] hover:bg-[#207CFF] hover:text-white hover:cursor-pointer"
+              className="border-white text-white bg-[#207CFF] hover:text-[#207CFF] hover:bg-white hover:cursor-pointer"
             >
               Login
             </Button>

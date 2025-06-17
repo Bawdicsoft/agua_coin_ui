@@ -134,6 +134,8 @@
   --button-bg: #f4f4f5;
 --button-bg-hover: #e5e7eb;
 --button-text: #1f2937;
+--border-color: #ccc; /* Light mode */
+  --text-secondary: #666;
 
 
     --text-primary: #1f2937; /* Add this if missing */
@@ -187,7 +189,8 @@
 
     --text-primary: #f4f4f5;
   --text-secondary: #bbb;  /* Light gray for axis text in dark mode */
-
+ --border-color: #444; /* Dark mode gray */
+  --text-secondary: #aaa;
     --menu-background: #1f1f1f;   /* DARK mode background for all menus/dropdowns */
   --menu-item-background: transparent;
    --tooltip-background: #111;

@@ -18,7 +18,7 @@ export const ToastProvider = ({ children }) => {
     <ToastContext.Provider value={{ showToast }}>
       {children}
       {toast && (
-        <div className="fixed top-10 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="fixed top-2 left-1/2 transform -translate-x-1/2 z-50">
           <div
             className={`flex items-center text-gray-900 px-6 py-3 rounded shadow-md max-w-xs mx-auto bg-white border-l-8
       ${

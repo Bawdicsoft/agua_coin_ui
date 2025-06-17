@@ -45,7 +45,6 @@ export default function SummaryCards() {
   const containerStyle = {
     display: "grid",
     gap: "1rem",
-    marginBottom: "2rem",
     gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", // ✅ Responsive grid
   };
 

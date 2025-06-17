@@ -39,10 +39,10 @@ export default function SigninPage() {
 
     if (!formData.email || !formData.password) {
       // alert("Please fill in all fields.");
-       showToast({
-          type: "error",
-          message: data.error || "Please fill in all fields.",
-        });
+      showToast({
+        type: "error",
+        message: data.error || "Please fill in all fields.",
+      });
       return;
     }
 
@@ -72,24 +72,29 @@ export default function SigninPage() {
             : router.push("/dashboard/admin");
         }
         showToast({ type: "success", message: `Welcome to ${user.name}` });
-        setIsLoading(false);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
       } else {
         showToast({
           type: "error",
           message: data.error || "Login failed. Please try again.",
         });
-        setIsLoading(false);
-       
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
       }
-
     } catch (error) {
       console.error("Login failed:", error);
       showToast({
-          type: "error",
-          message: data.error || "An unexpected error occurred. Please try again.",
-        });
+        type: "error",
+        message:
+          data.error || "An unexpected error occurred. Please try again.",
+      });
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
     }
   };
 
