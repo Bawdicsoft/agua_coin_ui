@@ -467,7 +467,13 @@ export default function Goldpayment() {
 
         {/* Display Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <InfoCard label="User ID" value="#123456" theme={theme} />
+          <InfoCard label="User ID" value={
+            clientId && clientId.length > 8
+              ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}`
+              : clientId || "-"
+            }
+            theme={theme}
+           />
           <InfoCard
             label="Current AU Rate oz"
             value={goldRates.loading ? "Loading..." : `$${goldRates.ounce}`}

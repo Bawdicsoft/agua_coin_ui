@@ -41,7 +41,7 @@ export default function SilverPayment() {
         setSilverRates({ ounce: 0, gram: 0, loading: true });
 
         const res = await fetch("https://api.gold-api.com/price/XAG");
-        console.log("res=>", res);  
+        console.log("res=>", res);
         if (!res.ok) throw new Error("Failed to fetch silver rate");
 
         const data = await res.json();
@@ -422,7 +422,15 @@ export default function SilverPayment() {
 
         {/* Display Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <InfoCard label="User ID" value="#123456" theme={theme} />
+          <InfoCard
+            label="User ID"
+            value={
+              clientId && clientId.length > 8
+                ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}`
+                : clientId || "-"
+            }
+            theme={theme}
+          />
           <InfoCard
             label="Current AG Rate oz"
             value={silverRates.loading ? "Loading..." : `$${silverRates.ounce}`}
@@ -456,7 +464,9 @@ export default function SilverPayment() {
             </div>
             <div className="flex items-center gap-2">
               <span className="font-semibold md:ml-6">Rate/gram:</span>
-              <span className="text-lg font-bold">${silverRates.gram || 0}</span>
+              <span className="text-lg font-bold">
+                ${silverRates.gram || 0}
+              </span>
             </div>
           </div>
         </div>
@@ -476,13 +486,13 @@ export default function SilverPayment() {
             <input
               type="text"
               value={numTokens}
-              onChange={e => {
+              onChange={(e) => {
                 // Remove all non-numeric and non-dot characters, allow only one dot
-                let value = e.target.value.replace(/[^0-9.]/g, '');
+                let value = e.target.value.replace(/[^0-9.]/g, "");
                 // Only allow one dot
-                const parts = value.split('.');
+                const parts = value.split(".");
                 if (parts.length > 2) {
-                  value = parts[0] + '.' + parts.slice(1).join('');
+                  value = parts[0] + "." + parts.slice(1).join("");
                 }
                 setNumTokens(value);
                 setTotalAmount(
@@ -491,9 +501,9 @@ export default function SilverPayment() {
                   ).toFixed(2)
                 );
               }}
-              onPaste={e => {
+              onPaste={(e) => {
                 // Prevent pasting non-numeric content
-                const paste = e.clipboardData.getData('text');
+                const paste = e.clipboardData.getData("text");
                 if (!/^[0-9]*\.?[0-9]*$/.test(paste)) {
                   e.preventDefault();
                 }
@@ -525,7 +535,7 @@ export default function SilverPayment() {
             <input
               type="number"
               value={totalAmount}
-              onChange={e => {
+              onChange={(e) => {
                 const value = e.target.value;
                 setTotalAmount(value);
                 setNumTokens(
@@ -570,7 +580,11 @@ export default function SilverPayment() {
           </div>
 
           {paymentMethod === "stripe" && (
-            <StripeAsset totalAmount={totalAmount} stripeCheckout={stripeCheckout} theme={theme} />
+            <StripeAsset
+              totalAmount={totalAmount}
+              stripeCheckout={stripeCheckout}
+              theme={theme}
+            />
           )}
           {paymentMethod === "crypto" && (
             <div
@@ -589,7 +603,7 @@ export default function SilverPayment() {
                 </label>
                 <select
                   value={selectedCrypto}
-                  onChange={e => setSelectedCrypto(e.target.value)}
+                  onChange={(e) => setSelectedCrypto(e.target.value)}
                   className={`mt-1 block w-full rounded-lg border p-3 shadow-sm text-base focus:ring-2 focus:outline-none transition
                     ${
                       theme === "dark"
@@ -658,7 +672,8 @@ const StripeAsset = ({ totalAmount, stripeCheckout, theme }) => (
   >
     <p className="text-sm font-semibold mb-1">Stripe Selected</p>
     <p className="text-sm mb-2">
-      You will be redirected to Stripe to complete the payment of <strong>${totalAmount}</strong>.
+      You will be redirected to Stripe to complete the payment of{" "}
+      <strong>${totalAmount}</strong>.
     </p>
     <button
       className={`mt-2 px-6 py-2 rounded-lg text-base font-bold shadow transition
@@ -675,7 +690,12 @@ const StripeAsset = ({ totalAmount, stripeCheckout, theme }) => (
   </div>
 );
 
-const CryptoAsset = ({ totalAmount, selectedCrypto, handleCheckout, theme }) => {
+const CryptoAsset = ({
+  totalAmount,
+  selectedCrypto,
+  handleCheckout,
+  theme,
+}) => {
   const readable = {
     eth: "Ether (Ethereum)",
     usdt_eth: "USDT (Ethereum)",
@@ -696,7 +716,8 @@ const CryptoAsset = ({ totalAmount, selectedCrypto, handleCheckout, theme }) => 
     >
       <p className="text-sm font-semibold mb-1">Crypto Wallet</p>
       <p className="text-sm mb-2">
-        You selected: <strong>{readable[selectedCrypto]}</strong> to pay <strong>${totalAmount}</strong>.
+        You selected: <strong>{readable[selectedCrypto]}</strong> to pay{" "}
+        <strong>${totalAmount}</strong>.
       </p>
       <button
         className={`mt-2 px-6 py-2 rounded-lg text-base font-bold shadow transition

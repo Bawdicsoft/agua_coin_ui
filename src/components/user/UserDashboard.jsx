@@ -361,21 +361,17 @@ export default function UserDashboard({ children }) {
                 ref={menuRef}
                 style={{
                   position: "absolute",
-                  top: "45px",
-                  right: 0,
+                  top: "40px",
+                  right: -10,
                   backgroundColor: "var(--background-header)",
-                  borderRadius: "8px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  border: "1px solid var(--border-color)",
+                 
                   zIndex: 1000,
                 }}
               >
                 <AvatarMenu
-                  collapsed={false}
-                  onSelect={(page) => {
-                    console.log(page);
-                    setAvatarMenuOpen(false);
-                  }}
+                  auth={auth}
+                  walletAddress={walletAddress}
+                  disconnectWallet={disconnectWallet}
                   onLogout={() => {
                     localStorage.removeItem("authToken");
                     disconnectWallet();
