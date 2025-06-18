@@ -1,7 +1,6 @@
+"use client";
+import TokenTable from "@/components/user/TokenTable";
+
 export default function ApprovedTokens() {
-  return (
-    <div>
-      <h1>Approved Tokens</h1>
-    </div>
-  );
-} 
+  return <TokenTable type="approved" />;
+}
