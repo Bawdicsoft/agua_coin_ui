@@ -14,6 +14,7 @@ import { WalletContext } from "@/context/WalletContext";
 import { AuthContext } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import AutoCloseModal from "@/components/common/AutoCloseModal";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function Goldpayment() {
   const [totalAmount, setTotalAmount] = useState("");
@@ -40,6 +41,8 @@ export default function Goldpayment() {
   const { auth, setAuth } = useContext(AuthContext);
   const [clientId, setClientId] = useState(null);
   const OUNCE_TO_GRAM = 31.1035;
+
+  const { theme } = useTheme();
 
   // Fetch live gold rate
   const providerOptions = {
@@ -443,33 +446,89 @@ export default function Goldpayment() {
 
   return (
     <>
-      <div className="max-w-4xl mx-auto p-6 font-lora">
-        <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-8">
-          Purchase Gold Tokens
-        </h1>
+      <div
+        className={`max-w-3xl mx-auto p-6 font-lora rounded-2xl shadow-lg border mt-8 transition-colors
+          ${
+            theme === "dark"
+              ? "bg-neutral-900 border-neutral-800 text-neutral-100"
+              : "bg-white border-neutral-200 text-neutral-900"
+          }
+        `}
+      >
+        <div className="flex items-center justify-center mb-8">
+          <h1
+            className={`text-4xl font-extrabold text-center mb-0 tracking-tight
+            ${theme === "dark" ? "text-neutral-100" : "text-neutral-900"}
+          `}
+          >
+            Purchase Gold Tokens
+          </h1>
+        </div>
 
         {/* Display Info */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <InfoCard label="User ID" value="#123456" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <InfoCard label="User ID" value="#123456" theme={theme} />
           <InfoCard
             label="Current AU Rate oz"
             value={goldRates.loading ? "Loading..." : `$${goldRates.ounce}`}
+            theme={theme}
           />
           <InfoCard
             label="Token Rate (per gram)"
             value={goldRates.loading ? "Loading..." : `$${goldRates.gram}`}
+            theme={theme}
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {/* Summary Box */}
+        <div
+          className={`rounded-lg p-4 mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 shadow-sm border transition-colors
+          ${
+            theme === "dark"
+              ? "bg-neutral-800 border-neutral-700"
+              : "bg-neutral-50 border-neutral-200"
+          }
+        `}
+        >
+          <div className="flex-1 flex justify-between items-center flex-col md:flex-row md:items-center gap-2">
+          <div className="flex items-center gap-2">
+              <span className="font-semibold">Tokens:</span>
+              <span className="text-lg font-bold">{numTokens || 0}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold md:ml-6">Total (USD):</span>
+              <span className="text-lg font-bold">${totalAmount || 0}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold md:ml-6">Rate/gram:</span>
+              <span className="text-lg font-bold">${goldRates.gram || 0}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Number of Tokens */}
-          <div className="bg-white shadow rounded p-4">
-            <label className="text-sm text-gray-500">Number of Tokens</label>
+          <div
+            className={`shadow rounded-xl p-6 border flex flex-col gap-2 transition-colors
+            ${
+              theme === "dark"
+                ? "bg-neutral-900 border-neutral-700"
+                : "bg-white border-neutral-100"
+            }
+          `}
+          >
+            <label className="text-sm font-semibold">Number of Tokens</label>
             <input
-              type="number"
+              type="text"
               value={numTokens}
-              onChange={(e) => {
-                const value = e.target.value;
+              onChange={e => {
+                // Remove all non-numeric and non-dot characters, allow only one dot
+                let value = e.target.value.replace(/[^0-9.]/g, '');
+                // Only allow one dot
+                const parts = value.split('.');
+                if (parts.length > 2) {
+                  value = parts[0] + '.' + parts.slice(1).join('');
+                }
                 setNumTokens(value);
                 setTotalAmount(
                   (
@@ -477,14 +536,37 @@ export default function Goldpayment() {
                   ).toFixed(2)
                 );
               }}
-              className="mt-1 w-full p-2 border border-gray-300 rounded text-gray-800"
+              onPaste={e => {
+                // Prevent pasting non-numeric content
+                const paste = e.clipboardData.getData('text');
+                if (!/^[0-9]*\.?[0-9]*$/.test(paste)) {
+                  e.preventDefault();
+                }
+              }}
+              inputMode="decimal"
+              autoComplete="off"
+              className={`mt-1 w-full p-3 rounded-lg focus:ring-2 focus:outline-none transition
+                ${
+                  theme === "dark"
+                    ? "bg-neutral-800 border-neutral-700 text-neutral-100 focus:ring-neutral-600"
+                    : "bg-neutral-50 border-neutral-200 text-neutral-900 focus:ring-neutral-300"
+                }
+              `}
               placeholder="Enter number of tokens"
             />
           </div>
 
           {/* Total Amount in USD */}
-          <div className="bg-white shadow rounded p-4">
-            <label className="text-sm text-gray-500">Total Amount (USD)</label>
+          <div
+            className={`shadow rounded-xl p-6 border flex flex-col gap-2 transition-colors
+            ${
+              theme === "dark"
+                ? "bg-neutral-900 border-neutral-700"
+                : "bg-white border-neutral-100"
+            }
+          `}
+          >
+            <label className="text-sm font-semibold">Total Amount (USD)</label>
             <input
               type="number"
               value={totalAmount}
@@ -497,25 +579,34 @@ export default function Goldpayment() {
                   ).toFixed(4)
                 );
               }}
-              className="mt-1 w-full p-2 border border-gray-300 rounded text-gray-800"
+              className={`mt-1 w-full p-3 rounded-lg focus:ring-2 focus:outline-none transition
+                ${
+                  theme === "dark"
+                    ? "bg-neutral-800 border-neutral-700 text-neutral-100 focus:ring-neutral-600"
+                    : "bg-neutral-50 border-neutral-200 text-neutral-900 focus:ring-neutral-300"
+                }
+              `}
               placeholder="Enter total amount"
             />
           </div>
-
-          {/* Current Rate Display */}
-          <InfoCard label="Current Rate" value={`$${goldRates.gram}`} />
         </div>
 
         {/* Payment Method */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-black">
+            <label className="block text-sm font-bold mb-1">
               Select Payment Method
             </label>
             <select
               onChange={handlePaymentMethodChange}
               value={paymentMethod}
-              className="mt-1 block w-full text-black rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+              className={`mt-1 block w-full rounded-lg border p-3 shadow-sm focus:ring-2 focus:outline-none text-base transition
+                ${
+                  theme === "dark"
+                    ? "bg-neutral-800 border-neutral-700 text-neutral-100 focus:ring-neutral-600"
+                    : "bg-neutral-50 border-neutral-200 text-neutral-900 focus:ring-neutral-300"
+                }
+              `}
             >
               <option value="">-- Select --</option>
               <option value="stripe">Stripe</option>
@@ -527,19 +618,34 @@ export default function Goldpayment() {
             <StripeAsset
               totalAmount={totalAmount}
               stripeCheckout={stripeCheckout}
+              theme={theme}
             />
           )}
           {paymentMethod === "crypto" && (
-            <>
+            <div
+              className={`border rounded-xl p-6 mt-2 transition-colors
+              ${
+                theme === "dark"
+                  ? "bg-neutral-900 border-neutral-700"
+                  : "bg-white border-neutral-100"
+              }
+            `}
+            >
               {/* Select Crypto Token */}
               <div>
-                <label className="block text-sm font-medium text-black mt-4">
+                <label className="block text-sm font-bold mb-1">
                   Select Crypto Token
                 </label>
                 <select
                   value={selectedCrypto}
                   onChange={(e) => setSelectedCrypto(e.target.value)}
-                  className="mt-1 block w-full text-black rounded-md border border-gray-300 p-2 shadow-sm text-sm"
+                  className={`mt-1 block w-full rounded-lg border p-3 shadow-sm text-base focus:ring-2 focus:outline-none transition
+                    ${
+                      theme === "dark"
+                        ? "bg-neutral-800 border-neutral-700 text-neutral-100 focus:ring-neutral-600"
+                        : "bg-neutral-50 border-neutral-200 text-neutral-900 focus:ring-neutral-300"
+                    }
+                  `}
                 >
                   <option value="">-- Select Token --</option>
                   <option value="eth">Ether (Ethereum)</option>
@@ -556,16 +662,17 @@ export default function Goldpayment() {
                   totalAmount={totalAmount}
                   selectedCrypto={selectedCrypto}
                   handleCheckout={handleCryptoCheckout}
+                  theme={theme}
                 />
               )}
-            </>
+            </div>
           )}
         </div>
       </div>
       {showModal && (
         <AutoCloseModal
           message="Action completed successfully!"
-          type="success" // or "error"
+          type="success"
           onClose={() => setShowModal(false)}
         />
       )}
@@ -573,22 +680,44 @@ export default function Goldpayment() {
   );
 }
 
-const InfoCard = ({ label, value }) => (
-  <div className="bg-white shadow rounded p-4">
-    <label className="text-sm text-gray-500">{label}</label>
-    <div className="text-lg font-semibold text-gray-800">{value}</div>
+const InfoCard = ({ label, value, theme }) => (
+  <div
+    className={`shadow rounded-xl p-4 border flex flex-col items-center transition-colors
+    ${
+      theme === "dark"
+        ? "bg-neutral-900 border-neutral-700 text-neutral-100"
+        : "bg-white border-neutral-100 text-neutral-900"
+    }
+  `}
+  >
+    <label className="text-xs font-semibold mb-1">{label}</label>
+    <div className="text-lg font-bold">{value}</div>
   </div>
 );
 
-const StripeAsset = ({ totalAmount, stripeCheckout }) => (
-  <div className="rounded-md border p-4 shadow-sm bg-white">
-    <p className="text-sm text-gray-600 font-semibold">Stripe Selected</p>
-    <p className="text-sm text-gray-500">
+const StripeAsset = ({ totalAmount, stripeCheckout, theme }) => (
+  <div
+    className={`rounded-lg border p-4 shadow-sm flex flex-col items-start mt-2 transition-colors
+    ${
+      theme === "dark"
+        ? "bg-neutral-900 border-neutral-700"
+        : "bg-neutral-50 border-neutral-200"
+    }
+  `}
+  >
+    <p className="text-sm font-semibold mb-1">Stripe Selected</p>
+    <p className="text-sm mb-2">
       You will be redirected to Stripe to complete the payment of{" "}
       <strong>${totalAmount}</strong>.
     </p>
     <button
-      className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded text-sm"
+      className={`mt-2 px-6 py-2 rounded-lg text-base font-bold shadow transition
+        ${
+          theme === "dark"
+            ? "bg-neutral-700 text-neutral-100 hover:bg-neutral-600"
+            : "bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
+        }
+      `}
       onClick={stripeCheckout}
     >
       Pay with Stripe
@@ -596,7 +725,12 @@ const StripeAsset = ({ totalAmount, stripeCheckout }) => (
   </div>
 );
 
-const CryptoAsset = ({ totalAmount, selectedCrypto, handleCheckout }) => {
+const CryptoAsset = ({
+  totalAmount,
+  selectedCrypto,
+  handleCheckout,
+  theme,
+}) => {
   const readable = {
     eth: "Ether (Ethereum)",
     usdt_eth: "USDT (Ethereum)",
@@ -606,14 +740,28 @@ const CryptoAsset = ({ totalAmount, selectedCrypto, handleCheckout }) => {
   };
 
   return (
-    <div className="rounded-md border p-4 shadow-sm bg-white mt-4">
-      <p className="text-sm text-gray-600 font-semibold">Crypto Wallet</p>
-      <p className="text-sm text-gray-500">
+    <div
+      className={`rounded-lg border p-4 shadow-sm mt-4 flex flex-col items-start transition-colors
+      ${
+        theme === "dark"
+          ? "bg-neutral-900 border-neutral-700"
+          : "bg-neutral-50 border-neutral-200"
+      }
+    `}
+    >
+      <p className="text-sm font-semibold mb-1">Crypto Wallet</p>
+      <p className="text-sm mb-2">
         You selected: <strong>{readable[selectedCrypto]}</strong> to pay{" "}
         <strong>${totalAmount}</strong>.
       </p>
       <button
-        className="mt-2 px-4 py-2 bg-yellow-500 text-white rounded text-sm"
+        className={`mt-2 px-6 py-2 rounded-lg text-base font-bold shadow transition
+          ${
+            theme === "dark"
+              ? "bg-neutral-700 text-neutral-100 hover:bg-neutral-600"
+              : "bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
+          }
+        `}
         onClick={() => handleCheckout(selectedCrypto)}
       >
         Pay with {readable[selectedCrypto]}
