@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/context/AuthContext";
 import Link from "next/link";
-import { IoArrowBackOutline } from "react-icons/io5";
+import { IoArrowBackOutline, IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { ToastContext } from "@/context/ToastContext";
 import { LoadingContext } from "@/context/LoadingContext";
 
@@ -12,6 +12,7 @@ export default function SigninPage() {
   const [userDetail, setUserDetail] = useState([]);
   const { showToast } = useContext(ToastContext);
   const { isLoading, setIsLoading } = useContext(LoadingContext);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -158,15 +159,28 @@ export default function SigninPage() {
                 >
                   Password
                 </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center mt-1"
+                  >
+                    {showPassword ? (
+                      <IoEyeOffOutline className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    ) : (
+                      <IoEyeOutline className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <button

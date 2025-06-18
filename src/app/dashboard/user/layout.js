@@ -7,3 +7,6 @@ export default function UserDashboardLayout({ children }) {
     </UserDashboard>
   );
 }
+
+
+    // "@stripe/stripe-js": "^7.3.0",

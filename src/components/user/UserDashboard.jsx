@@ -46,7 +46,7 @@ const providerOptions = {
 
 export default function UserDashboard({ children }) {
   const router = useRouter();
-  const { setBreadcrumb } = useBreadcrumb();
+  const { breadcrumbs, addBreadcrumb, clearBreadcrumbs } = useBreadcrumb();
   const [collapsed, setCollapsed] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
@@ -68,8 +68,8 @@ export default function UserDashboard({ children }) {
       title: "Purchase",
       icon: <MdShoppingCart />,
       children: [
-        { name: "AG", path: "/dashboard/user/purchase/ag" },
-        { name: "AU", path: "/dashboard/user/purchase/au" },
+        { name: "Silver", path: "/dashboard/user/purchase/silver" },
+        { name: "Gold", path: "/dashboard/user/purchase/gold" },
         { name: "AGUA", path: "/dashboard/user/purchase/agua" }
       ],
     },
@@ -77,8 +77,8 @@ export default function UserDashboard({ children }) {
       title: "Redeem",
       icon: <MdRedeem />,
       children: [
-        { name: "AU", path: "/dashboard/user/redeem/ag" },
-        { name: "AG", path: "/dashboard/user/redeem/au" },
+        { name: "Silver", path: "/dashboard/user/redeem/silver" },
+        { name: "Gold", path: "/dashboard/user/redeem/gold" },
         { name: "AGUA", path: "/dashboard/user/redeem/agua" }
       ],
     },
@@ -86,8 +86,8 @@ export default function UserDashboard({ children }) {
       title: "Mint",
       icon: <MdBolt />,
       children: [
-        { name: "AU", path: "/dashboard/user/mint/ag" },
-        { name: "AG", path: "/dashboard/user/mint/au" },
+        { name: "Silver", path: "/dashboard/user/mint/silver" },
+        { name: "Gold", path: "/dashboard/user/mint/gold" },
         { name: "AGUA", path: "/dashboard/user/mint/agua" }
       ],
     },
@@ -149,6 +149,34 @@ export default function UserDashboard({ children }) {
     }
   };
 
+  const handleNavigation = async (path, name) => {
+    try {
+      setCurrentPage(name);
+      clearBreadcrumbs(); // Clear existing breadcrumbs
+      
+      // Find the parent menu for this path
+      const parentMenu = menus.find(menu => 
+        menu.children?.some(child => child.path === path)
+      );
+
+      // Add breadcrumbs in correct order
+      if (name !== "Dashboard") {
+        // addBreadcrumb(   "/dashboard/user");
+        if (parentMenu) {
+          console.log("parentMenu==>", parentMenu);
+          addBreadcrumb(parentMenu.title, `#${parentMenu.title.toLowerCase()}`);
+        }
+        addBreadcrumb(name, path);
+      } else {
+        addBreadcrumb("Dashboard", "/dashboard/user");
+      }
+      
+      await router.push(path);
+    } catch (error) {
+      console.error("Navigation error:", error);
+    }
+  };
+
   return (
     <div
       style={{
@@ -204,8 +232,6 @@ export default function UserDashboard({ children }) {
                     openMenu === menu.title
                       ? "var(--background-submenu)"
                       : "transparent",
-                  // margin: "0.5rem 0",
-                  // padding: "0.85rem 1.25rem",
                 }}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.backgroundColor = "var(--menu-active)")
@@ -218,9 +244,7 @@ export default function UserDashboard({ children }) {
                 }
                 onClick={() => {
                   if (menu.isMain) {
-                    setCurrentPage("Dashboard");
-                    setBreadcrumb("Dashboard");
-                    router.push(menu.path);
+                    handleNavigation(menu.path, "Dashboard");
                   } else {
                     if (collapsed) setCollapsed(false);
                     setOpenMenu((prev) =>
@@ -247,17 +271,10 @@ export default function UserDashboard({ children }) {
                         ...styles.submenuItem,
                         color: "var(--color-warning)",
                         animation: `fadeSlide 0.3s ease ${index * 0.05}s both`,
-                        // padding: "0.75rem 1.5rem",
-                        // margin: "0.25rem 0",
                       }}
-                      onClick={() => {
-                        setCurrentPage(child.name);
-                        setBreadcrumb(child.name);
-                        router.push(child.path);
-                      }}
+                      onClick={() => handleNavigation(child.path, child.name)}
                       onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor =
-                          "var(--menu-active)")
+                        (e.currentTarget.style.backgroundColor = "var(--menu-active)")
                       }
                       onMouseLeave={(e) =>
                         (e.currentTarget.style.backgroundColor = "transparent")
@@ -291,7 +308,12 @@ export default function UserDashboard({ children }) {
           }}
         >
           <div style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
-            Dashboard {currentPage !== "Dashboard" && ` / ${currentPage}`}
+            {breadcrumbs.map((crumb, index) => (
+              <span key={crumb.path}>
+                {index > 0 && " / "}
+                {crumb.label}
+              </span>
+            ))}
           </div>
 
           <div

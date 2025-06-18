@@ -7,7 +7,6 @@ import { useBreadcrumb } from "@/context/BreadcrumbContext";
 export default function AGUAPayment() {
   const { theme } = useTheme();
   const router = useRouter();
-  const { setBreadcrumb } = useBreadcrumb();
   const [totalAmount, setTotalAmount] = useState("");
   const [numTokens, setNumTokens] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -22,11 +21,10 @@ export default function AGUAPayment() {
 
   const OUNCE_TO_GRAM = 31.1034768;
 
-  useEffect(() => {
-    setBreadcrumb("Purchase AGUA Tokens");
-    fetchGoldRates();
-  }, [setBreadcrumb]);
 
+  useEffect(() => {
+    fetchGoldRates();
+  }, []);
   const fetchGoldRates = async () => {
     try {
       // Simulated API call - replace with actual API endpoint

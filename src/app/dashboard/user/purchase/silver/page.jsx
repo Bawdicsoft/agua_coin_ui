@@ -7,7 +7,6 @@ import { useBreadcrumb } from "@/context/BreadcrumbContext";
 export default function AUPayment() {
   const { theme } = useTheme();
   const router = useRouter();
-  const { setBreadcrumb } = useBreadcrumb();
   const [totalAmount, setTotalAmount] = useState("");
   const [numTokens, setNumTokens] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -23,14 +22,13 @@ export default function AUPayment() {
   const OUNCE_TO_GRAM = 31.1034768;
 
   useEffect(() => {
-    setBreadcrumb("Purchase AU Tokens");
     fetchGoldRates();
-  }, [setBreadcrumb]);
+  }, []);
 
   const fetchGoldRates = async () => {
     try {
       // Simulated API call - replace with actual API endpoint
-      const response = await fetch("https://api.example.com/gold-rates");
+      const response = await fetch("https://api.gold-api.com/price/XAG");
       const data = await response.json();
       setGoldRates({
         loading: false,
@@ -38,7 +36,7 @@ export default function AUPayment() {
         gram: data.ounce / OUNCE_TO_GRAM,
       });
     } catch (error) {
-      console.error("Error fetching gold rates:", error);
+      console.error("Error fetching Silver rates:", error);
       setGoldRates({ loading: false, ounce: 0, gram: 0 });
     }
   };
