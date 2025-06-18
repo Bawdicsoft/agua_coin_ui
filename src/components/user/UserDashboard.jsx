@@ -177,9 +177,9 @@ export default function UserDashboard({ children }) {
     avatar: {
       width: "40px",
       height: "40px",
-      background: "var(--color-secondary, #eee)",
+      background: theme === "dark" ? "var(--color-primary)" : "var(--color-secondary, #eee)",
       borderRadius: "50%",
-      color: "inherit",
+      color: "rgba(0, 0, 0, 0.9)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -221,6 +221,15 @@ export default function UserDashboard({ children }) {
         { name: "Silver", path: "/dashboard/user/mint/silver" },
         { name: "Gold", path: "/dashboard/user/mint/gold" },
         { name: "Agua", path: "/dashboard/user/mint/agua" }
+      ],
+    },
+    {
+      title: "Tokens",
+      icon: <MdBolt />,
+      children: [
+        { name: "Pending", path: "/dashboard/user/token/pending" },
+        { name: "Approved", path: "/dashboard/user/token/approved" },
+        { name: "Rejected", path: "/dashboard/user/token/rejected" }
       ],
     },
   ];
@@ -480,11 +489,13 @@ export default function UserDashboard({ children }) {
             </button>
 
             <ThemeToggle />
+
+
             <div
               onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
               style={styles.avatar}
             >
-              <MdAccountCircle size={24} />
+              <MdAccountCircle size={36} />
             </div>
 
             {avatarMenuOpen && (
@@ -494,8 +505,7 @@ export default function UserDashboard({ children }) {
                   position: "absolute",
                   top: "40px",
                   right: -10,
-                  backgroundColor: "var(--background-header)",
-                 
+                  backgroundColor: "var(--background-header)",                 
                   zIndex: 1000,
                 }}
               >
