@@ -47,15 +47,147 @@ const providerOptions = {
 export default function UserDashboard({ children }) {
   const router = useRouter();
   const { breadcrumbs, addBreadcrumb, clearBreadcrumbs } = useBreadcrumb();
+  const { theme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState("Dashboard");
   const { walletAddress, setWalletAddress, signer, setSigner } = useContext(WalletContext);
   const { auth, logout } = useContext(AuthContext);
-  const { theme } = useTheme();
   const menuRef = useRef();
   const web3ModalRef = useRef(null);
+
+  const styles = {
+    dashboard: {
+      display: "flex",
+      height: "100vh",
+      fontFamily: "sans-serif",
+      backgroundColor: "var(--background-main)",
+      color: "var(--text-primary)",
+    },
+    sidebar: {
+      padding: "1.5rem 1rem",
+      transition: "width 0.3s ease",
+      display: "flex",
+      flexDirection: "column",
+    },
+    logo: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "var(--color-primary)",
+    },
+    logoIcon: {
+      fontSize: "1.5rem",
+      fontWeight: "bold",
+    },
+    logoText: {
+      marginLeft: "0.75rem",
+      fontWeight: "bold",
+      fontSize: "1.4rem",
+      letterSpacing: "0.5px",
+    },
+    collapseBtn: {
+      position: "absolute",
+      top: "3rem",
+      right: "-20px",
+      width: "40px",
+      height: "40px",
+      backgroundColor: "var(--button-bg)",
+      color: "var(--text-primary)",
+      border: "1px solid var(--border-color)",
+      borderRadius: "50%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      transition: "all 0.3s ease",
+      zIndex: 99,
+      opacity: 1,
+      outline: "none",
+    },
+    nav: {
+      padding: "1rem 0",
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.5rem",
+    },
+    menuItem: {
+      display: "flex",
+      alignItems: "center",
+      gap: "1rem",
+      padding: "0.85rem 1.25rem",
+      color: "var(--text-primary)",
+      fontWeight: 500,
+      cursor: "pointer",
+      transition: "all 0.3s ease",
+      borderRadius: "12px",
+      fontSize: "1rem",
+    },
+    menuIcon: {
+      fontSize: "1.4rem",
+      display: "flex",
+      alignItems: "center",
+    },
+    menuTitle: {
+      flex: 1,
+      fontSize: "1rem",
+    },
+    menuArrow: {
+      fontSize: "1.2rem",
+      display: "flex",
+      alignItems: "center",
+    },
+    submenu: {
+      paddingLeft: "2.5rem",
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.5rem",
+      marginTop: "0.5rem",
+      animation: "fadeSlide 0.3s ease forwards",
+    },
+    submenuItem: {
+      padding: "0.75rem 1.5rem",
+      borderRadius: "8px",
+      cursor: "pointer",
+      fontSize: "0.95rem",
+      transition: "all 0.3s ease",
+      fontWeight: 500,
+      color: theme === "dark" ? "var(--color-primary)" : "var(--color-warning)",
+    },
+    mainContent: {
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      overflow: "hidden",
+      backgroundColor: "var(--background-main)",
+    },
+    header: {
+      padding: "0 2rem",
+      height: "70px",
+      minHeight: "70px",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      backgroundColor: "var(--background-header)",
+      borderBottom: "1px solid var(--border-color)",
+    },
+    avatar: {
+      width: "40px",
+      height: "40px",
+      background: "var(--color-secondary, #eee)",
+      borderRadius: "50%",
+      color: "inherit",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+      transition: "all 0.3s ease",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    },
+  };
 
   const menus = [
     {
@@ -70,7 +202,7 @@ export default function UserDashboard({ children }) {
       children: [
         { name: "Silver", path: "/dashboard/user/purchase/silver" },
         { name: "Gold", path: "/dashboard/user/purchase/gold" },
-        { name: "AGUA", path: "/dashboard/user/purchase/agua" }
+        { name: "Agua", path: "/dashboard/user/purchase/agua" }
       ],
     },
     {
@@ -79,7 +211,7 @@ export default function UserDashboard({ children }) {
       children: [
         { name: "Silver", path: "/dashboard/user/redeem/silver" },
         { name: "Gold", path: "/dashboard/user/redeem/gold" },
-        { name: "AGUA", path: "/dashboard/user/redeem/agua" }
+        { name: "Agua", path: "/dashboard/user/redeem/agua" }
       ],
     },
     {
@@ -88,7 +220,7 @@ export default function UserDashboard({ children }) {
       children: [
         { name: "Silver", path: "/dashboard/user/mint/silver" },
         { name: "Gold", path: "/dashboard/user/mint/gold" },
-        { name: "AGUA", path: "/dashboard/user/mint/agua" }
+        { name: "Agua", path: "/dashboard/user/mint/agua" }
       ],
     },
   ];
@@ -269,7 +401,6 @@ export default function UserDashboard({ children }) {
                       key={child.name}
                       style={{
                         ...styles.submenuItem,
-                        color: "var(--color-warning)",
                         animation: `fadeSlide 0.3s ease ${index * 0.05}s both`,
                       }}
                       onClick={() => handleNavigation(child.path, child.name)}
@@ -391,137 +522,3 @@ export default function UserDashboard({ children }) {
     </div>
   );
 }
-
-const styles = {
-  dashboard: {
-    display: "flex",
-    height: "100vh",
-    fontFamily: "sans-serif",
-    backgroundColor: "var(--background-main)",
-    color: "var(--text-primary)",
-  },
-  sidebar: {
-    padding: "1.5rem 1rem",
-    transition: "width 0.3s ease",
-    display: "flex",
-    flexDirection: "column",
-    // gap: "1rem",
-  },
-  logo: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    // marginBottom: "1.5rem",
-    color: "var(--color-primary)",
-    // padding: "0.5rem",
-  },
-  logoIcon: {
-    fontSize: "1.5rem",
-    fontWeight: "bold",
-  },
-  logoText: {
-    marginLeft: "0.75rem",
-    fontWeight: "bold",
-    fontSize: "1.4rem",
-    letterSpacing: "0.5px",
-  },
-  collapseBtn: {
-    position: "absolute",
-    top: "3rem",
-    right: "-20px",
-    width: "40px",
-    height: "40px",
-    backgroundColor: "var(--button-bg)",
-    color: "var(--text-primary)",
-    border: "1px solid var(--border-color)",
-    borderRadius: "50%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-    transition: "all 0.3s ease",
-    zIndex: 99,
-    opacity: 1,
-    outline: "none",
-  },
-  nav: {
-    padding: "1rem 0",
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.5rem",
-  },
-  menuItem: {
-    display: "flex",
-    alignItems: "center",
-    gap: "1rem",
-    padding: "0.85rem 1.25rem",
-    color: "var(--text-primary)",
-    fontWeight: 500,
-    cursor: "pointer",
-    transition: "all 0.3s ease",
-    borderRadius: "12px",
-    fontSize: "1rem",
-  },
-  menuIcon: {
-    fontSize: "1.4rem",
-    display: "flex",
-    alignItems: "center",
-  },
-  menuTitle: {
-    flex: 1,
-    fontSize: "1rem",
-  },
-  menuArrow: {
-    fontSize: "1.2rem",
-    display: "flex",
-    alignItems: "center",
-  },
-  submenu: {
-    paddingLeft: "2.5rem",
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.5rem",
-    marginTop: "0.5rem",
-    animation: "fadeSlide 0.3s ease forwards",
-  },
-  submenuItem: {
-    padding: "0.75rem 1.5rem",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontSize: "0.95rem",
-    transition: "all 0.3s ease",
-    fontWeight: 500,
-  },
-  mainContent: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    overflow: "hidden",
-    backgroundColor: "var(--background-main)",
-  },
-  header: {
-    padding: "0 2rem",
-    height: "70px",
-    minHeight: "70px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "var(--background-header)",
-    borderBottom: "1px solid var(--border-color)",
-  },
-  avatar: {
-    width: "40px",
-    height: "40px",
-    background: "var(--color-secondary, #eee)",
-    borderRadius: "50%",
-    color: "inherit",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    transition: "all 0.3s ease",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-  },
-};
