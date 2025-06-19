@@ -18,10 +18,14 @@ import {
   MdAccountCircle,
   MdDashboard,
   MdAccountBalanceWallet,
+  MdChevronLeft,
+  MdChevronRight,
+  MdPerson,
+  MdNotifications,
+  MdReport
 } from "react-icons/md";
 import ThemeToggle from "../common/ThemeToggle";
 import AvatarMenu from "../common/AvatarMenu";
-import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import Image from "next/image";
 
 const providerOptions = {
@@ -52,7 +56,8 @@ export default function AdminDashboard({ children }) {
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState("Dashboard");
-  const { walletAddress, setWalletAddress, signer, setSigner } = useContext(WalletContext);
+  const { walletAddress, setWalletAddress, signer, setSigner } =
+    useContext(WalletContext);
   const { auth, logout } = useContext(AuthContext);
   const menuRef = useRef();
   const web3ModalRef = useRef(null);
@@ -64,12 +69,14 @@ export default function AdminDashboard({ children }) {
       fontFamily: "sans-serif",
       backgroundColor: "var(--background-main)",
       color: "var(--text-primary)",
+      overflow: "hidden",
     },
     sidebar: {
-      padding: "1.5rem 1rem",
+      padding: "1.5rem 0rem",
       transition: "width 0.3s ease",
       display: "flex",
       flexDirection: "column",
+      height: "100vh",
     },
     logo: {
       display: "flex",
@@ -108,10 +115,14 @@ export default function AdminDashboard({ children }) {
       outline: "none",
     },
     nav: {
-      padding: "1rem 0",
+      padding: "1rem 0rem",
+      marginLeft: "1rem",
       display: "flex",
       flexDirection: "column",
       gap: "0.5rem",
+      flex: 1,
+      overflowY: "auto",
+      minHeight: 0,
     },
     menuItem: {
       display: "flex",
@@ -133,6 +144,7 @@ export default function AdminDashboard({ children }) {
     menuTitle: {
       flex: 1,
       fontSize: "1rem",
+      whiteSpace: "nowrap",
     },
     menuArrow: {
       fontSize: "1.2rem",
@@ -148,7 +160,7 @@ export default function AdminDashboard({ children }) {
       animation: "fadeSlide 0.3s ease forwards",
     },
     submenuItem: {
-      padding: "0.75rem 1.5rem",
+      padding: "0.35rem 1.5rem",
       borderRadius: "8px",
       cursor: "pointer",
       fontSize: "0.95rem",
@@ -177,7 +189,10 @@ export default function AdminDashboard({ children }) {
     avatar: {
       width: "40px",
       height: "40px",
-      background: theme === "dark" ? "var(--color-primary)" : "var(--color-secondary, #eee)",
+      background:
+        theme === "dark"
+          ? "var(--color-primary)"
+          : "var(--color-secondary, #eee)",
       borderRadius: "50%",
       color: "rgba(0, 0, 0, 0.9)",
       display: "flex",
@@ -194,42 +209,69 @@ export default function AdminDashboard({ children }) {
       title: "Admin Dashboard",
       icon: <MdDashboard />,
       path: "/dashboard/user",
-      isMain: true
+      isMain: true,
     },
     {
-      title: "Purchase",
+      title: "Purchase Tokens",
       icon: <MdShoppingCart />,
       children: [
-        { name: "Silver", path: "/dashboard/user/purchase/silver" },
-        { name: "Gold", path: "/dashboard/user/purchase/gold" },
-        { name: "Agua", path: "/dashboard/user/purchase/agua" }
+        { name: "Pending", path: "/dashboard/user/purchase/silver" },
+        { name: "Approved", path: "/dashboard/user/purchase/gold" },
+        { name: "Rejected", path: "/dashboard/user/purchase/agua" },
       ],
     },
     {
-      title: "Redeem",
+      title: "Redeem Tokens",
       icon: <MdRedeem />,
       children: [
-        { name: "Silver", path: "/dashboard/user/redeem/silver" },
-        { name: "Gold", path: "/dashboard/user/redeem/gold" },
-        { name: "Agua", path: "/dashboard/user/redeem/agua" }
+        { name: "Pending", path: "/dashboard/user/redeem/silver" },
+        { name: "Approved", path: "/dashboard/user/redeem/gold" },
+        { name: "Rejected", path: "/dashboard/user/redeem/agua" },
       ],
     },
     {
-      title: "Mint",
+      title: "Mint Tokens",
       icon: <MdBolt />,
       children: [
-        { name: "Silver", path: "/dashboard/user/mint/silver" },
-        { name: "Gold", path: "/dashboard/user/mint/gold" },
-        { name: "Agua", path: "/dashboard/user/mint/agua" }
+        { name: "Pending", path: "/dashboard/user/mint/silver" },
+        { name: "Approved", path: "/dashboard/user/mint/gold" },
+        { name: "Rejected", path: "/dashboard/user/mint/agua" },
       ],
     },
     {
-      title: "Tokens",
-      icon: <MdBolt />,
+      title: "Users Requests",
+      icon: <MdPerson />,
       children: [
         { name: "Pending", path: "/dashboard/user/token/pending" },
         { name: "Approved", path: "/dashboard/user/token/approved" },
-        { name: "Rejected", path: "/dashboard/user/token/rejected" }
+        { name: "Blacklisted", path: "/dashboard/user/token/rejected" },
+      ],
+    },
+    {
+      title: "Notifications",
+      icon: <MdNotifications />,
+      children: [
+        { name: "Announcements", path: "/dashboard/user/token/pending" },
+        { name: "New Notification", path: "/dashboard/user/token/approved" },
+        { name: "Notifications History", path: "/dashboard/user/token/rejected" },
+      ],
+    },
+    {
+      title: "Reports",
+      icon: <MdReport />,
+      children: [
+        { name: "Announcements", path: "/dashboard/user/token/pending" },
+        { name: "New Notification", path: "/dashboard/user/token/approved" },
+        { name: "Notifications History", path: "/dashboard/user/token/rejected" },
+      ],
+    },
+    {
+      title: "Payments",
+      icon: <MdReport />,
+      children: [
+        { name: "Announcements", path: "/dashboard/user/token/pending" },
+        { name: "New Notification", path: "/dashboard/user/token/approved" },
+        { name: "Notifications History", path: "/dashboard/user/token/rejected" },
       ],
     },
   ];
@@ -294,10 +336,10 @@ export default function AdminDashboard({ children }) {
     try {
       setCurrentPage(name);
       clearBreadcrumbs(); // Clear existing breadcrumbs
-      
+
       // Find the parent menu for this path
-      const parentMenu = menus.find(menu => 
-        menu.children?.some(child => child.path === path)
+      const parentMenu = menus.find((menu) =>
+        menu.children?.some((child) => child.path === path)
       );
 
       // Add breadcrumbs in correct order
@@ -311,7 +353,7 @@ export default function AdminDashboard({ children }) {
       } else {
         addBreadcrumb("Dashboard", "/dashboard/user");
       }
-      
+
       await router.push(path);
     } catch (error) {
       console.error("Navigation error:", error);
@@ -395,10 +437,16 @@ export default function AdminDashboard({ children }) {
                 }}
               >
                 <span style={styles.menuIcon}>{menu.icon}</span>
-                {!collapsed && <span style={styles.menuTitle}>{menu.title}</span>}
+                {!collapsed && (
+                  <span style={styles.menuTitle}>{menu.title}</span>
+                )}
                 {!collapsed && !menu.isMain && (
                   <span style={styles.menuArrow}>
-                    {openMenu === menu.title ? <MdExpandLess /> : <MdExpandMore />}
+                    {openMenu === menu.title ? (
+                      <MdExpandLess />
+                    ) : (
+                      <MdExpandMore />
+                    )}
                   </span>
                 )}
               </div>
@@ -414,7 +462,8 @@ export default function AdminDashboard({ children }) {
                       }}
                       onClick={() => handleNavigation(child.path, child.name)}
                       onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor = "var(--menu-active)")
+                        (e.currentTarget.style.backgroundColor =
+                          "var(--menu-active)")
                       }
                       onMouseLeave={(e) =>
                         (e.currentTarget.style.backgroundColor = "transparent")
@@ -471,7 +520,10 @@ export default function AdminDashboard({ children }) {
                 alignItems: "center",
                 gap: "0.5rem",
                 padding: "0.5rem 1rem",
-                backgroundColor: theme === "dark" ? "var(--color-primary)" : "var(--color-warning)",
+                backgroundColor:
+                  theme === "dark"
+                    ? "var(--color-primary)"
+                    : "var(--color-warning)",
                 color: "white",
                 border: "none",
                 borderRadius: "0.5rem",
@@ -484,12 +536,14 @@ export default function AdminDashboard({ children }) {
             >
               <MdAccountBalanceWallet size={18} />
               {walletAddress
-                ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+                ? `Connected: ${walletAddress.slice(
+                    0,
+                    6
+                  )}...${walletAddress.slice(-4)}`
                 : "Connect Wallet"}
             </button>
 
             <ThemeToggle />
-
 
             <div
               onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
@@ -505,7 +559,7 @@ export default function AdminDashboard({ children }) {
                   position: "absolute",
                   top: "40px",
                   right: -10,
-                  backgroundColor: "var(--background-header)",                 
+                  backgroundColor: "var(--background-header)",
                   zIndex: 1000,
                 }}
               >

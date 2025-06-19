@@ -224,7 +224,7 @@ export default function UserDashboard({ children }) {
       ],
     },
     {
-      title: "Tokens",
+      title: "Token Status",
       icon: <MdBolt />,
       children: [
         { name: "Pending", path: "/dashboard/user/token/pending" },
