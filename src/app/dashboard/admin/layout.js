@@ -1,8 +1,12 @@
+import AdminDashboard from "@/components/user/AdminDashboard";
+
 export default function AdminDashboardLayout({ children }) {
   return (
-    <div>
-      <header>Admin Dashboard Header</header>
-      <main>{children}</main>
-    </div>
+    <AdminDashboard>
+      {children}
+    </AdminDashboard>
   );
 }
+
+
+    // "@stripe/stripe-js": "^7.3.0",
