@@ -28,6 +28,7 @@ import ThemeToggle from "../common/ThemeToggle";
 import AvatarMenu from "../common/AvatarMenu";
 import Image from "next/image";
 import { TbReport } from "react-icons/tb";
+import Modal from "../common/Modal";
 
 const providerOptions = {
   coinbasewallet: {
@@ -62,6 +63,7 @@ export default function AdminDashboard({ children }) {
   const { auth, logout } = useContext(AuthContext);
   const menuRef = useRef();
   const web3ModalRef = useRef(null);
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   const styles = {
     dashboard: {
@@ -515,7 +517,7 @@ export default function AdminDashboard({ children }) {
             }}
           >
             <button
-              onClick={walletAddress ? disconnectWallet : connectWallet}
+              onClick={connectWallet}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -537,10 +539,7 @@ export default function AdminDashboard({ children }) {
             >
               <MdAccountBalanceWallet size={18} />
               {walletAddress
-                ? `Connected: ${walletAddress.slice(
-                    0,
-                    6
-                  )}...${walletAddress.slice(-4)}`
+                ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
                 : "Connect Wallet"}
             </button>
 
@@ -584,6 +583,52 @@ export default function AdminDashboard({ children }) {
           {children || <h2>{currentPage}</h2>}
         </div>
       </main>
+
+      {/* Wallet Modal */}
+      {showWalletModal && (
+        <Modal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)}>
+          <div style={{ padding: "1rem" }}>
+            <h2 style={{ marginBottom: "0.5rem" }}>Wallet Options</h2>
+            <button
+              onClick={() => {
+                setShowWalletModal(false);
+                if (!walletAddress) connectWallet();
+              }}
+              style={{
+                marginTop: "1rem",
+                padding: "0.4rem 1rem",
+                borderRadius: "6px",
+                border: "none",
+                backgroundColor: "var(--color-primary)",
+                color: "#fff",
+                cursor: "pointer",
+                marginRight: "0.5rem",
+              }}
+            >
+              {walletAddress ? "Wallet Connected" : "Connect Wallet"}
+            </button>
+            {walletAddress && (
+              <button
+                onClick={() => {
+                  setShowWalletModal(false);
+                  disconnectWallet();
+                }}
+                style={{
+                  marginTop: "1rem",
+                  padding: "0.4rem 1rem",
+                  borderRadius: "6px",
+                  border: "none",
+                  backgroundColor: "var(--color-danger, #f44336)",
+                  color: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                Disconnect Wallet
+              </button>
+            )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

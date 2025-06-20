@@ -465,7 +465,7 @@ export default function UserDashboard({ children }) {
             }}
           >
             <button
-              onClick={walletAddress ? disconnectWallet : connectWallet}
+              onClick={connectWallet}
               style={{
                 display: "flex",
                 alignItems: "center",
