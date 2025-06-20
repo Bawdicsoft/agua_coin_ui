@@ -6,6 +6,7 @@ import { WalletProvider } from "@/context/WalletContext";
 import { LoadingProvider } from "@/context/LoadingContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { BreadcrumbProvider } from "@/context/BreadcrumbContext";
+import { BalanceProvider } from "@/context/BalanceContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +37,9 @@ export default function RootLayout({ children }) {
             <ToastProvider>
               <LoadingProvider>
                 <AuthProvider>
-                  <WalletProvider>{children}</WalletProvider>
+                  <WalletProvider>
+                    <BalanceProvider>{children}</BalanceProvider>
+                  </WalletProvider>
                 </AuthProvider>
               </LoadingProvider>
             </ToastProvider>

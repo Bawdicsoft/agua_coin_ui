@@ -7,7 +7,6 @@ export default function Page() {
     <div className="flex gap-4 p-4">
       <div className="w-3/4 flex gap-4 flex-col">
         <SummaryCardsForAdmin />
-        <SummaryCardsForAdmin />
         <EarningsChart />
       </div>
       <div className="w-1/4">

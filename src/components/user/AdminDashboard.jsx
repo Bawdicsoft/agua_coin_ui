@@ -22,11 +22,12 @@ import {
   MdChevronRight,
   MdPerson,
   MdNotifications,
-  MdReport
+  MdOutlinePayments 
 } from "react-icons/md";
 import ThemeToggle from "../common/ThemeToggle";
 import AvatarMenu from "../common/AvatarMenu";
 import Image from "next/image";
+import { TbReport } from "react-icons/tb";
 
 const providerOptions = {
   coinbasewallet: {
@@ -208,7 +209,7 @@ export default function AdminDashboard({ children }) {
     {
       title: "Admin Dashboard",
       icon: <MdDashboard />,
-      path: "/dashboard/user",
+      path: "/dashboard/admin",
       isMain: true,
     },
     {
@@ -258,7 +259,7 @@ export default function AdminDashboard({ children }) {
     },
     {
       title: "Reports",
-      icon: <MdReport />,
+      icon: <TbReport />,
       children: [
         { name: "Announcements", path: "/dashboard/user/token/pending" },
         { name: "New Notification", path: "/dashboard/user/token/approved" },
@@ -267,7 +268,7 @@ export default function AdminDashboard({ children }) {
     },
     {
       title: "Payments",
-      icon: <MdReport />,
+      icon: <MdOutlinePayments />,
       children: [
         { name: "Announcements", path: "/dashboard/user/token/pending" },
         { name: "New Notification", path: "/dashboard/user/token/approved" },
