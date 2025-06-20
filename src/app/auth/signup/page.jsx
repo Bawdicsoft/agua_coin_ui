@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { IoArrowBackOutline } from "react-icons/io5";
+import { ToastContext } from "@/context/ToastContext";
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ export default function SignupPage() {
     // walletAddress: "",
     profilePicture: null,
   });
+  const { showToast } = useContext(ToastContext);
 
   useEffect(()=>{
     setIsLoading(false)
@@ -35,7 +37,8 @@ export default function SignupPage() {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      // alert("Passwords do not match!");
+      showToast({ type: "warning", message: "Passwords do not match!" });
       return;
     }
 
@@ -73,19 +76,19 @@ export default function SignupPage() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("User created successfully");
+        showToast({ message: "User created successfully", type: "success" });
         const token = data.token;
         saveTokenToLocalStorage(token);
-        router.push("/userdashboard");
+        router.push("/dashboard/user");
         setIsLoading(false);
       } else {
-        alert(data.error || "Signup failed");
+        showToast({ message: data.error || "Signup failed", type: "error" });
       }
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       console.error("Signup error:", error);
-      alert("Something went wrong during signup.");
+      showToast({ message: "Something went wrong during signup.", type: "error" });
     } finally {
       setIsLoading(false);
     }

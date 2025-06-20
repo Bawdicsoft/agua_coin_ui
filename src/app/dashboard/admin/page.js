@@ -1,7 +1,7 @@
 "use client";
 import EarningsChart from "@/components/EarningsChart";
 import RightSidebar from "@/components/RightSidebar";
-import SummaryCardsForAdmin from "@/components/user/SummaryCardsForAdmin";
+import SummaryCardsForAdmin from "@/components/admin/SummaryCardsForAdmin";
 export default function Page() {
   return (
     <div className="flex flex-col lg:flex-row gap-4 p-4">

@@ -495,7 +495,11 @@ export default function UserDashboard({ children }) {
               onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
               style={styles.avatar}
             >
-              <MdAccountCircle size={36} />
+              {auth?.user?.profilePicture ? (
+                <Image src={auth?.user?.profilePicture} className="rounded-full" alt="User avatar" width={32} height={32} />
+              ) : (
+                <MdAccountCircle size={36} />
+              )}
             </div>
 
             {avatarMenuOpen && (

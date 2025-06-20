@@ -95,15 +95,15 @@ export default function SummaryCardsForUser() {
   const containerStyle = {
     display: "grid",
     gap: "0.7rem",
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
   };
 
   const cardStyle = {
     background: cardBg,
     border: `1px solid ${borderColor}`,
     borderRadius: "10px",
-    padding: "0.7rem 0.9rem 0.5rem 0.9rem",
-    minHeight: "62px",
+    padding: "0.5rem 0.6rem 0.4rem 0.6rem",
+    minHeight: "48px",
     boxShadow: cardShadow,
     color: textColor,
     display: "flex",
@@ -122,7 +122,7 @@ export default function SummaryCardsForUser() {
 
   const titleStyle = {
     fontWeight: 700,
-    fontSize: "1.01rem",
+    fontSize: "0.85rem",
     color: textColor,
     letterSpacing: 0.2,
     display: "flex",
@@ -139,7 +139,7 @@ export default function SummaryCardsForUser() {
       ? "0 1px 2px #000, 0 0.5px 0.5px #23272e"
       : "0 1px 2px #e2e8f0, 0 0.5px 0.5px #fff",
     marginLeft: 8,
-    minWidth: 70,
+    minWidth: 60,
     textAlign: "right",
     whiteSpace: "nowrap",
   };
@@ -149,9 +149,9 @@ export default function SummaryCardsForUser() {
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
-    fontSize: "0.97rem",
+    fontSize: "0.85rem",
     fontWeight: 500,
-    padding: "0.13rem 0",
+    padding: "0.09rem 0",
     borderBottom: `1px solid ${borderColor}`,
   };
 
@@ -163,13 +163,13 @@ export default function SummaryCardsForUser() {
   const labelStyle = {
     color: labelColor,
     fontWeight: 500,
-    fontSize: "0.93rem",
+    fontSize: "0.8rem",
   };
 
   const valueStyle = {
     color: textColor,
     fontWeight: 600,
-    fontSize: "1.01rem",
+    fontSize: "0.85rem",
     marginLeft: 8,
     display: "flex",
     alignItems: "center",
@@ -177,84 +177,107 @@ export default function SummaryCardsForUser() {
 
   const tokenValueStyle = {
     color: textColor,
-    fontWeight: 800,
-    fontSize: "1.35rem",
+    fontWeight: 700,
+    fontSize: "0.85rem",
     marginLeft: 8,
     display: "flex",
     alignItems: "center",
     letterSpacing: 0.5,
+    wordBreak: "break-all",
   };
 
   const dollarStyle = {
     fontWeight: 600,
-    fontSize: "1.01rem",
+    fontSize: "0.85rem",
     marginRight: 2,
     display: "inline-block",
     color: textColor,
   };
+
+  // Responsive styles for mobile
+  const responsiveStyle = `
+    @media (max-width: 600px) {
+      .summary-cards-admin-container {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+      .summary-cards-admin-card {
+        padding: 0.4rem 0.3rem 0.3rem 0.3rem;
+      }
+      .summary-cards-admin-title {
+        font-size: 0.8rem;
+      }
+      .summary-cards-admin-token-value {
+        font-size: 0.8rem;
+      }
+    }
+  `;
 
   const cards = [
     {
       type: "gold",
       title: "Gold",
       symbol: "(AU)",
-      marketRate: rates.gold?.ounce ?? 0,
-      tokenRate: rates.gold?.gram ?? 0,
-      balance: balances.gold ?? 0,
+      marketRate: loading ? "Loading..." : rates.gold?.ounce,
+      tokenRate: loading ? "Loading..." : rates.gold?.gram,
+      balance: loading ? "Loading..." : balances.gold,
     },
     {
       type: "silver",
       title: "Silver",
       symbol: "(AG)",
-      marketRate: rates.silver?.ounce ?? 0,
-      tokenRate: rates.silver?.gram ?? 0,
-      balance: balances.silver ?? 0,
+      marketRate: loading ? "Loading..." : rates.silver?.ounce,
+      tokenRate: loading ? "Loading..." : rates.silver?.gram,
+      balance: loading ? "Loading..." : balances.silver,
     },
     {
       type: "agua",
       title: "Agua",
       symbol: "(AGUA)",
-      marketRate: rates.agua?.ounce ?? 0,
-      tokenRate: rates.agua?.gram ?? 0,
-      balance: balances.agua ?? 0,
+      marketRate: loading ? "Loading..." : rates.agua?.ounce,
+      tokenRate: loading ? "Loading..." : rates.agua?.gram,
+      balance: loading ? "Loading..." : balances.agua,
     },
   ];
 
   return (
-    <div style={containerStyle}>
-      {cards.map((card, idx) => (
-        <div key={idx} style={cardStyle}>
-          <div style={topRowStyle}>
-            <span style={titleStyle}>{card.title} <span style={{ fontWeight: 400, fontSize: "0.93rem", color: labelColor, marginLeft: 4 }}>{card.symbol}</span></span>
-            <span style={shadowTextStyle}>
-              {loading
-                ? "..."
-                : `Current Rate: $${card.marketRate !== null ? Number(card.marketRate).toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0"}/oz`}
-            </span>
+    <>
+      <style>{responsiveStyle}</style>
+      <div className="summary-cards-admin-container" style={containerStyle}>
+        {cards.map((card, idx) => (
+          <div key={idx} className="summary-cards-admin-card" style={cardStyle}>
+            <div style={topRowStyle}>
+              <span className="summary-cards-admin-title" style={titleStyle}>{card.title} <span style={{ fontWeight: 400, fontSize: "0.8rem", color: labelColor, marginLeft: 4 }}>{card.symbol}</span></span>
+              <span style={shadowTextStyle}>
+                {card.marketRate === "Loading..."
+                  ? "Loading..."
+                  : `Current Rate: $${card.marketRate !== null ? Number(card.marketRate).toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0"}/oz`}
+              </span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Token Rate:</span>
+              <span style={valueStyle}>
+                <span style={dollarStyle}>$</span>
+                {card.tokenRate === "Loading..."
+                  ? "Loading..."
+                  : card.tokenRate !== null
+                    ? `${Number(card.tokenRate).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+                    : "0"}
+              </span>
+            </div>
+            <div style={lastRowStyle}>
+              <span style={labelStyle}>No. of Tokens:</span>
+              <span className="summary-cards-admin-token-value" style={tokenValueStyle}>
+                {card.balance === "Loading..."
+                  ? "Loading..."
+                  : card.balance !== null && card.balance !== undefined
+                    ? Number(card.balance).toLocaleString(undefined, { maximumFractionDigits: 4 })
+                    : "0"}
+              </span>
+            </div>
           </div>
-          <div style={rowStyle}>
-            <span style={labelStyle}>Token Rate:</span>
-            <span style={valueStyle}>
-              <span style={dollarStyle}>$</span>
-              {loading
-                ? "..."
-                : card.tokenRate !== null
-                  ? `${Number(card.tokenRate).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
-                  : "0"}
-            </span>
-          </div>
-          <div style={lastRowStyle}>
-            <span style={labelStyle}>No. of Tokens:</span>
-            <span style={tokenValueStyle}>
-              {loading
-                ? "..."
-                : card.balance !== null && card.balance !== undefined
-                  ? Number(card.balance).toLocaleString(undefined, { maximumFractionDigits: 4 })
-                  : "0"}
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </>
   );
 }

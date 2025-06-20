@@ -41,13 +41,25 @@ export async function POST(request) {
 
     // If profilePicture is base64 and provided, upload it to Cloudinary
     if (profilePicture) {
-      const uploadedResponse = await cloudinary.v2.uploader.upload(
-        profilePicture,
-        {
-          folder: "user_profiles",
-        }
-      );
-      imageUrl = uploadedResponse.secure_url;
+      try {
+        const uploadedResponse = await cloudinary.v2.uploader.upload(
+          profilePicture,
+          {
+            folder: "agua_users_profile_pictures",
+            transformation: [
+              { width: 1024, height: 1024, crop: "limit" }, // Resize to max 1024px
+              { quality: "auto", fetch_format: "auto" }    // Compress and auto format
+            ],
+          }
+        );
+        imageUrl = uploadedResponse.secure_url;
+      } catch (cloudinaryError) {
+        console.error("Cloudinary upload error:", cloudinaryError);
+        return NextResponse.json(
+          { error: "Image upload failed. Please use an image smaller than 10MB and in a supported format (JPG, PNG, etc)." },
+          { status: 400 }
+        );
+      }
     }
 
     // Hash password before saving

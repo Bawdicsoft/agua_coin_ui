@@ -162,7 +162,8 @@ export default function AvatarMenu({
         className="avatar cursor-pointer border-0 bg-transparent p-0 m-0 flex items-center justify-center"
         aria-label="User menu"
         style={{ boxShadow: "none", width: "32px", height: "32px" }}
-      ></button>
+      >
+      </button>
       <div
         tabIndex={0}
         className={`dropdown-content z-50 min-w-44 border rounded-xl p-3 space-y-2 ${
@@ -185,7 +186,7 @@ export default function AvatarMenu({
             }`}
           >
             <img
-              src="https://www.shutterstock.com/image-vector/profile-picture-vector-260nw-404138239.jpg"
+              src={auth?.user?.profilePicture || "https://www.shutterstock.com/image-vector/profile-picture-vector-260nw-404138239.jpg"}
               alt="User avatar"
               className="object-cover w-full h-full"
             />

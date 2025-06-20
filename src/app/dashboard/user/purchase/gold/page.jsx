@@ -15,6 +15,7 @@ import { AuthContext } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import AutoCloseModal from "@/components/common/AutoCloseModal";
 import { useTheme } from "@/context/ThemeContext";
+import { ToastContext } from "@/context/ToastContext";
 
 export default function Goldpayment() {
   const [totalAmount, setTotalAmount] = useState("");
@@ -43,6 +44,7 @@ export default function Goldpayment() {
   const OUNCE_TO_GRAM = 31.1035;
 
   const { theme } = useTheme();
+  const { showToast } = useContext(ToastContext);
 
   // Fetch live gold rate
   const providerOptions = {
@@ -242,7 +244,7 @@ export default function Goldpayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ ETH Payment failed:", err.message || err);
-      alert("ETH Payment failed: " + err.message);
+      showToast({ message: "ETH Payment failed: " + err.message, type: "error" });
     } finally {
       setIsPaying(false);
     }
@@ -300,9 +302,7 @@ export default function Goldpayment() {
       // You can now show a success toast or redirect
     } catch (err) {
       console.error("❌ Payment failed:", err.message || err);
-
-      // Optionally: show an alert, rollback UI, or log it
-      alert("Payment failed: " + err.message);
+      showToast({ message: "Payment failed: " + err.message, type: "error" });
       return;
     }
   };
@@ -382,7 +382,7 @@ export default function Goldpayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ MATIC Payment failed:", err.message || err);
-      alert("MATIC Payment failed: " + err.message);
+      showToast({ message: "MATIC Payment failed: " + err.message, type: "error" });
     }
   };
 
@@ -436,7 +436,7 @@ export default function Goldpayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ Polygon USDT Payment failed:", err.message || err);
-      alert("Polygon USDT Payment failed: " + err.message);
+      showToast({ message: "Polygon USDT Payment failed: " + err.message, type: "error" });
     }
   };
 

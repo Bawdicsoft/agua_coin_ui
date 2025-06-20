@@ -11,6 +11,7 @@ import { AuthContext } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import AutoCloseModal from "@/components/common/AutoCloseModal";
 import { useTheme } from "@/context/ThemeContext";
+import { ToastContext } from "@/context/ToastContext";
 
 export default function SilverPayment() {
   const [totalAmount, setTotalAmount] = useState("");
@@ -27,13 +28,14 @@ export default function SilverPayment() {
 
   const OUNCE_TO_GRAM = 31.1035;
 
-  const { walletAddress, setWalletAddress, signer, setSigner } =
+  const { walletAddress,  signer } =
     useContext(WalletContext);
   const router = useRouter();
 
   const { auth, setAuth } = useContext(AuthContext);
   const [clientId, setClientId] = useState(null);
   const { theme } = useTheme();
+  const { showToast } = useContext(ToastContext);
 
   useEffect(() => {
     const fetchSilverRate = async () => {
@@ -82,7 +84,8 @@ export default function SilverPayment() {
 
   const handlePaymentMethodChange = (e) => {
     if (!signer || !walletAddress) {
-      return alert("Kindly connect your wallet first");
+      showToast({ message: "Kindly connect your wallet first", type: "error" });
+      return;
     }
     setPaymentMethod(e.target.value);
   };
@@ -199,7 +202,7 @@ export default function SilverPayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ ETH Payment failed:", err.message || err);
-      alert("ETH Payment failed: " + err.message);
+      showToast({ message: "ETH Payment failed: " + err.message, type: "error" });
     }
   };
   //working
@@ -257,7 +260,7 @@ export default function SilverPayment() {
       console.error("❌ Payment failed:", err.message || err);
 
       // Optionally: show an alert, rollback UI, or log it
-      alert("Payment failed: " + err.message);
+      showToast({ message: "Payment failed: " + err.message, type: "error" });
       return;
     }
   };
@@ -337,7 +340,7 @@ export default function SilverPayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ MATIC Payment failed:", err.message || err);
-      alert("MATIC Payment failed: " + err.message);
+      showToast({ message: "MATIC Payment failed: " + err.message, type: "error" });
     }
   };
 
@@ -391,7 +394,7 @@ export default function SilverPayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ Polygon USDT Payment failed:", err.message || err);
-      alert("Polygon USDT Payment failed: " + err.message);
+      showToast({ message: "Polygon USDT Payment failed: " + err.message, type: "error" });
     }
   };
 

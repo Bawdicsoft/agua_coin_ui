@@ -16,7 +16,7 @@ const OUNCE_TO_GRAM = 31.1035;
 const GOLD_WEIGHT = 0.6;
 const SILVER_WEIGHT = 0.4;
 
-export default function SummaryCardsForUser() {
+export default function SummaryCardsForAdmin() {
   const { theme } = useTheme();
   const { walletAddress, signer } = useContext(WalletContext);
   const [rates, setRates] = useState({ gold: null, silver: null, agua: null });
@@ -218,25 +218,25 @@ export default function SummaryCardsForUser() {
       type: "gold",
       title: "Gold",
       symbol: "(AU)",
-      marketRate: rates.gold?.ounce ?? "Loading...",
-      tokenRate: rates.gold?.gram ?? "Loading...",
-      balance: balances.gold ?? "Loading...",
+      marketRate: loading ? "Loading..." : rates.gold?.ounce,
+      tokenRate: loading ? "Loading..." : rates.gold?.gram,
+      balance: loading ? "Loading..." : balances.gold,
     },
     {
       type: "silver",
       title: "Silver",
       symbol: "(AG)",
-      marketRate: rates.silver?.ounce ?? "Loading...",
-      tokenRate: rates.silver?.gram ?? "Loading...",
-      balance: balances.silver ?? "Loading...",
+      marketRate: loading ? "Loading..." : rates.silver?.ounce,
+      tokenRate: loading ? "Loading..." : rates.silver?.gram,
+      balance: loading ? "Loading..." : balances.silver,
     },
     {
       type: "agua",
       title: "Agua",
       symbol: "(AGUA)",
-      marketRate: rates.agua?.ounce ?? "Loading...",
-      tokenRate: rates.agua?.gram ?? "Loading...",
-      balance: balances.agua ?? "Loading...",
+      marketRate: loading ? "Loading..." : rates.agua?.ounce,
+      tokenRate: loading ? "Loading..." : rates.agua?.gram,
+      balance: loading ? "Loading..." : balances.agua,
     },
   ];
 
@@ -249,8 +249,8 @@ export default function SummaryCardsForUser() {
             <div style={topRowStyle}>
               <span className="summary-cards-admin-title" style={titleStyle}>{card.title} <span style={{ fontWeight: 400, fontSize: "0.8rem", color: labelColor, marginLeft: 4 }}>{card.symbol}</span></span>
               <span style={shadowTextStyle}>
-                {loading
-                  ? "..."
+                {card.marketRate === "Loading..."
+                  ? "Loading..."
                   : `Current Rate: $${card.marketRate !== null ? Number(card.marketRate).toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0"}/oz`}
               </span>
             </div>
@@ -258,8 +258,8 @@ export default function SummaryCardsForUser() {
               <span style={labelStyle}>Token Rate:</span>
               <span style={valueStyle}>
                 <span style={dollarStyle}>$</span>
-                {loading
-                  ? "..."
+                {card.tokenRate === "Loading..."
+                  ? "Loading..."
                   : card.tokenRate !== null
                     ? `${Number(card.tokenRate).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
                     : "0"}
@@ -268,8 +268,8 @@ export default function SummaryCardsForUser() {
             <div style={lastRowStyle}>
               <span style={labelStyle}>No. of Tokens:</span>
               <span className="summary-cards-admin-token-value" style={tokenValueStyle}>
-                {loading
-                  ? "..."
+                {card.balance === "Loading..."
+                  ? "Loading..."
                   : card.balance !== null && card.balance !== undefined
                     ? Number(card.balance).toLocaleString(undefined, { maximumFractionDigits: 4 })
                     : "0"}
