@@ -28,8 +28,7 @@ export default function SilverPayment() {
 
   const OUNCE_TO_GRAM = 31.1035;
 
-  const { walletAddress,  signer } =
-    useContext(WalletContext);
+  const { walletAddress, signer } = useContext(WalletContext);
   const router = useRouter();
 
   const { auth, setAuth } = useContext(AuthContext);
@@ -202,7 +201,10 @@ export default function SilverPayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ ETH Payment failed:", err.message || err);
-      showToast({ message: "ETH Payment failed: " + err.message, type: "error" });
+      showToast({
+        message: "ETH Payment failed: " + err.message,
+        type: "error",
+      });
     }
   };
   //working
@@ -340,7 +342,10 @@ export default function SilverPayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ MATIC Payment failed:", err.message || err);
-      showToast({ message: "MATIC Payment failed: " + err.message, type: "error" });
+      showToast({
+        message: "MATIC Payment failed: " + err.message,
+        type: "error",
+      });
     }
   };
 
@@ -394,7 +399,10 @@ export default function SilverPayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ Polygon USDT Payment failed:", err.message || err);
-      showToast({ message: "Polygon USDT Payment failed: " + err.message, type: "error" });
+      showToast({
+        message: "Polygon USDT Payment failed: " + err.message,
+        type: "error",
+      });
     }
   };
 
@@ -405,7 +413,7 @@ export default function SilverPayment() {
   return (
     <>
       <div
-        className={`max-w-3xl mx-auto p-6 font-lora rounded-2xl shadow-lg border mt-8 transition-colors
+        className={`max-w-3xl mx-auto p-6 font-lora rounded-2xl shadow-lg border my-8 transition-colors
           ${
             theme === "dark"
               ? "bg-neutral-900 border-neutral-800 text-neutral-100"
@@ -513,13 +521,13 @@ export default function SilverPayment() {
               }}
               inputMode="decimal"
               autoComplete="off"
-              className={`mt-1 w-full p-3 rounded-lg focus:ring-2 focus:outline-none transition
-                ${
-                  theme === "dark"
-                    ? "bg-neutral-800 border-neutral-700 text-neutral-100 focus:ring-neutral-600"
-                    : "bg-neutral-50 border-neutral-200 text-neutral-900 focus:ring-neutral-300"
-                }
-              `}
+              className={`mt-1 w-full p-3 rounded-lg border focus:outline-none focus:ring-2 transition
+  ${
+    theme === "dark"
+      ? "bg-neutral-800 border-neutral-700 text-neutral-100 focus:ring-neutral-600 shadow-inner"
+      : "bg-neutral-100 border border-neutral-300 text-neutral-900 focus:ring-neutral-300 shadow-inner"
+  }
+`}
               placeholder="Enter number of tokens"
             />
           </div>
@@ -538,6 +546,10 @@ export default function SilverPayment() {
             <input
               type="number"
               value={totalAmount}
+              style={{
+                MozAppearance: "textfield",
+                WebkitAppearance: "none",
+              }}
               onChange={(e) => {
                 const value = e.target.value;
                 setTotalAmount(value);
@@ -547,41 +559,59 @@ export default function SilverPayment() {
                   ).toFixed(4)
                 );
               }}
-              className={`mt-1 w-full p-3 rounded-lg focus:ring-2 focus:outline-none transition
-                ${
-                  theme === "dark"
-                    ? "bg-neutral-800 border-neutral-700 text-neutral-100 focus:ring-neutral-600"
-                    : "bg-neutral-50 border-neutral-200 text-neutral-900 focus:ring-neutral-300"
-                }
-              `}
+              className={`mt-1 w-full p-3 rounded-lg border focus:outline-none focus:ring-2 transition ${
+                theme === "dark"
+                  ? "bg-neutral-800 border-neutral-700 text-neutral-100 focus:ring-neutral-600 shadow-inner"
+                  : "bg-neutral-100 border border-neutral-300 text-neutral-900 focus:ring-neutral-300 shadow-inner"
+              } `}
               placeholder="Enter total amount"
             />
           </div>
         </div>
 
-        {/* Payment Method */}
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-bold mb-1">
               Select Payment Method
             </label>
-            <select
-              onChange={handlePaymentMethodChange}
-              value={paymentMethod}
-              className={`mt-1 block w-full rounded-lg border p-3 shadow-sm focus:ring-2 focus:outline-none text-base transition
-                ${
-                  theme === "dark"
-                    ? "bg-neutral-800 border-neutral-700 text-neutral-100 focus:ring-neutral-600"
-                    : "bg-neutral-50 border-neutral-200 text-neutral-900 focus:ring-neutral-300"
-                }
-              `}
-            >
-              <option value="">-- Select --</option>
-              <option value="stripe">Stripe</option>
-              <option value="crypto">Crypto</option>
-            </select>
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-6 mt-1">
+              {[
+                {
+                  label: "Stripe",
+                  value: "stripe",
+                  icon: "/icons/stripe-icon.png",
+                },
+                {
+                  label: "Crypto",
+                  value: "crypto",
+                  icon: "/icons/crypto-icon.png",
+                },
+              ].map(({ label, value, icon }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setPaymentMethod(value)}
+                  className={`flex flex-col items-center justify-center gap-2 p-6 rounded-xl border shadow-sm transition font-semibold w-full
+            ${
+              paymentMethod === value
+                ? "ring-2 ring-blue-500"
+                : "hover:ring-1 hover:ring-gray-400"
+            }
+            ${
+              theme === "dark"
+                ? "bg-neutral-800 border-neutral-700 text-neutral-100"
+                : "bg-neutral-50 border-neutral-200 text-neutral-900"
+            }
+          `}
+                >
+                  <img src={icon} alt={label} className="w-10 h-10" />
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
+          {/* Stripe Checkout Section */}
           {paymentMethod === "stripe" && (
             <StripeAsset
               totalAmount={totalAmount}
@@ -589,50 +619,63 @@ export default function SilverPayment() {
               theme={theme}
             />
           )}
+
+          {/* Crypto Token Selection */}
+
           {paymentMethod === "crypto" && (
             <div
               className={`border rounded-xl p-6 mt-2 transition-colors
-                ${
-                  theme === "dark"
-                    ? "bg-neutral-900 border-neutral-700"
-                    : "bg-white border-neutral-100"
-                }
-              `}
+      ${
+        theme === "dark"
+          ? "bg-neutral-900 border-neutral-700"
+          : "bg-white border-neutral-100"
+      }
+    `}
             >
-              {/* Select Crypto Token */}
-              <div>
-                <label className="block text-sm font-bold mb-1">
-                  Select Crypto Token
-                </label>
-                <select
-                  value={selectedCrypto}
-                  onChange={(e) => setSelectedCrypto(e.target.value)}
-                  className={`mt-1 block w-full rounded-lg border p-3 shadow-sm text-base focus:ring-2 focus:outline-none transition
-                    ${
-                      theme === "dark"
-                        ? "bg-neutral-800 border-neutral-700 text-neutral-100 focus:ring-neutral-600"
-                        : "bg-neutral-50 border-neutral-200 text-neutral-900 focus:ring-neutral-300"
-                    }
-                  `}
-                >
-                  <option value="">-- Select Token --</option>
-                  <option value="eth">Ether (Ethereum)</option>
-                  <option value="usdt_eth">USDT (Ethereum)</option>
-                  <option value="matic">Matic (Polygon)</option>
-                  <option value="usdt_polygon">USDT (Polygon)</option>
-                  <option value="btc">Bitcoin (BTC Network)</option>
-                </select>
-              </div>
+              <label className="block text-sm font-bold mb-2">
+                Select Crypto Token
+              </label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                {["eth", "usdt_eth", "matic", "usdt_polygon", "btc"].map(
+                  (token) => {
+                    const labelMap = {
+                      eth: "Ether (Ethereum)",
+                      usdt_eth: "USDT (Ethereum)",
+                      matic: "Matic (Polygon)",
+                      usdt_polygon: "USDT (Polygon)",
+                      btc: "Bitcoin (BTC Network)",
+                    };
+                    const iconMap = {
+                      eth: "/icons/eth-icon.png",
+                      usdt_eth: "/icons/usdt-icon.png",
+                      matic: "/icons/matic-logo.png",
+                      usdt_polygon: "/icons/USDT (Polygon).png",
+                      btc: "/icons/Bitcoin (BTC Network).png",
+                    };
 
-              {/* Show Crypto UI only after token selected */}
-              {selectedCrypto && (
-                <CryptoAsset
-                  totalAmount={totalAmount}
-                  selectedCrypto={selectedCrypto}
-                  handleCheckout={handleCryptoCheckout}
-                  theme={theme}
-                />
-              )}
+                    return (
+                      <button
+                        key={token}
+                        type="button"
+                        onClick={() => handleCryptoCheckout(token)}
+                        className={`flex flex-col items-center justify-center gap-2 px-6 py-4 rounded-xl border shadow-sm transition font-medium w-full
+              ${
+                theme === "dark"
+                  ? "bg-neutral-800 border-neutral-700 text-neutral-100"
+                  : "bg-neutral-50 border-neutral-200 text-neutral-900"
+              } hover:ring-2 hover:ring-green-500`}
+                      >
+                        <img
+                          src={iconMap[token]}
+                          alt={labelMap[token]}
+                          className="w-10 h-10"
+                        />
+                        {labelMap[token]}
+                      </button>
+                    );
+                  }
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -665,75 +708,47 @@ const InfoCard = ({ label, value, theme }) => (
 
 const StripeAsset = ({ totalAmount, stripeCheckout, theme }) => (
   <div
-    className={`rounded-lg border p-4 shadow-sm flex flex-col items-start mt-2 transition-colors
-      ${
-        theme === "dark"
-          ? "bg-neutral-900 border-neutral-700"
-          : "bg-neutral-50 border-neutral-200"
-      }
-    `}
+    className={`rounded-xl border px-6 py-5 shadow-sm mt-2 transition-colors flex flex-col md:flex-row justify-between items-start md:items-center gap-4
+    ${
+      theme === "dark"
+        ? "bg-neutral-900 border-neutral-700"
+        : "bg-white border-neutral-200"
+    }
+  `}
   >
-    <p className="text-sm font-semibold mb-1">Stripe Selected</p>
-    <p className="text-sm mb-2">
-      You will be redirected to Stripe to complete the payment of{" "}
-      <strong>${totalAmount}</strong>.
-    </p>
-    <button
-      className={`mt-2 px-6 py-2 rounded-lg text-base font-bold shadow transition
-        ${
-          theme === "dark"
-            ? "bg-neutral-700 text-neutral-100 hover:bg-neutral-600"
-            : "bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
-        }
-      `}
-      onClick={stripeCheckout}
-    >
-      Pay with Stripe
-    </button>
-  </div>
-);
+    {/* Left Section: Icon + Text */}
+    <div className="flex items-start gap-4 flex-1">
+      <img
+        src="/icons/stripe-icon.png"
+        alt="Stripe"
+        className="w-10 h-10 object-contain mt-1"
+      />
+      <div>
+        <h3 className="text-base font-bold mb-1">Stripe Selected</h3>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          You will be redirected to Stripe to complete the payment of{" "}
+          <span className="font-semibold text-black dark:text-white">
+            ${totalAmount}
+          </span>
+          .
+        </p>
+      </div>
+    </div>
 
-const CryptoAsset = ({
-  totalAmount,
-  selectedCrypto,
-  handleCheckout,
-  theme,
-}) => {
-  const readable = {
-    eth: "Ether (Ethereum)",
-    usdt_eth: "USDT (Ethereum)",
-    matic: "Matic (Polygon)",
-    usdt_polygon: "USDT (Polygon)",
-    btc: "Bitcoin",
-  };
-
-  return (
-    <div
-      className={`rounded-lg border p-4 shadow-sm mt-4 flex flex-col items-start transition-colors
-        ${
-          theme === "dark"
-            ? "bg-neutral-900 border-neutral-700"
-            : "bg-neutral-50 border-neutral-200"
-        }
-      `}
-    >
-      <p className="text-sm font-semibold mb-1">Crypto Wallet</p>
-      <p className="text-sm mb-2">
-        You selected: <strong>{readable[selectedCrypto]}</strong> to pay{" "}
-        <strong>${totalAmount}</strong>.
-      </p>
+    {/* Right Section: Button */}
+    <div className="w-full md:w-auto">
       <button
-        className={`mt-2 px-6 py-2 rounded-lg text-base font-bold shadow transition
-          ${
-            theme === "dark"
-              ? "bg-neutral-700 text-neutral-100 hover:bg-neutral-600"
-              : "bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
-          }
-        `}
-        onClick={() => handleCheckout(selectedCrypto)}
+        onClick={stripeCheckout}
+        className={`w-full md:w-auto px-5 py-2 rounded-lg text-sm font-semibold transition-colors duration-200
+        ${
+          theme === "dark"
+            ? "bg-blue-600 text-white hover:bg-blue-500"
+            : "bg-blue-500 text-white hover:bg-blue-600"
+        }
+      `}
       >
-        Pay with {readable[selectedCrypto]}
+        Pay with Stripe
       </button>
     </div>
-  );
-};
+  </div>
+);

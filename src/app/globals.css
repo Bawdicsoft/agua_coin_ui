@@ -316,3 +316,17 @@ button:active {
   opacity: 1 !important; /* Remove default hover/focus opacity */
   outline: none;         /* Remove outline if undesired */
 }
+
+
+
+
+/* hideArrows.css */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}

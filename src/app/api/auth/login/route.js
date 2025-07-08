@@ -45,7 +45,8 @@ export async function POST(request) {
     // Fetch complete user data by ID (omit password)
     const userData = await AuthModel.findById(user._id).select("-password");
 
-    return NextResponse.json(
+    // ✅ Set cookies before returning response
+    const response = NextResponse.json(
       {
         message: "Login successful",
         token,
@@ -53,6 +54,24 @@ export async function POST(request) {
       },
       { status: 200 }
     );
+
+    // ✅ Set token & role cookies
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24, // 1 day
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    response.cookies.set("role", user.role, {
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24, // 1 day
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    return response;
   } catch (error) {
     console.error("Error during login:", error);
     return NextResponse.json(

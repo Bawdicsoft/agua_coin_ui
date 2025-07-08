@@ -52,7 +52,8 @@ export default function UserDashboard({ children }) {
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
   const [currentPage, setCurrentPage] = useState("Dashboard");
-  const { walletAddress, setWalletAddress, signer, setSigner } = useContext(WalletContext);
+  const { walletAddress, setWalletAddress, signer, setSigner } =
+    useContext(WalletContext);
   const { auth, logout } = useContext(AuthContext);
   const menuRef = useRef();
   const web3ModalRef = useRef(null);
@@ -177,7 +178,10 @@ export default function UserDashboard({ children }) {
     avatar: {
       width: "40px",
       height: "40px",
-      background: theme === "dark" ? "var(--color-primary)" : "var(--color-secondary, #eee)",
+      background:
+        theme === "dark"
+          ? "var(--color-primary)"
+          : "var(--color-secondary, #eee)",
       borderRadius: "50%",
       color: "rgba(0, 0, 0, 0.9)",
       display: "flex",
@@ -194,7 +198,7 @@ export default function UserDashboard({ children }) {
       title: "Dashboard",
       icon: <MdDashboard />,
       path: "/dashboard/user",
-      isMain: true
+      isMain: true,
     },
     {
       title: "Purchase",
@@ -202,7 +206,7 @@ export default function UserDashboard({ children }) {
       children: [
         { name: "Silver", path: "/dashboard/user/purchase/silver" },
         { name: "Gold", path: "/dashboard/user/purchase/gold" },
-        { name: "Agua", path: "/dashboard/user/purchase/agua" }
+        { name: "Agua", path: "/dashboard/user/purchase/agua" },
       ],
     },
     {
@@ -211,7 +215,7 @@ export default function UserDashboard({ children }) {
       children: [
         { name: "Silver", path: "/dashboard/user/redeem/silver" },
         { name: "Gold", path: "/dashboard/user/redeem/gold" },
-        { name: "Agua", path: "/dashboard/user/redeem/agua" }
+        { name: "Agua", path: "/dashboard/user/redeem/agua" },
       ],
     },
     {
@@ -220,7 +224,7 @@ export default function UserDashboard({ children }) {
       children: [
         { name: "Silver", path: "/dashboard/user/mint/silver" },
         { name: "Gold", path: "/dashboard/user/mint/gold" },
-        { name: "Agua", path: "/dashboard/user/mint/agua" }
+        { name: "Agua", path: "/dashboard/user/mint/agua" },
       ],
     },
     {
@@ -229,7 +233,7 @@ export default function UserDashboard({ children }) {
       children: [
         { name: "Pending", path: "/dashboard/user/token/pending" },
         { name: "Approved", path: "/dashboard/user/token/approved" },
-        { name: "Rejected", path: "/dashboard/user/token/rejected" }
+        { name: "Rejected", path: "/dashboard/user/token/rejected" },
       ],
     },
   ];
@@ -294,10 +298,10 @@ export default function UserDashboard({ children }) {
     try {
       setCurrentPage(name);
       clearBreadcrumbs(); // Clear existing breadcrumbs
-      
+
       // Find the parent menu for this path
-      const parentMenu = menus.find(menu => 
-        menu.children?.some(child => child.path === path)
+      const parentMenu = menus.find((menu) =>
+        menu.children?.some((child) => child.path === path)
       );
 
       // Add breadcrumbs in correct order
@@ -311,7 +315,7 @@ export default function UserDashboard({ children }) {
       } else {
         addBreadcrumb("Dashboard", "/dashboard/user");
       }
-      
+
       await router.push(path);
     } catch (error) {
       console.error("Navigation error:", error);
@@ -339,7 +343,13 @@ export default function UserDashboard({ children }) {
       >
         <div style={styles.logo}>
           <span style={styles.logoIcon}>
-            <Image src="/Agua-logo1.png" alt="logo" width={96} height={96} />
+            <Image
+              src="/Agua-logo1.png"
+              alt="logo"
+              width={96}
+              height={96}
+
+            />
           </span>
           {/* {!collapsed && <span style={styles.logoText}>AGUA</span>} */}
         </div>
@@ -395,10 +405,16 @@ export default function UserDashboard({ children }) {
                 }}
               >
                 <span style={styles.menuIcon}>{menu.icon}</span>
-                {!collapsed && <span style={styles.menuTitle}>{menu.title}</span>}
+                {!collapsed && (
+                  <span style={styles.menuTitle}>{menu.title}</span>
+                )}
                 {!collapsed && !menu.isMain && (
                   <span style={styles.menuArrow}>
-                    {openMenu === menu.title ? <MdExpandLess /> : <MdExpandMore />}
+                    {openMenu === menu.title ? (
+                      <MdExpandLess />
+                    ) : (
+                      <MdExpandMore />
+                    )}
                   </span>
                 )}
               </div>
@@ -414,7 +430,8 @@ export default function UserDashboard({ children }) {
                       }}
                       onClick={() => handleNavigation(child.path, child.name)}
                       onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor = "var(--menu-active)")
+                        (e.currentTarget.style.backgroundColor =
+                          "var(--menu-active)")
                       }
                       onMouseLeave={(e) =>
                         (e.currentTarget.style.backgroundColor = "transparent")
@@ -471,7 +488,10 @@ export default function UserDashboard({ children }) {
                 alignItems: "center",
                 gap: "0.5rem",
                 padding: "0.5rem 1rem",
-                backgroundColor: theme === "dark" ? "var(--color-primary)" : "var(--color-warning)",
+                backgroundColor:
+                  theme === "dark"
+                    ? "var(--color-primary)"
+                    : "var(--color-warning)",
                 color: "white",
                 border: "none",
                 borderRadius: "0.5rem",
@@ -484,19 +504,27 @@ export default function UserDashboard({ children }) {
             >
               <MdAccountBalanceWallet size={18} />
               {walletAddress
-                ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+                ? `Connected: ${walletAddress.slice(
+                    0,
+                    6
+                  )}...${walletAddress.slice(-4)}`
                 : "Connect Wallet"}
             </button>
 
             <ThemeToggle />
-
 
             <div
               onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
               style={styles.avatar}
             >
               {auth?.user?.profilePicture ? (
-                <Image src={auth?.user?.profilePicture} className="rounded-full" alt="User avatar" width={32} height={32} />
+                <Image
+                  src={auth?.user?.profilePicture}
+                  className="rounded-full"
+                  alt="User avatar"
+                  width={32}
+                  height={32}
+                />
               ) : (
                 <MdAccountCircle size={36} />
               )}
@@ -509,7 +537,7 @@ export default function UserDashboard({ children }) {
                   position: "absolute",
                   top: "40px",
                   right: -10,
-                  backgroundColor: "var(--background-header)",                 
+                  backgroundColor: "var(--background-header)",
                   zIndex: 1000,
                 }}
               >

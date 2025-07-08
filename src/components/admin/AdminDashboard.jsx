@@ -218,63 +218,63 @@ export default function AdminDashboard({ children }) {
       title: "Purchase Tokens",
       icon: <MdShoppingCart />,
       children: [
-        { name: "Pending", path: "/dashboard/user/purchase/silver" },
-        { name: "Approved", path: "/dashboard/user/purchase/gold" },
-        { name: "Rejected", path: "/dashboard/user/purchase/agua" },
+        { name: "Pending", path: "/dashboard/admin/purchase/silver" },
+        { name: "Approved", path: "/dashboard/admin/purchase/gold" },
+        { name: "Rejected", path: "/dashboard/admin/purchase/agua" },
       ],
     },
     {
       title: "Redeem Tokens",
       icon: <MdRedeem />,
       children: [
-        { name: "Pending", path: "/dashboard/user/redeem/silver" },
-        { name: "Approved", path: "/dashboard/user/redeem/gold" },
-        { name: "Rejected", path: "/dashboard/user/redeem/agua" },
+        { name: "Pending", path: "/dashboard/admin/redeem/silver" },
+        { name: "Approved", path: "/dashboard/admin/redeem/gold" },
+        { name: "Rejected", path: "/dashboard/admin/redeem/agua" },
       ],
     },
     {
       title: "Mint Tokens",
       icon: <MdBolt />,
       children: [
-        { name: "Pending", path: "/dashboard/user/mint/silver" },
-        { name: "Approved", path: "/dashboard/user/mint/gold" },
-        { name: "Rejected", path: "/dashboard/user/mint/agua" },
+        { name: "Pending", path: "/dashboard/admin/mint/silver" },
+        { name: "Approved", path: "/dashboard/admin/mint/gold" },
+        { name: "Rejected", path: "/dashboard/admin/mint/agua" },
       ],
     },
     {
       title: "Users Requests",
       icon: <MdPerson />,
       children: [
-        { name: "Pending", path: "/dashboard/user/token/pending" },
-        { name: "Approved", path: "/dashboard/user/token/approved" },
-        { name: "Blacklisted", path: "/dashboard/user/token/rejected" },
+        { name: "Pending", path: "/dashboard/admin/token/pending" },
+        { name: "Approved", path: "/dashboard/admin/token/approved" },
+        { name: "Blacklisted", path: "/dashboard/admin/token/rejected" },
       ],
     },
     {
       title: "Notifications",
       icon: <MdNotifications />,
       children: [
-        { name: "Announcements", path: "/dashboard/user/token/pending" },
-        { name: "New Notification", path: "/dashboard/user/token/approved" },
-        { name: "Notifications History", path: "/dashboard/user/token/rejected" },
+        { name: "Announcements", path: "/dashboard/admin/token/pending" },
+        { name: "New Notification", path: "/dashboard/admin/token/approved" },
+        { name: "Notifications History", path: "/dashboard/admin/token/rejected" },
       ],
     },
     {
       title: "Reports",
       icon: <TbReport />,
       children: [
-        { name: "Announcements", path: "/dashboard/user/token/pending" },
-        { name: "New Notification", path: "/dashboard/user/token/approved" },
-        { name: "Notifications History", path: "/dashboard/user/token/rejected" },
+        { name: "Announcements", path: "/dashboard/admin/token/pending" },
+        { name: "New Notification", path: "/dashboard/admin/token/approved" },
+        { name: "Notifications History", path: "/dashboard/admin/token/rejected" },
       ],
     },
     {
       title: "Payments",
       icon: <MdOutlinePayments />,
       children: [
-        { name: "Announcements", path: "/dashboard/user/token/pending" },
-        { name: "New Notification", path: "/dashboard/user/token/approved" },
-        { name: "Notifications History", path: "/dashboard/user/token/rejected" },
+        { name: "Announcements", path: "/dashboard/admin/token/pending" },
+        { name: "New Notification", path: "/dashboard/admin/token/approved" },
+        { name: "Notifications History", path: "/dashboard/admin/token/rejected" },
       ],
     },
   ];
@@ -347,14 +347,14 @@ export default function AdminDashboard({ children }) {
 
       // Add breadcrumbs in correct order
       if (name !== "Dashboard") {
-        // addBreadcrumb(   "/dashboard/user");
+        addBreadcrumb(   "Admin");
         if (parentMenu) {
           console.log("parentMenu==>", parentMenu);
           addBreadcrumb(parentMenu.title, `#${parentMenu.title.toLowerCase()}`);
         }
         addBreadcrumb(name, path);
       } else {
-        addBreadcrumb("Dashboard", "/dashboard/user");
+        addBreadcrumb("Dashboard", "/dashboard/admin");
       }
 
       await router.push(path);

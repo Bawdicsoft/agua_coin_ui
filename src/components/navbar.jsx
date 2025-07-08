@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState, useEffect, useRef  } from "react";
 import Image from "next/image";
 import { FiMenu, FiX } from "react-icons/fi";
 import Button from "./Button";
@@ -11,12 +11,32 @@ import { navLinks } from "../content/data";
 export default function Navbar({ setIsLoading }) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
 
   const handleNav = (href) => {
     setIsLoading(true); // 👈 Set loading to true BEFORE navigating
     setIsMenuOpen(false);
     router.push(href);
   };
+
+    useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isMenuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
 
   useEffect(()=>{
     setIsLoading(false)
@@ -75,7 +95,7 @@ export default function Navbar({ setIsLoading }) {
             setIsLoading={true}
             variant="outline"
             size="md"
-            className="border-white bg-white text-[#207CFF] hover:bg-[#207CFF] hover:text-white px-6 mx-4 font-semibold hover:cursor-pointer"
+            className="border-white text-white bg-[#207CFF] hover:text-[#207CFF] hover:bg-white px-6 mx-4 font-semibold hover:cursor-pointer"
           >
             Login
           </Button>
@@ -92,12 +112,13 @@ export default function Navbar({ setIsLoading }) {
 
       {/* Mobile Menu */}
       <div
-        className={`lg:hidden bg-[#207CFF] overflow-hidden transition-all duration-300 ${
-          isMenuOpen ? "max-h-[500px] py-4" : "max-h-0"
-        }`}
-      >
-        <ul className="flex flex-col gap-1 px-4">{renderLinks(true)}</ul>
-      </div>
+  ref={menuRef} // 🔹 Attach ref here
+  className={`lg:hidden bg-[#207CFF] overflow-hidden transition-all duration-300 ${
+    isMenuOpen ? "max-h-[500px] py-4" : "max-h-0"
+  }`}
+>
+  <ul className="flex flex-col gap-1 px-4">{renderLinks(true)}</ul>
+</div>
     </nav>
   );
 }

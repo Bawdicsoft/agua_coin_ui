@@ -4,7 +4,11 @@ import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/context/AuthContext";
 import Link from "next/link";
-import { IoArrowBackOutline, IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
+import {
+  IoArrowBackOutline,
+  IoEyeOutline,
+  IoEyeOffOutline,
+} from "react-icons/io5";
 import { ToastContext } from "@/context/ToastContext";
 import { LoadingContext } from "@/context/LoadingContext";
 
@@ -74,7 +78,7 @@ export default function SigninPage() {
         }
         showToast({ type: "success", message: `Welcome to ${user.name}` });
         setTimeout(() => {
-          setIsLoading(false);
+          // setIsLoading(false);
         }, 1000);
       } else {
         showToast({
@@ -141,15 +145,16 @@ export default function SigninPage() {
                 >
                   Email Address
                 </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+             <input
+  id="email"
+  name="email"
+  type="email"
+  value={formData.email}
+  onChange={handleChange}
+  required
+  className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black"
+/>
+
               </div>
 
               <div>
@@ -167,8 +172,9 @@ export default function SigninPage() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black"
                   />
+
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
