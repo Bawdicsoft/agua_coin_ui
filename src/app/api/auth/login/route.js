@@ -38,7 +38,7 @@ export async function POST(request) {
     // Create JWT token
     const token = jwt.sign(
       { id: user._id, email: user.email },
-      process.env.JWT_SECRET || "default_secret",
+      process.env.JWT_SECRET || "AguaCoinUI",
       { expiresIn: "1d" }
     );
 

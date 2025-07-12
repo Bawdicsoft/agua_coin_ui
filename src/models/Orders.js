@@ -2,13 +2,20 @@ import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema(
   {
+    orderId: {
+      type: String,
+    },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     name: {
       type: String,
     },
     email: {
       type: String,
     },
-    walletAddress: {
+    from: {
+      type: String,
+    },
+    to: {
       type: String,
     },
     TokenType: {
@@ -26,9 +33,6 @@ const OrderSchema = new mongoose.Schema(
       required: true,
     },
     totalAmount: {
-      type: String,
-    },
-    orderDate: {
       type: String,
     },
     tokenStatus: {

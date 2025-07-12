@@ -4,7 +4,15 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { WalletContext } from "@/context/WalletContext";
 import { Contract } from "ethers";
-import { adminAddress, aguaToken, aguaAbi, goldToken, auAbi, silverToken, agAbi } from "@/content/tokendata";
+import {
+  adminAddress,
+  aguaToken,
+  aguaAbi,
+  goldToken,
+  auAbi,
+  silverToken,
+  agAbi,
+} from "@/content/tokendata";
 import { useTheme } from "@/context/ThemeContext";
 import { useRouter } from "next/navigation";
 
@@ -32,7 +40,7 @@ export default function Aguaredeem() {
   useEffect(() => {
     const fetchRates = async () => {
       try {
-        setRates(prev => ({ ...prev, loading: true }));
+        setRates((prev) => ({ ...prev, loading: true }));
 
         // Fetch Gold Rate
         const goldRes = await fetch("https://api.gold-api.com/price/XAU");
@@ -49,7 +57,8 @@ export default function Aguaredeem() {
         const silverGramPrice = silverOuncePrice / OUNCE_TO_GRAM;
 
         // Calculate combined rate (60% gold + 40% silver)
-        const combinedRate = (goldGramPrice * GOLD_WEIGHT) + (silverGramPrice * SILVER_WEIGHT);
+        const combinedRate =
+          goldGramPrice * GOLD_WEIGHT + silverGramPrice * SILVER_WEIGHT;
 
         setRates({
           goldOunce: goldOuncePrice.toFixed(2),
@@ -61,7 +70,7 @@ export default function Aguaredeem() {
         });
       } catch (error) {
         console.error("Error fetching rates:", error);
-        setRates(prev => ({ ...prev, loading: false }));
+        setRates((prev) => ({ ...prev, loading: false }));
       }
     };
 
@@ -86,8 +95,10 @@ export default function Aguaredeem() {
     }
     try {
       const contract = new Contract(aguaToken, aguaAbi, signer);
-      const decimals = 18; // adjust if needed
-      const tokenAmount = ethers.parseUnits(totalAmount.toString(), decimals);
+      // const decimals = 18; // adjust if needed
+      const decimals = await contract.decimals(); // example: 18
+
+      const tokenAmount = ethers.parseUnits(numTokens.toString(), decimals);
       console.log("Parsed token amount:", tokenAmount.toString());
       const tx = await contract.transfer(adminAddress, tokenAmount);
       const receipt = await tx.wait(); // waits for block confirmation
@@ -113,7 +124,6 @@ export default function Aguaredeem() {
       const response = await axios.post("/api/redeemTokens", payload);
 
       console.log("token sendSuccessfully:", response.data);
-      router.push("/userdashboard");
     } catch (error) {
       console.log(error.message);
     }
@@ -142,13 +152,15 @@ export default function Aguaredeem() {
 
         {/* Display Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <InfoCard label="User ID" value={
-            clientId && clientId.length > 8
-              ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}`
-              : clientId || "-"
+          <InfoCard
+            label="User ID"
+            value={
+              clientId && clientId.length > 8
+                ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}`
+                : clientId || "-"
             }
             theme={theme}
-           />
+          />
           <InfoCard
             label="AGUA Rate (oz)"
             value={rates.loading ? "Loading..." : `$${rates.combinedRate}`}
@@ -182,7 +194,9 @@ export default function Aguaredeem() {
             </div>
             <div className="flex items-center gap-2">
               <span className="font-semibold md:ml-6">Rate/gram:</span>
-              <span className="text-lg font-bold">${rates.combinedRate || 0}</span>
+              <span className="text-lg font-bold">
+                ${rates.combinedRate || 0}
+              </span>
             </div>
           </div>
         </div>
@@ -202,11 +216,11 @@ export default function Aguaredeem() {
             <input
               type="text"
               value={numTokens}
-              onChange={e => {
-                let value = e.target.value.replace(/[^0-9.]/g, '');
-                const parts = value.split('.');
+              onChange={(e) => {
+                let value = e.target.value.replace(/[^0-9.]/g, "");
+                const parts = value.split(".");
                 if (parts.length > 2) {
-                  value = parts[0] + '.' + parts.slice(1).join('');
+                  value = parts[0] + "." + parts.slice(1).join("");
                 }
                 setNumTokens(value);
                 setTotalAmount(
@@ -215,8 +229,8 @@ export default function Aguaredeem() {
                   ).toFixed(2)
                 );
               }}
-              onPaste={e => {
-                const paste = e.clipboardData.getData('text');
+              onPaste={(e) => {
+                const paste = e.clipboardData.getData("text");
                 if (!/^[0-9]*\.?[0-9]*$/.test(paste)) {
                   e.preventDefault();
                 }
@@ -249,10 +263,10 @@ export default function Aguaredeem() {
               type="text"
               value={totalAmount}
               onChange={(e) => {
-                let value = e.target.value.replace(/[^0-9.]/g, '');
-                const parts = value.split('.');
+                let value = e.target.value.replace(/[^0-9.]/g, "");
+                const parts = value.split(".");
                 if (parts.length > 2) {
-                  value = parts[0] + '.' + parts.slice(1).join('');
+                  value = parts[0] + "." + parts.slice(1).join("");
                 }
                 setTotalAmount(value);
                 setNumTokens(
@@ -261,8 +275,8 @@ export default function Aguaredeem() {
                   ).toFixed(4)
                 );
               }}
-              onPaste={e => {
-                const paste = e.clipboardData.getData('text');
+              onPaste={(e) => {
+                const paste = e.clipboardData.getData("text");
                 if (!/^[0-9]*\.?[0-9]*$/.test(paste)) {
                   e.preventDefault();
                 }
@@ -289,7 +303,7 @@ export default function Aguaredeem() {
             focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2
             transition-all duration-200 ease-in-out
             disabled:opacity-50 disabled:cursor-not-allowed
-            ${!numTokens || !totalAmount ? 'opacity-50 cursor-not-allowed' : ''}
+            ${!numTokens || !totalAmount ? "opacity-50 cursor-not-allowed" : ""}
           `}
           onClick={sendToken}
           disabled={!numTokens || !totalAmount}

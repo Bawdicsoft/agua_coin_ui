@@ -22,7 +22,7 @@ import {
   MdChevronRight,
   MdPerson,
   MdNotifications,
-  MdOutlinePayments 
+  MdOutlinePayments,
 } from "react-icons/md";
 import ThemeToggle from "../common/ThemeToggle";
 import AvatarMenu from "../common/AvatarMenu";
@@ -218,27 +218,27 @@ export default function AdminDashboard({ children }) {
       title: "Purchase Tokens",
       icon: <MdShoppingCart />,
       children: [
-        { name: "Pending", path: "/dashboard/admin/purchase/silver" },
-        { name: "Approved", path: "/dashboard/admin/purchase/gold" },
-        { name: "Rejected", path: "/dashboard/admin/purchase/agua" },
+        { name: "Pending", path: "/dashboard/admin/purchase/pending" },
+        { name: "Approved", path: "/dashboard/admin/purchase/approved" },
+        { name: "Rejected", path: "/dashboard/admin/purchase/rejected" },
       ],
     },
     {
       title: "Redeem Tokens",
       icon: <MdRedeem />,
       children: [
-        { name: "Pending", path: "/dashboard/admin/redeem/silver" },
-        { name: "Approved", path: "/dashboard/admin/redeem/gold" },
-        { name: "Rejected", path: "/dashboard/admin/redeem/agua" },
+        { name: "Pending", path: "/dashboard/admin/redeem/pending" },
+        { name: "Approved", path: "/dashboard/admin/redeem/approved" },
+        { name: "Rejected", path: "/dashboard/admin/redeem/rejected" },
       ],
     },
     {
       title: "Mint Tokens",
       icon: <MdBolt />,
       children: [
-        { name: "Pending", path: "/dashboard/admin/mint/silver" },
-        { name: "Approved", path: "/dashboard/admin/mint/gold" },
-        { name: "Rejected", path: "/dashboard/admin/mint/agua" },
+        { name: "Pending", path: "/dashboard/admin/mint/pending" },
+        { name: "Approved", path: "/dashboard/admin/mint/approved" },
+        { name: "Rejected", path: "/dashboard/admin/mint/rejected" },
       ],
     },
     {
@@ -256,7 +256,10 @@ export default function AdminDashboard({ children }) {
       children: [
         { name: "Announcements", path: "/dashboard/admin/token/pending" },
         { name: "New Notification", path: "/dashboard/admin/token/approved" },
-        { name: "Notifications History", path: "/dashboard/admin/token/rejected" },
+        {
+          name: "Notifications History",
+          path: "/dashboard/admin/token/rejected",
+        },
       ],
     },
     {
@@ -265,7 +268,10 @@ export default function AdminDashboard({ children }) {
       children: [
         { name: "Announcements", path: "/dashboard/admin/token/pending" },
         { name: "New Notification", path: "/dashboard/admin/token/approved" },
-        { name: "Notifications History", path: "/dashboard/admin/token/rejected" },
+        {
+          name: "Notifications History",
+          path: "/dashboard/admin/token/rejected",
+        },
       ],
     },
     {
@@ -274,7 +280,10 @@ export default function AdminDashboard({ children }) {
       children: [
         { name: "Announcements", path: "/dashboard/admin/token/pending" },
         { name: "New Notification", path: "/dashboard/admin/token/approved" },
-        { name: "Notifications History", path: "/dashboard/admin/token/rejected" },
+        {
+          name: "Notifications History",
+          path: "/dashboard/admin/token/rejected",
+        },
       ],
     },
   ];
@@ -347,7 +356,7 @@ export default function AdminDashboard({ children }) {
 
       // Add breadcrumbs in correct order
       if (name !== "Dashboard") {
-        addBreadcrumb(   "Admin");
+        addBreadcrumb("Admin");
         if (parentMenu) {
           console.log("parentMenu==>", parentMenu);
           addBreadcrumb(parentMenu.title, `#${parentMenu.title.toLowerCase()}`);
@@ -539,7 +548,10 @@ export default function AdminDashboard({ children }) {
             >
               <MdAccountBalanceWallet size={18} />
               {walletAddress
-                ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+                ? `Connected: ${walletAddress.slice(
+                    0,
+                    6
+                  )}...${walletAddress.slice(-4)}`
                 : "Connect Wallet"}
             </button>
 
@@ -586,7 +598,10 @@ export default function AdminDashboard({ children }) {
 
       {/* Wallet Modal */}
       {showWalletModal && (
-        <Modal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)}>
+        <Modal
+          isOpen={showWalletModal}
+          onClose={() => setShowWalletModal(false)}
+        >
           <div style={{ padding: "1rem" }}>
             <h2 style={{ marginBottom: "0.5rem" }}>Wallet Options</h2>
             <button

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { WalletContext } from "@/context/WalletContext";
-import { Contract } from "ethers";
+import { Contract, ethers } from "ethers";
 import { adminAddress, agAbi, silverToken } from "@/content/tokendata";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -62,8 +62,8 @@ export default function Silverredeem() {
     }
     try {
       const contract = new Contract(silverToken, agAbi, signer);
-      const decimals = 18; // adjust if needed
-      const tokenAmount = ethers.parseUnits(totalAmount.toString(), decimals);
+      const decimals = await contract.decimals(); // example: 18
+      const tokenAmount = ethers.parseUnits(numTokens.toString(), decimals);
       console.log("Parsed token amount:", tokenAmount.toString());
       const tx = await contract.transfer(adminAddress, tokenAmount);
       const receipt = await tx.wait(); // waits for block confirmation
@@ -117,13 +117,15 @@ export default function Silverredeem() {
 
         {/* Display Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <InfoCard label="User ID" value={
-            clientId && clientId.length > 8
-              ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}`
-              : clientId || "-"
+          <InfoCard
+            label="User ID"
+            value={
+              clientId && clientId.length > 8
+                ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}`
+                : clientId || "-"
             }
             theme={theme}
-           />
+          />
           <InfoCard
             label="Current AG Rate oz"
             value={silverRates.loading ? "Loading..." : `$${silverRates.ounce}`}
@@ -157,7 +159,9 @@ export default function Silverredeem() {
             </div>
             <div className="flex items-center gap-2">
               <span className="font-semibold md:ml-6">Rate/gram:</span>
-              <span className="text-lg font-bold">${silverRates.gram || 0}</span>
+              <span className="text-lg font-bold">
+                ${silverRates.gram || 0}
+              </span>
             </div>
           </div>
         </div>
@@ -177,11 +181,11 @@ export default function Silverredeem() {
             <input
               type="text"
               value={numTokens}
-              onChange={e => {
-                let value = e.target.value.replace(/[^0-9.]/g, '');
-                const parts = value.split('.');
+              onChange={(e) => {
+                let value = e.target.value.replace(/[^0-9.]/g, "");
+                const parts = value.split(".");
                 if (parts.length > 2) {
-                  value = parts[0] + '.' + parts.slice(1).join('');
+                  value = parts[0] + "." + parts.slice(1).join("");
                 }
                 setNumTokens(value);
                 setTotalAmount(
@@ -190,8 +194,8 @@ export default function Silverredeem() {
                   ).toFixed(2)
                 );
               }}
-              onPaste={e => {
-                const paste = e.clipboardData.getData('text');
+              onPaste={(e) => {
+                const paste = e.clipboardData.getData("text");
                 if (!/^[0-9]*\.?[0-9]*$/.test(paste)) {
                   e.preventDefault();
                 }
@@ -224,10 +228,10 @@ export default function Silverredeem() {
               type="text"
               value={totalAmount}
               onChange={(e) => {
-                let value = e.target.value.replace(/[^0-9.]/g, '');
-                const parts = value.split('.');
+                let value = e.target.value.replace(/[^0-9.]/g, "");
+                const parts = value.split(".");
                 if (parts.length > 2) {
-                  value = parts[0] + '.' + parts.slice(1).join('');
+                  value = parts[0] + "." + parts.slice(1).join("");
                 }
                 setTotalAmount(value);
                 setNumTokens(
@@ -236,8 +240,8 @@ export default function Silverredeem() {
                   ).toFixed(4)
                 );
               }}
-              onPaste={e => {
-                const paste = e.clipboardData.getData('text');
+              onPaste={(e) => {
+                const paste = e.clipboardData.getData("text");
                 if (!/^[0-9]*\.?[0-9]*$/.test(paste)) {
                   e.preventDefault();
                 }
@@ -264,7 +268,7 @@ export default function Silverredeem() {
             focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2
             transition-all duration-200 ease-in-out
             disabled:opacity-50 disabled:cursor-not-allowed
-            ${!numTokens || !totalAmount ? 'opacity-50 cursor-not-allowed' : ''}
+            ${!numTokens || !totalAmount ? "opacity-50 cursor-not-allowed" : ""}
           `}
           onClick={sendToken}
           disabled={!numTokens || !totalAmount}

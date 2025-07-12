@@ -9,7 +9,13 @@ import { ethers } from "ethers"; // ✅ THIS IS REQUIRED
 
 // import { auAbi, adminAddress, token } from "../../../../../constant/data";
 // import { WalletContext } from "@/context/WalletContext";
-import { adminAddress, usdtToken, usdtAbi, aguaToken, aguaAbi } from "@/content/tokendata";
+import {
+  adminAddress,
+  usdtToken,
+  usdtAbi,
+  aguaToken,
+  aguaAbi,
+} from "@/content/tokendata";
 import { WalletContext } from "@/context/WalletContext";
 import { AuthContext } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -80,7 +86,7 @@ export default function AguaPayment() {
   useEffect(() => {
     const fetchRates = async () => {
       try {
-        setRates(prev => ({ ...prev, loading: true }));
+        setRates((prev) => ({ ...prev, loading: true }));
 
         // Fetch Gold Rate
         const goldRes = await fetch("https://api.gold-api.com/price/XAU");
@@ -97,7 +103,8 @@ export default function AguaPayment() {
         const silverGramPrice = silverOuncePrice / OUNCE_TO_GRAM;
 
         // Calculate combined rate (60% gold + 40% silver)
-        const combinedRate = (goldGramPrice * GOLD_WEIGHT) + (silverGramPrice * SILVER_WEIGHT);
+        const combinedRate =
+          goldGramPrice * GOLD_WEIGHT + silverGramPrice * SILVER_WEIGHT;
 
         setRates({
           goldOunce: goldOuncePrice.toFixed(2),
@@ -109,7 +116,7 @@ export default function AguaPayment() {
         });
       } catch (error) {
         console.error("Error fetching rates:", error);
-        setRates(prev => ({ ...prev, loading: false }));
+        setRates((prev) => ({ ...prev, loading: false }));
       }
     };
 
@@ -130,25 +137,31 @@ export default function AguaPayment() {
     }));
   }, [signer]);
 
-  const handlePaymentMethodChange = (e) => {
-    if (!signer || !walletAddress) {
-      showToast({ message: "Kindly connect your wallet first", type: "error" });
-      return;
-    }
-    setPaymentMethod(e.target.value);
-  };
-
   const stripeCheckout = () => {
+    if (!signer || !walletAddress) {
+      return alert("Kindly connect your wallet first");
+    }
+    console.log("clientId", clientId);
+    console.log("selectedToken", selectedToken);
+    console.log("numTokens", numTokens);
+    console.log("gramRate", rates?.combinedRates);
+    console.log("totalAmount", totalAmount);
+    console.log("paymentMethod", paymentMethod);
+    console.log("paymentType", "USD");
+    console.log("status", "pending");
+    console.log("walletAddress", walletAddress);
     axios
       .post("/api/stripe-checkout", {
         id: clientId,
         tokenQuantity: numTokens,
         tokenType: selectedToken,
-        gramRate: rates.combinedRate,
+        gramRate: rates?.combinedRates,
         amount: totalAmount,
         paymentType: "USDT",
         paymentMethod: paymentMethod,
-        status: "purchase",
+        type: "purchase",
+        status: "pending",
+        from: walletAddress,
       })
       .then((response) => {
         router.push(response?.data?.message?.url);
@@ -158,9 +171,12 @@ export default function AguaPayment() {
       });
   };
 
-  const web3ModalRef = useRef(null);
+  // const web3ModalRef = useRef(null);
 
   const handleCryptoCheckout = async (tokenType) => {
+    if (!signer || !walletAddress) {
+      return alert("Kindly connect your wallet first");
+    }
     switch (tokenType) {
       case "eth":
         return handleEthPayment();
@@ -187,6 +203,7 @@ export default function AguaPayment() {
       const data = await res.json();
 
       const price = data?.ethereum?.usd;
+      console.log("ETH Price:", price);
       if (!price) throw new Error("ETH price not found in response.");
 
       return price;
@@ -203,11 +220,6 @@ export default function AguaPayment() {
     setIsPaying(true);
 
     try {
-      if (!signer || !walletAddress) {
-        showToast({ message: "Wallet not connected.", type: "error" });
-        return;
-      }
-
       // Fetch ETH Price
       const ethPriceInUsd = await getEthPriceInUsd();
       console.log(`Live ETH Price: $${ethPriceInUsd}`);
@@ -224,31 +236,28 @@ export default function AguaPayment() {
       const receipt = await tx.wait();
       console.log("Transaction sent. Hash:", tx.hash);
 
-      if (!receipt || receipt.status !== 1) {
-        throw new Error("Transaction reverted or failed.");
-      }
-
       console.log("Transaction confirmed. Saving to backend...");
 
       // Save to backend
-      const res = await fetch("/api/send-paymentDetail", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: clientId,
-          gramRate: rates.combinedRate,
-          amount: totalAmount,
-          paymentMethod: "MetaMask",
-          tokenQuantity: numTokens,
-          tokenType: selectedToken,
-          paymentType: "ETH",
-          status: "purchase",
-          hash: tx.hash,
-          from: walletAddress,
-          to: adminAddress,
-          network: "Sepolia", // or "mainnet"
-        }),
-      });
+      if (tx.hash) {
+        const res = await fetch("/api/send-paymentDetail", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: clientId,
+            tokenQuantity: numTokens,
+            tokenType: selectedToken,
+            gramRate: rates?.combinedRates,
+            amount: totalAmount,
+            paymentType: "Ethereum Eth",
+            paymentMethod,
+            type: "purchase",
+            status: "pending",
+            from: walletAddress,
+            hash: tx.hash,
+          }),
+        });
+      }
 
       const data = await res.json();
       if (!res.ok) {
@@ -256,51 +265,51 @@ export default function AguaPayment() {
       }
 
       console.log("✅ ETH Transaction saved to DB successfully.");
-      router.push("/userdashboard");
     } catch (err) {
       console.error("❌ ETH Payment failed:", err.message || err);
-      showToast({ message: "ETH Payment failed: " + err.message, type: "error" });
+      showToast({
+        message: "ETH Payment failed: " + err.message,
+        type: "error",
+      });
     } finally {
       setIsPaying(false);
     }
   };
-  //working
+
   const handleUsdtEthPayment = async () => {
-    // console.log("Processing USDT (Ethereum) payment...");
+    console.log("Processing USDT (Ethereum) payment...");
+
     try {
       const contract = new Contract(usdtToken, usdtAbi, signer);
 
-      const tx = await contract.transfer(adminAddress, totalAmount * 10 ** 6);
-      // console.log("Transaction sent. Hash:", tx.hash);
+      // ✅ USDT has 6 decimals
+      const parsedAmount = ethers.parseUnits(totalAmount.toString(), 6);
+      console.log("Parsed amount:", parsedAmount.toString());
+      const tx = await contract.transfer(adminAddress, parsedAmount);
+      console.log("🔁 Transaction sent to admin:", tx.hash);
 
-      // ✅ Wait for transaction confirmation
-      const receipt = await tx.wait(); // waits for block confirmation
-
+      const receipt = await tx.wait();
       if (!receipt.status) {
         throw new Error("Blockchain transaction failed (reverted).");
       }
 
-      // console.log("Transaction confirmed. Saving to backend...");
+      console.log("✅ Transaction confirmed. Saving to backend...");
 
       const response = await fetch("/api/send-paymentDetail", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: clientId,
-          gramRate: rates.combinedRate,
-          amount: totalAmount,
-          paymentMethod: "MetaMask",
           tokenQuantity: numTokens,
           tokenType: selectedToken,
-          tokenStatus: "pending",
-          paymentType: "USDT",
-          status: "purchase",
-          hash: tx.hash,
+          gramRate: rates?.combinedRates,
+          amount: totalAmount,
+          paymentType: "Ethereum USDT",
+          paymentMethod,
+          type: "purchase",
+          status: "pending",
           from: walletAddress,
-          to: adminAddress,
-          network: "Sepolia",
+          hash: tx.hash,
         }),
       });
 
@@ -310,19 +319,12 @@ export default function AguaPayment() {
         throw new Error(data.error || "Failed to save transaction to backend.");
       }
 
-      // console.log("✅ Transaction saved to DB successfully.");
-
-      router.push("/userdashboard");
-      return;
-      // You can now show a success toast or redirect
+      console.log("✅ Transaction saved to DB successfully.");
     } catch (err) {
-      console.error("❌ Payment failed:", err.message || err);
-
-      // Optionally: show an alert, rollback UI, or log it
-      showToast({ message: "Payment failed: " + err.message, type: "error" });
-      return;
+      console.error("❌ Payment failed:", err?.message || err);
     }
   };
+
   //matic Price in USDT
   const getMaticPriceInUsd = async () => {
     try {
@@ -375,17 +377,16 @@ export default function AguaPayment() {
         },
         body: JSON.stringify({
           id: clientId,
-          gramRate: rates.combinedRate,
-          amount: totalAmount,
-          paymentMethod: "MetaMask",
           tokenQuantity: numTokens,
           tokenType: selectedToken,
-          paymentType: "MATIC",
-          status: "purchase",
-          hash: tx.hash,
+          gramRate: rates?.combinedRates,
+          amount: totalAmount,
+          paymentType: "Matic USDT",
+          paymentMethod,
+          type: "purchase",
+          status: "pending",
           from: walletAddress,
-          to: adminAddress,
-          network: "Polygon",
+          hash: tx.hash,
         }),
       });
 
@@ -396,10 +397,12 @@ export default function AguaPayment() {
       }
 
       // console.log("✅ MATIC Transaction saved to DB successfully.");
-      router.push("/userdashboard");
     } catch (err) {
       console.error("❌ MATIC Payment failed:", err.message || err);
-      showToast({ message: "MATIC Payment failed: " + err.message, type: "error" });
+      showToast({
+        message: "MATIC Payment failed: " + err.message,
+        type: "error",
+      });
     }
   };
 
@@ -409,7 +412,7 @@ export default function AguaPayment() {
     try {
       // 🟣 Use the USDT token contract on Polygon (replace with correct address)
       const polygonUsdtToken = "0xYOUR_POLYGON_USDT_ADDRESS"; // USDT on Polygon
-      const contract = new Contract(polygonUsdtToken, aguaAbi, signer); // signer must be on Polygon
+      const contract = new Contract(polygonUsdtToken, auAbi, signer); // signer must be on Polygon
 
       // Multiply by 1e6 because USDT has 6 decimals
       const tx = await contract.transfer(adminAddress, totalAmount * 10 ** 6);
@@ -429,17 +432,16 @@ export default function AguaPayment() {
         },
         body: JSON.stringify({
           id: clientId,
-          gramRate: rates.combinedRate,
-          amount: totalAmount,
-          paymentMethod: "MetaMask",
           tokenQuantity: numTokens,
           tokenType: selectedToken,
-          paymentType: "USDT",
-          status: "purchase",
-          hash: tx.hash,
+          gramRate: rates?.combinedRates,
+          amount: totalAmount,
+          paymentType: "Polygon USDT",
+          paymentMethod,
+          type: "purchase",
+          status: "pending",
           from: walletAddress,
-          to: adminAddress,
-          network: "Polygon", // updated network name
+          hash: tx.hash,
         }),
       });
 
@@ -448,12 +450,12 @@ export default function AguaPayment() {
       if (!response.ok) {
         throw new Error(data.error || "Failed to save transaction to backend.");
       }
-
-      // console.log("✅ Polygon USDT Transaction saved to DB successfully.");
-      router.push("/userdashboard");
     } catch (err) {
       console.error("❌ Polygon USDT Payment failed:", err.message || err);
-      showToast({ message: "Polygon USDT Payment failed: " + err.message, type: "error" });
+      showToast({
+        message: "Polygon USDT Payment failed: " + err.message,
+        type: "error",
+      });
     }
   };
 
@@ -484,13 +486,15 @@ export default function AguaPayment() {
 
         {/* Display Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <InfoCard label="User ID" value={
-            clientId && clientId.length > 8
-              ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}`
-              : clientId || "-"
+          <InfoCard
+            label="User ID"
+            value={
+              clientId && clientId.length > 8
+                ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}`
+                : clientId || "-"
             }
             theme={theme}
-           />
+          />
           <InfoCard
             label="AGUA Rate (oz)"
             value={rates.loading ? "Loading..." : `$${rates.combinedRate}`}
@@ -524,7 +528,9 @@ export default function AguaPayment() {
             </div>
             <div className="flex items-center gap-2">
               <span className="font-semibold md:ml-6">Rate/gram:</span>
-              <span className="text-lg font-bold">${rates.combinedRate || 0}</span>
+              <span className="text-lg font-bold">
+                ${rates.combinedRate || 0}
+              </span>
             </div>
           </div>
         </div>
@@ -544,11 +550,11 @@ export default function AguaPayment() {
             <input
               type="text"
               value={numTokens}
-              onChange={e => {
-                let value = e.target.value.replace(/[^0-9.]/g, '');
-                const parts = value.split('.');
+              onChange={(e) => {
+                let value = e.target.value.replace(/[^0-9.]/g, "");
+                const parts = value.split(".");
                 if (parts.length > 2) {
-                  value = parts[0] + '.' + parts.slice(1).join('');
+                  value = parts[0] + "." + parts.slice(1).join("");
                 }
                 setNumTokens(value);
                 setTotalAmount(
@@ -557,8 +563,8 @@ export default function AguaPayment() {
                   ).toFixed(2)
                 );
               }}
-              onPaste={e => {
-                const paste = e.clipboardData.getData('text');
+              onPaste={(e) => {
+                const paste = e.clipboardData.getData("text");
                 if (!/^[0-9]*\.?[0-9]*$/.test(paste)) {
                   e.preventDefault();
                 }
@@ -612,29 +618,29 @@ export default function AguaPayment() {
         </div>
 
         {/* Payment Method */}
-      <div className="space-y-6">
-             <div>
-               <label className="block text-sm font-bold mb-1">
-                 Select Payment Method
-               </label>
-               <div className="grid grid-cols-2 md:grid-cols-2 gap-6 mt-1">
-                 {[
-                   {
-                     label: "Stripe",
-                     value: "stripe",
-                     icon: "/icons/stripe-icon.png",
-                   },
-                   {
-                     label: "Crypto",
-                     value: "crypto",
-                     icon: "/icons/crypto-icon.png",
-                   },
-                 ].map(({ label, value, icon }) => (
-                   <button
-                     key={value}
-                     type="button"
-                     onClick={() => setPaymentMethod(value)}
-                     className={`flex flex-col items-center justify-center gap-2 p-6 rounded-xl border shadow-sm transition font-semibold w-full
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-bold mb-1">
+              Select Payment Method
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-6 mt-1">
+              {[
+                {
+                  label: "Stripe",
+                  value: "stripe",
+                  icon: "/icons/stripe-icon.png",
+                },
+                {
+                  label: "Crypto",
+                  value: "crypto",
+                  icon: "/icons/crypto-icon.png",
+                },
+              ].map(({ label, value, icon }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setPaymentMethod(value)}
+                  className={`flex flex-col items-center justify-center gap-2 p-6 rounded-xl border shadow-sm transition font-semibold w-full
                ${
                  paymentMethod === value
                    ? "ring-2 ring-blue-500"
@@ -646,153 +652,152 @@ export default function AguaPayment() {
                    : "bg-neutral-50 border-neutral-200 text-neutral-900"
                }
              `}
-                   >
-                     <img src={icon} alt={label} className="w-10 h-10" />
-                     {label}
-                   </button>
-                 ))}
-               </div>
-             </div>
-   
-             {/* Stripe Checkout Section */}
-             {paymentMethod === "stripe" && (
-               <StripeAsset
-                 totalAmount={totalAmount}
-                 stripeCheckout={stripeCheckout}
-                 theme={theme}
-               />
-             )}
-   
-             {/* Crypto Token Selection */}
-   
-             {paymentMethod === "crypto" && (
-               <div
-                 className={`border rounded-xl p-6 mt-2 transition-colors
+                >
+                  <img src={icon} alt={label} className="w-10 h-10" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Stripe Checkout Section */}
+          {paymentMethod === "stripe" && (
+            <StripeAsset
+              totalAmount={totalAmount}
+              stripeCheckout={stripeCheckout}
+              theme={theme}
+            />
+          )}
+
+          {/* Crypto Token Selection */}
+
+          {paymentMethod === "crypto" && (
+            <div
+              className={`border rounded-xl p-6 mt-2 transition-colors
          ${
            theme === "dark"
              ? "bg-neutral-900 border-neutral-700"
              : "bg-white border-neutral-100"
          }
        `}
-               >
-                 <label className="block text-sm font-bold mb-2">
-                   Select Crypto Token
-                 </label>
-                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                   {["eth", "usdt_eth", "matic", "usdt_polygon", "btc"].map(
-                     (token) => {
-                       const labelMap = {
-                         eth: "Ether (Ethereum)",
-                         usdt_eth: "USDT (Ethereum)",
-                         matic: "Matic (Polygon)",
-                         usdt_polygon: "USDT (Polygon)",
-                         btc: "Bitcoin (BTC Network)",
-                       };
-                       const iconMap = {
-                         eth: "/icons/eth-icon.png",
-                         usdt_eth: "/icons/usdt-icon.png",
-                         matic: "/icons/matic-logo.png",
-                         usdt_polygon: "/icons/USDT (Polygon).png",
-                         btc: "/icons/Bitcoin (BTC Network).png",
-                       };
-   
-                       return (
-                         <button
-                           key={token}
-                           type="button"
-                           onClick={() => handleCryptoCheckout(token)}
-                           className={`flex flex-col items-center justify-center gap-2 px-6 py-4 rounded-xl border shadow-sm transition font-medium w-full
+            >
+              <label className="block text-sm font-bold mb-2">
+                Select Crypto Token
+              </label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                {["eth", "usdt_eth", "matic", "usdt_polygon", "btc"].map(
+                  (token) => {
+                    const labelMap = {
+                      eth: "Ether (Ethereum)",
+                      usdt_eth: "USDT (Ethereum)",
+                      matic: "Matic (Polygon)",
+                      usdt_polygon: "USDT (Polygon)",
+                      btc: "Bitcoin (BTC Network)",
+                    };
+                    const iconMap = {
+                      eth: "/icons/eth-icon.png",
+                      usdt_eth: "/icons/usdt-icon.png",
+                      matic: "/icons/matic-logo.png",
+                      usdt_polygon: "/icons/USDT (Polygon).png",
+                      btc: "/icons/Bitcoin (BTC Network).png",
+                    };
+
+                    return (
+                      <button
+                        key={token}
+                        type="button"
+                        onClick={() => handleCryptoCheckout(token)}
+                        className={`flex flex-col items-center justify-center gap-2 px-6 py-4 rounded-xl border shadow-sm transition font-medium w-full
                  ${
                    theme === "dark"
                      ? "bg-neutral-800 border-neutral-700 text-neutral-100"
                      : "bg-neutral-50 border-neutral-200 text-neutral-900"
                  } hover:ring-2 hover:ring-green-500`}
-                         >
-                           <img
-                             src={iconMap[token]}
-                             alt={labelMap[token]}
-                             className="w-10 h-10"
-                           />
-                           {labelMap[token]}
-                         </button>
-                       );
-                     }
-                   )}
-                 </div>
-               </div>
-             )}
-           </div>
-         </div>
-         {showModal && (
-           <AutoCloseModal
-             message="Action completed successfully!"
-             type="success"
-             onClose={() => setShowModal(false)}
-           />
-         )}
-       </>
-     );
-   }
-   
-   const InfoCard = ({ label, value, theme }) => (
-     <div
-       className={`shadow rounded-xl p-4 border flex flex-col items-center transition-colors
+                      >
+                        <img
+                          src={iconMap[token]}
+                          alt={labelMap[token]}
+                          className="w-10 h-10"
+                        />
+                        {labelMap[token]}
+                      </button>
+                    );
+                  }
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      {showModal && (
+        <AutoCloseModal
+          message="Action completed successfully!"
+          type="success"
+          onClose={() => setShowModal(false)}
+        />
+      )}
+    </>
+  );
+}
+
+const InfoCard = ({ label, value, theme }) => (
+  <div
+    className={`shadow rounded-xl p-4 border flex flex-col items-center transition-colors
          ${
            theme === "dark"
              ? "bg-neutral-900 border-neutral-700 text-neutral-100"
              : "bg-white border-neutral-100 text-neutral-900"
          }
        `}
-     >
-       <label className="text-xs font-semibold mb-1">{label}</label>
-       <div className="text-lg font-bold">{value}</div>
-     </div>
-   );
-   
-   const StripeAsset = ({ totalAmount, stripeCheckout, theme }) => (
-     <div
-       className={`rounded-xl border px-6 py-5 shadow-sm mt-2 transition-colors flex flex-col md:flex-row justify-between items-start md:items-center gap-4
+  >
+    <label className="text-xs font-semibold mb-1">{label}</label>
+    <div className="text-lg font-bold">{value}</div>
+  </div>
+);
+
+const StripeAsset = ({ totalAmount, stripeCheckout, theme }) => (
+  <div
+    className={`rounded-xl border px-6 py-5 shadow-sm mt-2 transition-colors flex flex-col md:flex-row justify-between items-start md:items-center gap-4
        ${
          theme === "dark"
            ? "bg-neutral-900 border-neutral-700"
            : "bg-white border-neutral-200"
        }
      `}
-     >
-       {/* Left Section: Icon + Text */}
-       <div className="flex items-start gap-4 flex-1">
-         <img
-           src="/icons/stripe-icon.png"
-           alt="Stripe"
-           className="w-10 h-10 object-contain mt-1"
-         />
-         <div>
-           <h3 className="text-base font-bold mb-1">Stripe Selected</h3>
-           <p className="text-sm leading-relaxed text-muted-foreground">
-             You will be redirected to Stripe to complete the payment of{" "}
-             <span className="font-semibold text-black dark:text-white">
-               ${totalAmount}
-             </span>
-             .
-           </p>
-         </div>
-       </div>
-   
-       {/* Right Section: Button */}
-       <div className="w-full md:w-auto">
-         <button
-           onClick={stripeCheckout}
-           className={`w-full md:w-auto px-5 py-2 rounded-lg text-sm font-semibold transition-colors duration-200
+  >
+    {/* Left Section: Icon + Text */}
+    <div className="flex items-start gap-4 flex-1">
+      <img
+        src="/icons/stripe-icon.png"
+        alt="Stripe"
+        className="w-10 h-10 object-contain mt-1"
+      />
+      <div>
+        <h3 className="text-base font-bold mb-1">Stripe Selected</h3>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          You will be redirected to Stripe to complete the payment of{" "}
+          <span className="font-semibold text-black dark:text-white">
+            ${totalAmount}
+          </span>
+          .
+        </p>
+      </div>
+    </div>
+
+    {/* Right Section: Button */}
+    <div className="w-full md:w-auto">
+      <button
+        onClick={stripeCheckout}
+        className={`w-full md:w-auto px-5 py-2 rounded-lg text-sm font-semibold transition-colors duration-200
            ${
              theme === "dark"
                ? "bg-blue-600 text-white hover:bg-blue-500"
                : "bg-blue-500 text-white hover:bg-blue-600"
            }
          `}
-         >
-           Pay with Stripe
-         </button>
-       </div>
-     </div>
-   );
-   
+      >
+        Pay with Stripe
+      </button>
+    </div>
+  </div>
+);

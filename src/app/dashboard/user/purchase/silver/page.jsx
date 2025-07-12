@@ -81,14 +81,6 @@ export default function SilverPayment() {
     // console.log("WalletAddress=>", walletAddress);
   }, [signer]);
 
-  const handlePaymentMethodChange = (e) => {
-    if (!signer || !walletAddress) {
-      showToast({ message: "Kindly connect your wallet first", type: "error" });
-      return;
-    }
-    setPaymentMethod(e.target.value);
-  };
-
   const stripeCheckout = () => {
     axios
       .post("/api/stripe-checkout", {
@@ -99,7 +91,9 @@ export default function SilverPayment() {
         amount: totalAmount,
         paymentType: "USDT",
         paymentMethod: paymentMethod,
-        status: "purchase",
+        type: "purchase",
+        status: "pending",
+        from: walletAddress,
       })
       .then((response) => {
         router.push(response?.data?.message?.url);
@@ -108,7 +102,13 @@ export default function SilverPayment() {
         console.error("Stripe checkout error:", error);
       });
   };
+
+  // const web3ModalRef = useRef(null);
+
   const handleCryptoCheckout = async (tokenType) => {
+    if (!signer || !walletAddress) {
+      return alert("Kindly connect your wallet first");
+    }
     switch (tokenType) {
       case "eth":
         return handleEthPayment();
@@ -135,6 +135,7 @@ export default function SilverPayment() {
       const data = await res.json();
 
       const price = data?.ethereum?.usd;
+      console.log("ETH Price:", price);
       if (!price) throw new Error("ETH price not found in response.");
 
       return price;
@@ -144,106 +145,103 @@ export default function SilverPayment() {
     }
   };
 
+  // ✅ Handle ETH Payment
+  const [isPaying, setIsPaying] = useState(false);
   const handleEthPayment = async () => {
-    // console.log("Processing ETH payment...");
+    console.log("🔄 Processing ETH payment...");
+    setIsPaying(true);
 
     try {
-      // ✅ Get live ETH price
+      // Fetch ETH Price
       const ethPriceInUsd = await getEthPriceInUsd();
-      // console.log(`Live ETH Price: $${ethPriceInUsd}`);
+      console.log(`Live ETH Price: $${ethPriceInUsd}`);
 
-      const amountInUsd = totalAmount;
-      const amountInEth = (amountInUsd / ethPriceInUsd).toFixed(18);
-      const ethValue = ethers.utils.parseEther(amountInEth);
+      const amountInEth = (totalAmount / ethPriceInUsd).toFixed(6); // Limit decimals
+      const ethValue = ethers.parseEther(amountInEth);
 
+      // Send ETH
       const tx = await signer.sendTransaction({
         to: adminAddress,
         value: ethValue,
       });
 
       const receipt = await tx.wait();
-      // console.log("Transaction sent. Hash:", tx.hash);
+      console.log("Transaction sent. Hash:", tx.hash);
 
-      if (!receipt.status) {
-        throw new Error("Blockchain transaction failed (reverted).");
+      console.log("Transaction confirmed. Saving to backend...");
+
+      // Save to backend
+      if (tx.hash) {
+        const res = await fetch("/api/send-paymentDetail", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: clientId,
+            tokenQuantity: numTokens,
+            tokenType: selectedToken,
+            gramRate: silverRates?.gram,
+            amount: totalAmount,
+            paymentType: "Ethereum Eth",
+            paymentMethod,
+            type: "purchase",
+            status: "pending",
+            from: walletAddress,
+            hash: tx.hash,
+          }),
+        });
       }
 
-      // console.log("Transaction confirmed. Saving to backend...");
-
-      const response = await fetch("/api/send-paymentDetail", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: clientId,
-          gramRate: silverRates.gram,
-          amount: totalAmount,
-          paymentMethod: "MetaMask",
-          tokenQuantity: numTokens,
-          tokenType: selectedToken,
-          paymentType: "ETH",
-          status: "purchase",
-          hash: tx.hash,
-          from: walletAddress,
-          to: adminAddress,
-          network: "Sepolia",
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to save transaction to backend.");
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to save transaction.");
       }
 
-      // console.log("✅ ETH Transaction saved to DB successfully.");
-      router.push("/userdashboard");
+      console.log("✅ ETH Transaction saved to DB successfully.");
     } catch (err) {
       console.error("❌ ETH Payment failed:", err.message || err);
       showToast({
         message: "ETH Payment failed: " + err.message,
         type: "error",
       });
+    } finally {
+      setIsPaying(false);
     }
   };
-  //working
+
   const handleUsdtEthPayment = async () => {
-    // console.log("Processing USDT (Ethereum) payment...");
+    console.log("Processing USDT (Ethereum) payment...");
+
     try {
       const contract = new Contract(usdtToken, usdtAbi, signer);
 
-      const tx = await contract.transfer(adminAddress, totalAmount * 10 ** 6);
-      // console.log("Transaction sent. Hash:", tx.hash);
+      // ✅ USDT has 6 decimals
+      const parsedAmount = ethers.parseUnits(totalAmount.toString(), 6);
+      console.log("Parsed amount:", parsedAmount.toString());
+      const tx = await contract.transfer(adminAddress, parsedAmount);
+      console.log("🔁 Transaction sent to admin:", tx.hash);
 
-      // ✅ Wait for transaction confirmation
-      const receipt = await tx.wait(); // waits for block confirmation
-
+      const receipt = await tx.wait();
       if (!receipt.status) {
         throw new Error("Blockchain transaction failed (reverted).");
       }
 
-      // console.log("Transaction confirmed. Saving to backend...");
+      console.log("✅ Transaction confirmed. Saving to backend...");
 
       const response = await fetch("/api/send-paymentDetail", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: clientId,
-          gramRate: silverRates.gram,
-          amount: totalAmount,
-          paymentMethod: "MetaMask",
           tokenQuantity: numTokens,
           tokenType: selectedToken,
-          tokenStatus: "pending",
-          paymentType: "USDT",
-          status: "purchase",
-          hash: tx.hash,
+          gramRate: silverRates?.gram,
+          amount: totalAmount,
+          paymentType: "Ethereum USDT",
+          paymentMethod,
+          type: "purchase",
+          status: "pending",
           from: walletAddress,
-          to: adminAddress,
-          network: "Sepolia",
+          hash: tx.hash,
         }),
       });
 
@@ -253,19 +251,12 @@ export default function SilverPayment() {
         throw new Error(data.error || "Failed to save transaction to backend.");
       }
 
-      // console.log("✅ Transaction saved to DB successfully.");
-
-      router.push("/userdashboard");
-      return;
-      // You can now show a success toast or redirect
+      console.log("✅ Transaction saved to DB successfully.");
     } catch (err) {
-      console.error("❌ Payment failed:", err.message || err);
-
-      // Optionally: show an alert, rollback UI, or log it
-      showToast({ message: "Payment failed: " + err.message, type: "error" });
-      return;
+      console.error("❌ Payment failed:", err?.message || err);
     }
   };
+
   //matic Price in USDT
   const getMaticPriceInUsd = async () => {
     try {
@@ -318,17 +309,16 @@ export default function SilverPayment() {
         },
         body: JSON.stringify({
           id: clientId,
-          gramRate: silverRates.gram,
-          amount: totalAmount,
-          paymentMethod: "MetaMask",
           tokenQuantity: numTokens,
           tokenType: selectedToken,
-          paymentType: "MATIC",
-          status: "purchase",
-          hash: tx.hash,
+          gramRate: silverRates?.gram,
+          amount: totalAmount,
+          paymentType: "Matic USDT",
+          paymentMethod,
+          type: "purchase",
+          status: "pending",
           from: walletAddress,
-          to: adminAddress,
-          network: "Polygon",
+          hash: tx.hash,
         }),
       });
 
@@ -375,17 +365,16 @@ export default function SilverPayment() {
         },
         body: JSON.stringify({
           id: clientId,
-          gramRate: silverRates.gram,
-          amount: totalAmount,
-          paymentMethod: "MetaMask",
           tokenQuantity: numTokens,
           tokenType: selectedToken,
-          paymentType: "USDT",
-          status: "purchase",
-          hash: tx.hash,
+          gramRate: silverRates?.gram,
+          amount: totalAmount,
+          paymentType: "Polygon USDT",
+          paymentMethod,
+          type: "purchase",
+          status: "pending",
           from: walletAddress,
-          to: adminAddress,
-          network: "Polygon", // updated network name
+          hash: tx.hash,
         }),
       });
 
