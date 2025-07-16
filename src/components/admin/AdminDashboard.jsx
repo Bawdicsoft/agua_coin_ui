@@ -22,7 +22,7 @@ import {
   MdChevronRight,
   MdPerson,
   MdNotifications,
-  MdOutlinePayments 
+  MdOutlinePayments,
 } from "react-icons/md";
 import ThemeToggle from "../common/ThemeToggle";
 import AvatarMenu from "../common/AvatarMenu";
@@ -256,7 +256,10 @@ export default function AdminDashboard({ children }) {
       children: [
         { name: "Announcements", path: "/dashboard/admin/token/pending" },
         { name: "New Notification", path: "/dashboard/admin/token/approved" },
-        { name: "Notifications History", path: "/dashboard/admin/token/rejected" },
+        {
+          name: "Notifications History",
+          path: "/dashboard/admin/token/rejected",
+        },
       ],
     },
     {
@@ -265,7 +268,10 @@ export default function AdminDashboard({ children }) {
       children: [
         { name: "Announcements", path: "/dashboard/admin/token/pending" },
         { name: "New Notification", path: "/dashboard/admin/token/approved" },
-        { name: "Notifications History", path: "/dashboard/admin/token/rejected" },
+        {
+          name: "Notifications History",
+          path: "/dashboard/admin/token/rejected",
+        },
       ],
     },
     {
@@ -274,7 +280,10 @@ export default function AdminDashboard({ children }) {
       children: [
         { name: "Announcements", path: "/dashboard/admin/token/pending" },
         { name: "New Notification", path: "/dashboard/admin/token/approved" },
-        { name: "Notifications History", path: "/dashboard/admin/token/rejected" },
+        {
+          name: "Notifications History",
+          path: "/dashboard/admin/token/rejected",
+        },
       ],
     },
   ];
@@ -347,7 +356,7 @@ export default function AdminDashboard({ children }) {
 
       // Add breadcrumbs in correct order
       if (name !== "Dashboard") {
-        addBreadcrumb(   "Admin");
+        addBreadcrumb("Admin");
         if (parentMenu) {
           console.log("parentMenu==>", parentMenu);
           addBreadcrumb(parentMenu.title, `#${parentMenu.title.toLowerCase()}`);
@@ -539,7 +548,10 @@ export default function AdminDashboard({ children }) {
             >
               <MdAccountBalanceWallet size={18} />
               {walletAddress
-                ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+                ? `Connected: ${walletAddress.slice(
+                    0,
+                    6
+                  )}...${walletAddress.slice(-4)}`
                 : "Connect Wallet"}
             </button>
 
@@ -549,7 +561,18 @@ export default function AdminDashboard({ children }) {
               onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
               style={styles.avatar}
             >
-              <MdAccountCircle size={36} />
+              {/* <MdAccountCircle size={36} /> */}
+
+              <img
+                src={
+                  auth?.user?.profilePicture ||
+                  "https://www.shutterstock.com/image-vector/profile-picture-vector-260nw-404138239.jpg"
+                }
+                alt="User avatar"
+                className={`object-cover rounded-full border-2 ${
+                  theme === "dark" ? "border-blue-500" : "border-yellow-400"
+                } w-full h-full`}
+              />
             </div>
 
             {avatarMenuOpen && (
@@ -586,7 +609,10 @@ export default function AdminDashboard({ children }) {
 
       {/* Wallet Modal */}
       {showWalletModal && (
-        <Modal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)}>
+        <Modal
+          isOpen={showWalletModal}
+          onClose={() => setShowWalletModal(false)}
+        >
           <div style={{ padding: "1rem" }}>
             <h2 style={{ marginBottom: "0.5rem" }}>Wallet Options</h2>
             <button

@@ -12,7 +12,8 @@ export default function Page() {
 
   useEffect(() => {
     if (!auth?.isLoggedIn || auth?.user?.role !== "admin") {
-      router.push("/unauthorized");
+      // router.push("/unauthorized");
+        console.log("You are unauthorized person")
     }
   }, [auth]);
 

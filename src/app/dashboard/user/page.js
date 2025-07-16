@@ -13,7 +13,8 @@ const router = useRouter();
 
   useEffect(() => {
     if (!auth?.isLoggedIn || auth?.user?.role !== "user") {
-      router.push("/unauthorized");
+      // router.push("/unauthorized");
+        console.log("You are unauthorized person")
     }
   }, [auth]);
 
