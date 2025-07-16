@@ -4,13 +4,17 @@ import { useTheme } from "@/context/ThemeContext";
 import { jwtDecode } from "jwt-decode";
 import { WalletContext } from "@/context/WalletContext";
 import { AuthContext } from "@/context/AuthContext";
+import { Contract, ethers } from "ethers";
+import { adminAddress, usdtAbi, usdtToken } from "@/content/tokendata";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Goldmint() {
   const [totalAmount, setTotalAmount] = useState("");
   const [numTokens, setNumTokens] = useState("");
   // const totalAmount = numTokens ? (numTokens * goldRates.gram).toFixed(2) : 0;
   const { auth, setAuth } = useContext(AuthContext);
-
+  const router = useRouter();
   const [goldRates, setGoldRates] = useState({
     ounce: 0,
     gram: 0,
@@ -19,6 +23,8 @@ export default function Goldmint() {
   const { theme } = useTheme();
   const [paymentMethod, setPaymentMethod] = useState("");
   const [clientId, setClientId] = useState("");
+  const [selectedToken, setSelectedToken] = useState("AU"); // NEW
+
   const { walletAddress, signer } = useContext(WalletContext);
   const OUNCE_TO_GRAM = 31.1035;
 
@@ -67,14 +73,6 @@ export default function Goldmint() {
     // console.log("WalletAddress=>", walletAddress);
   }, [signer]);
 
-  const handlePaymentMethodChange = (e) => {
-    if (!signer || !walletAddress) {
-      showToast({ message: "Kindly connect your wallet first", type: "error" });
-      return;
-    }
-    setPaymentMethod(e.target.value);
-  };
-
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
@@ -87,23 +85,331 @@ export default function Goldmint() {
     setClientId(decodedToken?.id);
     console.log(clientId, "decodedid");
   });
+
   const stripeCheckout = () => {
+    if (!signer || !walletAddress) {
+      return alert("Kindly connect your wallet first");
+    }
+    console.log("clientId", clientId);
+    console.log("selectedToken", selectedToken);
+    console.log("numTokens", numTokens);
+    console.log("gramRate", goldRates.gram);
+    console.log("totalAmount", totalAmount);
+    console.log("paymentMethod", paymentMethod);
+    console.log("paymentType", "USD");
+    console.log("status", "pending");
+    console.log("walletAddress", walletAddress);
     axios
       .post("/api/stripe-checkout", {
-        type: "Gold",
-        userId: clientId,
-        tokens: numTokens,
-        gramRate: goldRates.gram,
+        id: clientId,
+        tokenQuantity: numTokens,
+        tokenType: selectedToken,
+        gramRate: goldRates?.gram,
         amount: totalAmount,
+        paymentType: "USD",
         paymentMethod: paymentMethod,
-        status: "mint",
+        type: "mint",
+        status: "pending",
+        from: walletAddress,
       })
       .then((response) => {
         router.push(response?.data?.message?.url);
       })
       .catch((error) => {
-        console.error("Stripe checkout error:", error);
+        console.log("Stripe checkout error:", error);
       });
+  };
+
+  // const web3ModalRef = useRef(null);
+
+  const handleCryptoCheckout = async (tokenType) => {
+    if (!signer || !walletAddress) {
+      return alert("Kindly connect your wallet first");
+    }
+    switch (tokenType) {
+      case "eth":
+        return handleEthPayment();
+      case "usdt_eth":
+        return handleUsdtEthPayment();
+      case "matic":
+        return handleMaticPayment();
+      case "usdt_polygon":
+        return handleUsdtPolygonPayment();
+      case "btc":
+        return handleBitcoinPayment();
+      default:
+        console.warn("Invalid token type selected.");
+    }
+  };
+
+  // EXAMPLE FUNCTIONS
+  //get Current Eth Price
+  const getEthPriceInUsd = async () => {
+    try {
+      const res = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+      );
+      const data = await res.json();
+
+      const price = data?.ethereum?.usd;
+      console.log("ETH Price:", price);
+      if (!price) throw new Error("ETH price not found in response.");
+
+      return price;
+    } catch (error) {
+      console.error("Error fetching ETH price:", error.message || error);
+      throw new Error("Unable to fetch current ETH price.");
+    }
+  };
+
+  // ✅ Handle ETH Payment
+  const [isPaying, setIsPaying] = useState(false);
+  const handleEthPayment = async () => {
+    console.log("🔄 Processing ETH payment...");
+    setIsPaying(true);
+
+    try {
+      // Fetch ETH Price
+      const ethPriceInUsd = await getEthPriceInUsd();
+      console.log(`Live ETH Price: $${ethPriceInUsd}`);
+
+      const amountInEth = (totalAmount / ethPriceInUsd).toFixed(6); // Limit decimals
+      const ethValue = ethers.parseEther(amountInEth);
+
+      // Send ETH
+      const tx = await signer.sendTransaction({
+        to: adminAddress,
+        value: ethValue,
+      });
+
+      const receipt = await tx.wait();
+      console.log("Transaction sent. Hash:", tx.hash);
+
+      console.log("Transaction confirmed. Saving to backend...");
+
+      // Save to backend
+      if (tx.hash) {
+        const res = await fetch("/api/send-paymentDetail", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: clientId,
+            tokenQuantity: numTokens,
+            tokenType: selectedToken,
+            gramRate: goldRates?.gram,
+            amount: totalAmount,
+            paymentType: "Ethereum Eth",
+            paymentMethod,
+            type: "mint",
+            status: "pending",
+            from: walletAddress,
+            hash: tx.hash,
+          }),
+        });
+      }
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to save transaction.");
+      }
+
+      console.log("✅ ETH Transaction saved to DB successfully.");
+    } catch (err) {
+      console.error("❌ ETH Payment failed:", err.message || err);
+      showToast({
+        message: "ETH Payment failed: " + err.message,
+        type: "error",
+      });
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
+  const handleUsdtEthPayment = async () => {
+    console.log("Processing USDT (Ethereum) payment...");
+
+    try {
+      const contract = new Contract(usdtToken, usdtAbi, signer);
+
+      // ✅ USDT has 6 decimals
+      const parsedAmount = ethers.parseUnits(totalAmount.toString(), 6);
+      console.log("Parsed amount:", parsedAmount.toString());
+      const tx = await contract.transfer(adminAddress, parsedAmount);
+      console.log("🔁 Transaction sent to admin:", tx.hash);
+
+      const receipt = await tx.wait();
+      if (!receipt.status) {
+        throw new Error("Blockchain transaction failed (reverted).");
+      }
+
+      console.log("✅ Transaction confirmed. Saving to backend...");
+
+      const response = await fetch("/api/send-paymentDetail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: clientId,
+          tokenQuantity: numTokens,
+          tokenType: selectedToken,
+          gramRate: goldRates?.gram,
+          amount: totalAmount,
+          paymentType: "Ethereum USDT",
+          paymentMethod,
+          type: "mint",
+          status: "pending",
+          from: walletAddress,
+          hash: tx.hash,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to save transaction to backend.");
+      }
+
+      console.log("✅ Transaction saved to DB successfully.");
+    } catch (err) {
+      console.error("❌ Payment failed:", err?.message || err);
+    }
+  };
+
+  //matic Price in USDT
+  const getMaticPriceInUsd = async () => {
+    try {
+      const res = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=matic-network&vs_currencies=usd"
+      );
+      const data = await res.json();
+
+      const price = data?.["matic-network"]?.usd;
+      if (!price) throw new Error("MATIC price not found in response.");
+
+      return price;
+    } catch (error) {
+      console.error("Error fetching MATIC price:", error.message || error);
+      throw new Error("Unable to fetch current MATIC price.");
+    }
+  };
+
+  const handleMaticPayment = async () => {
+    // console.log("Processing MATIC payment...");
+
+    try {
+      // ✅ Fetch live MATIC price
+      const maticPriceInUsd = await getMaticPriceInUsd();
+      // console.log(`Live MATIC Price: $${maticPriceInUsd}`);
+
+      const amountInUsd = totalAmount;
+      const amountInMatic = (amountInUsd / maticPriceInUsd).toFixed(18);
+      const maticValue = ethers.utils.parseEther(amountInMatic);
+
+      // 🔁 Send MATIC using native transaction
+      const tx = await signer.sendTransaction({
+        to: adminAddress,
+        value: maticValue,
+      });
+
+      const receipt = await tx.wait();
+      // console.log("Transaction sent. Hash:", tx.hash);
+
+      if (!receipt.status) {
+        throw new Error("Blockchain transaction failed (reverted).");
+      }
+
+      // console.log("Transaction confirmed. Saving to backend...");
+
+      const response = await fetch("/api/send-paymentDetail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: clientId,
+          tokenQuantity: numTokens,
+          tokenType: selectedToken,
+          gramRate: goldRates?.gram,
+          amount: totalAmount,
+          paymentType: "Matic USDT",
+          paymentMethod,
+          type: "mint",
+          status: "pending",
+          from: walletAddress,
+          hash: tx.hash,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to save transaction to backend.");
+      }
+
+      // console.log("✅ MATIC Transaction saved to DB successfully.");
+    } catch (err) {
+      console.error("❌ MATIC Payment failed:", err.message || err);
+      showToast({
+        message: "MATIC Payment failed: " + err.message,
+        type: "error",
+      });
+    }
+  };
+
+  const handleUsdtPolygonPayment = async () => {
+    // console.log("Processing USDT (Polygon) payment...");
+
+    try {
+      // 🟣 Use the USDT token contract on Polygon (replace with correct address)
+      const polygonUsdtToken = "0xYOUR_POLYGON_USDT_ADDRESS"; // USDT on Polygon
+      const contract = new Contract(polygonUsdtToken, auAbi, signer); // signer must be on Polygon
+
+      // Multiply by 1e6 because USDT has 6 decimals
+      const tx = await contract.transfer(adminAddress, totalAmount * 10 ** 6);
+      const receipt = await tx.wait();
+      // console.log("Transaction sent. Hash:", tx.hash);
+
+      if (!receipt.status) {
+        throw new Error("Blockchain transaction failed (reverted).");
+      }
+
+      // console.log("Transaction confirmed. Saving to backend...");
+
+      const response = await fetch("/api/send-paymentDetail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: clientId,
+          tokenQuantity: numTokens,
+          tokenType: selectedToken,
+          gramRate: goldRates?.gram,
+          amount: totalAmount,
+          paymentType: "Polygon USDT",
+          paymentMethod,
+          type: "mint",
+          status: "pending",
+          from: walletAddress,
+          hash: tx.hash,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to save transaction to backend.");
+      }
+    } catch (err) {
+      console.error("❌ Polygon USDT Payment failed:", err.message || err);
+      showToast({
+        message: "Polygon USDT Payment failed: " + err.message,
+        type: "error",
+      });
+    }
+  };
+
+  const handleBitcoinPayment = async () => {
+    // console.log("Show BTC address or initiate BTC API call...");
   };
 
   return (
@@ -168,9 +474,7 @@ export default function Goldmint() {
             </div>
             <div className="flex items-center gap-2">
               <span className="font-semibold md:ml-6">Rate/gram:</span>
-              <span className="text-lg font-bold">
-                ${goldRates.gram || 0}
-              </span>
+              <span className="text-lg font-bold">${goldRates.gram || 0}</span>
             </div>
           </div>
         </div>
@@ -197,9 +501,9 @@ export default function Goldmint() {
                 }
                 setNumTokens(value);
                 setTotalAmount(
-                  (parseFloat(value || 0) * parseFloat(goldRates.gram || 0)).toFixed(
-                    2
-                  )
+                  (
+                    parseFloat(value || 0) * parseFloat(goldRates.gram || 0)
+                  ).toFixed(2)
                 );
               }}
               onPaste={(e) => {
@@ -238,9 +542,9 @@ export default function Goldmint() {
                 const value = e.target.value;
                 setTotalAmount(value);
                 setNumTokens(
-                  (parseFloat(value || 0) / parseFloat(goldRates.gram || 1)).toFixed(
-                    4
-                  )
+                  (
+                    parseFloat(value || 0) / parseFloat(goldRates.gram || 1)
+                  ).toFixed(4)
                 );
               }}
               className={`mt-1 w-full p-3 rounded-lg border focus:outline-none focus:ring-2 transition
@@ -332,6 +636,7 @@ export default function Goldmint() {
                       <button
                         key={token}
                         type="button"
+                        onClick={() => handleCryptoCheckout(token)}
                         className={`flex flex-col items-center justify-center gap-2 px-6 py-4 rounded-xl border shadow-sm transition font-medium w-full
                           ${
                             theme === "dark"
@@ -373,14 +678,17 @@ const InfoCard = ({ label, value, theme }) => (
 );
 
 // Stripe Payment UI
-const StripeAsset = ({ totalAmount }) => (
+const StripeAsset = ({ totalAmount, stripeCheckout }) => (
   <div className="rounded-md border p-4 shadow-sm bg-white">
     <p className="text-sm text-gray-600 font-semibold">Stripe Selected</p>
     <p className="text-sm text-gray-500">
       You will be redirected to Stripe to complete the payment of{" "}
       <strong>${totalAmount}</strong>.
     </p>
-    <button className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded text-sm">
+    <button
+      className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded text-sm"
+      onClick={stripeCheckout}
+    >
       Pay with Stripe
     </button>
   </div>

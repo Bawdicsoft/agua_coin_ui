@@ -218,27 +218,27 @@ export default function AdminDashboard({ children }) {
       title: "Purchase Tokens",
       icon: <MdShoppingCart />,
       children: [
-        { name: "Pending", path: "/dashboard/admin/purchase/silver" },
-        { name: "Approved", path: "/dashboard/admin/purchase/gold" },
-        { name: "Rejected", path: "/dashboard/admin/purchase/agua" },
+        { name: "Pending", path: "/dashboard/admin/purchase/pending" },
+        { name: "Approved", path: "/dashboard/admin/purchase/approved" },
+        { name: "Rejected", path: "/dashboard/admin/purchase/rejected" },
       ],
     },
     {
       title: "Redeem Tokens",
       icon: <MdRedeem />,
       children: [
-        { name: "Pending", path: "/dashboard/admin/redeem/silver" },
-        { name: "Approved", path: "/dashboard/admin/redeem/gold" },
-        { name: "Rejected", path: "/dashboard/admin/redeem/agua" },
+        { name: "Pending", path: "/dashboard/admin/redeem/pending" },
+        { name: "Approved", path: "/dashboard/admin/redeem/approved" },
+        { name: "Rejected", path: "/dashboard/admin/redeem/rejected" },
       ],
     },
     {
       title: "Mint Tokens",
       icon: <MdBolt />,
       children: [
-        { name: "Pending", path: "/dashboard/admin/mint/silver" },
-        { name: "Approved", path: "/dashboard/admin/mint/gold" },
-        { name: "Rejected", path: "/dashboard/admin/mint/agua" },
+        { name: "Pending", path: "/dashboard/admin/mint/pending" },
+        { name: "Approved", path: "/dashboard/admin/mint/approved" },
+        { name: "Rejected", path: "/dashboard/admin/mint/rejected" },
       ],
     },
     {

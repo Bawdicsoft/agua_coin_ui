@@ -48,7 +48,7 @@ export async function POST(request) {
             folder: "agua_users_profile_pictures",
             transformation: [
               { width: 1024, height: 1024, crop: "limit" }, // Resize to max 1024px
-              { quality: "auto", fetch_format: "auto" }    // Compress and auto format
+              { quality: "auto", fetch_format: "auto" }, // Compress and auto format
             ],
           }
         );
@@ -56,7 +56,10 @@ export async function POST(request) {
       } catch (cloudinaryError) {
         console.error("Cloudinary upload error:", cloudinaryError);
         return NextResponse.json(
-          { error: "Image upload failed. Please use an image smaller than 10MB and in a supported format (JPG, PNG, etc)." },
+          {
+            error:
+              "Image upload failed. Please use an image smaller than 10MB and in a supported format (JPG, PNG, etc).",
+          },
           { status: 400 }
         );
       }
@@ -91,7 +94,7 @@ export async function POST(request) {
         email: newUser.email,
         profilePicture: newUser.profilePicture,
       },
-      process.env.JWT_SECRET || "hssssh",
+      process.env.JWT_SECRET || "AguaCoinUI",
       { expiresIn: "1d" }
     );
 

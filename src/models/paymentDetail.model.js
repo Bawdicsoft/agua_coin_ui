@@ -83,26 +83,28 @@
 
 import mongoose from "mongoose";
 
-const paymentDetailSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  name: String,
-  email: String,
+const paymentDetailSchema = new mongoose.Schema(
+  {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    name: String,
+    email: String,
 
-  tokenType: String,
-  paymentType: String,
-  walletAddress: String,
-  tokenQuantity: Number,
-  gramRate: Number,
-  totalAmount: Number,
-  paymentMethod: String,
-  tokenStatus: String,
-  status: String,
-  transactionHash: String,
-  fromAddress: String,
-  toAddress: String,
-  network: String,
-  createdAt: { type: Date, default: Date.now },
-});
+    tokenType: String,
+    paymentType: String,
+    tokenQuantity: Number,
+    gramRate: Number,
+    totalAmount: Number,
+    paymentMethod: String,
+    tokenStatus: String,
+    status: String,
+    transactionHash: String,
+    fromAddress: String,
+  },
+  { timestamps: true }
+);
 
-export default mongoose.models.PaymentDetail ||
-  mongoose.model("PaymentDetail", paymentDetailSchema);
+const PaymentDetailModel =
+  mongoose.models.paymentDetail ||
+  mongoose.model("paymentDetail", paymentDetailSchema);
+
+export default PaymentDetailModel;

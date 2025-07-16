@@ -244,7 +244,10 @@ export default function Goldpayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ ETH Payment failed:", err.message || err);
-      showToast({ message: "ETH Payment failed: " + err.message, type: "error" });
+      showToast({
+        message: "ETH Payment failed: " + err.message,
+        type: "error",
+      });
     } finally {
       setIsPaying(false);
     }
@@ -382,7 +385,10 @@ export default function Goldpayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ MATIC Payment failed:", err.message || err);
-      showToast({ message: "MATIC Payment failed: " + err.message, type: "error" });
+      showToast({
+        message: "MATIC Payment failed: " + err.message,
+        type: "error",
+      });
     }
   };
 
@@ -436,7 +442,10 @@ export default function Goldpayment() {
       router.push("/userdashboard");
     } catch (err) {
       console.error("❌ Polygon USDT Payment failed:", err.message || err);
-      showToast({ message: "Polygon USDT Payment failed: " + err.message, type: "error" });
+      showToast({
+        message: "Polygon USDT Payment failed: " + err.message,
+        type: "error",
+      });
     }
   };
 
@@ -467,13 +476,15 @@ export default function Goldpayment() {
 
         {/* Display Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <InfoCard label="User ID" value={
-            clientId && clientId.length > 8
-              ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}`
-              : clientId || "-"
+          <InfoCard
+            label="User ID"
+            value={
+              clientId && clientId.length > 8
+                ? `${clientId.slice(0, 4)}...${clientId.slice(-4)}`
+                : clientId || "-"
             }
             theme={theme}
-           />
+          />
           <InfoCard
             label="Current AU Rate oz"
             value={goldRates.loading ? "Loading..." : `$${goldRates.ounce}`}
@@ -497,7 +508,7 @@ export default function Goldpayment() {
         `}
         >
           <div className="flex-1 flex justify-between items-center flex-col md:flex-row md:items-center gap-2">
-          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <span className="font-semibold">Tokens:</span>
               <span className="text-lg font-bold">{numTokens || 0}</span>
             </div>
@@ -527,13 +538,13 @@ export default function Goldpayment() {
             <input
               type="text"
               value={numTokens}
-              onChange={e => {
+              onChange={(e) => {
                 // Remove all non-numeric and non-dot characters, allow only one dot
-                let value = e.target.value.replace(/[^0-9.]/g, '');
+                let value = e.target.value.replace(/[^0-9.]/g, "");
                 // Only allow one dot
-                const parts = value.split('.');
+                const parts = value.split(".");
                 if (parts.length > 2) {
-                  value = parts[0] + '.' + parts.slice(1).join('');
+                  value = parts[0] + "." + parts.slice(1).join("");
                 }
                 setNumTokens(value);
                 setTotalAmount(
@@ -542,9 +553,9 @@ export default function Goldpayment() {
                   ).toFixed(2)
                 );
               }}
-              onPaste={e => {
+              onPaste={(e) => {
                 // Prevent pasting non-numeric content
-                const paste = e.clipboardData.getData('text');
+                const paste = e.clipboardData.getData("text");
                 if (!/^[0-9]*\.?[0-9]*$/.test(paste)) {
                   e.preventDefault();
                 }
