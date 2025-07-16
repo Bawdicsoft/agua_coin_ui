@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
 import connectDB from "@/lib/db";
-import OrderModel from "../../../models/orderDetails.model.js";
-import PaymentModel from "../../../models/paymentDetail.model.js";
-
+import OrderModel from "../../../models/Orders.js";
+import PaymentDetailModel from "../../../models/paymentDetail.model.js";
+import RedeemModel from "../../../models/redeemToken.model.js";
 export async function POST(request) {
   try {
     const {
@@ -18,6 +18,7 @@ export async function POST(request) {
       status,
       name,
       email,
+      totalAmount,
     } = await request.json();
 
     console.log("Payload for Orders:", {
@@ -38,11 +39,20 @@ export async function POST(request) {
     // Connect to DB
     await connectDB();
 
-    const delDetail = await PaymentModel.findByIdAndDelete({ _id: id });
-    console.log("Payment Detail del successfully");
-    if (!delDetail) {
-      console.log("error while deleting data");
-      return;
+    if (tokenStatus === "redeem") {
+      const delDetail = await RedeemModel.findByIdAndDelete({ _id: id });
+      console.log("Order Detail del successfully");
+      if (!delDetail) {
+        console.log("error while deleting data");
+        return;
+      }
+    } else {
+      const delDetail = await PaymentDetailModel.findByIdAndDelete({ _id: id });
+      console.log("Payment Detail del successfully");
+      if (!delDetail) {
+        console.log("error while deleting data");
+        return;
+      }
     }
 
     const ApprovedOrders = await OrderModel.create({

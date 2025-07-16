@@ -11,7 +11,7 @@ import {
 } from "@/content/tokendata";
 import { WalletContext } from "@/context/WalletContext";
 import axios from "axios";
-import { Contract } from "ethers";
+import { Contract, ethers } from "ethers";
 import React, { useContext, useEffect, useState } from "react";
 
 const Pending = () => {
@@ -78,7 +78,7 @@ const Pending = () => {
       } else if (key === "rejected") {
         const usdtContract = new Contract(usdtToken, usdtAbi, signer);
         const refundAmount = ethers.parseUnits(order.totalAmount.toString(), 6); // USDT has 6 decimals
-
+        console.log("Refund Amount:", refundAmount.toString());
         const balance = await usdtContract.balanceOf(walletAddress);
         if (balance < refundAmount) {
           return alert("Insufficient USDT balance in admin wallet for refund");
@@ -91,7 +91,7 @@ const Pending = () => {
 
       // Log order status update in backend
       const payload = {
-        id: order.id,
+        id: order._id,
         userId: order.userId,
         name: order.name,
         email: order.email,
@@ -102,8 +102,9 @@ const Pending = () => {
         TokenQuantity: order.tokenQuantity,
         tokenStatus: order.tokenStatus,
         status: key,
-        totalAmount: totalAmount,
+        totalAmount: order.totalAmount,
       };
+      console.log("Payload for Order Status Update:", payload);
       await axios.post("/api/orderDetails", payload);
 
       alert(`Order ${key} successfully`);

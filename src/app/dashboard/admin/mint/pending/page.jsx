@@ -75,7 +75,7 @@ const Pending = () => {
 
       // Log order status update in backend
       const payload = {
-        id: order.id,
+        id: order._id,
         userId: order.userId,
         name: order.name,
         email: order.email,
@@ -86,7 +86,7 @@ const Pending = () => {
         TokenQuantity: order.tokenQuantity,
         tokenStatus: order.tokenStatus,
         status: key,
-        totalAmount: totalAmount,
+        totalAmount: order.totalAmount,
       };
       await axios.post("/api/orderDetails", payload);
 

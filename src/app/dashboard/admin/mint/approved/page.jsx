@@ -28,7 +28,7 @@ const page = () => {
         const ordersArray = result.getOrders || [];
         setPurchaseData(ordersArray);
         const PurchaseOrders = ordersArray.filter(
-          (u) => u.status === "rejected" && u.tokenStatus === "purchase"
+          (u) => u.status === "approved" && u.tokenStatus === "mint"
         );
         setPurchaseData(PurchaseOrders);
         console.log("Fetched orders:", result);
@@ -56,7 +56,7 @@ const page = () => {
           {purchaseData.length === 0 ? (
             <tr>
               <td colSpan="8" className="text-center py-6 text-gray-500">
-                No Rejected orders found.
+                No Approved orders found.
               </td>
             </tr>
           ) : (

@@ -28,7 +28,7 @@ const page = () => {
         const ordersArray = result.getOrders || [];
         setPurchaseData(ordersArray);
         const PurchaseOrders = ordersArray.filter(
-          (u) => u.status === "rejected" && u.tokenStatus === "purchase"
+          (u) => u.status === "rejected" && u.tokenStatus === "mint"
         );
         setPurchaseData(PurchaseOrders);
         console.log("Fetched orders:", result);

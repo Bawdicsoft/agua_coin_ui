@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
-import OrderModel from "@/model/Orders";
+import OrderModel from "../../../models/Orders.js";
 
 export async function GET() {
   try {
@@ -8,7 +8,7 @@ export async function GET() {
     await connectDB();
 
     // Fetch all users
-    const getOrders = await OrderModel.find();
+    const getOrders = await OrderModel.find({});
     if (!getOrders) {
       console.log("error while fetching data ");
     }

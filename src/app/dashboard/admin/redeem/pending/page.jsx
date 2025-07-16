@@ -26,11 +26,12 @@ const Pending = () => {
   }, []);
   const OrderStatus = async (order, key) => {
     console.log("order", order, key);
+
     if (!signer || !walletAddress) {
       return alert("Kindly connect your wallet first");
     }
 
-    setLoadingId(order.id); // Disable buttons while processing
+    setLoadingId(order.id);
 
     try {
       const tokenMap = {
@@ -44,54 +45,64 @@ const Pending = () => {
         return alert("Unknown token type");
       }
 
-      const contract = new Contract(selected.address, selected.abi, signer);
-      const decimals = await contract.decimals();
+      const tokenContract = new Contract(
+        selected.address,
+        selected.abi,
+        signer
+      );
+      const decimals = await tokenContract.decimals();
       const tokenAmount = ethers.parseUnits(
         order.tokenQuantity.toString(),
         decimals
       );
 
       if (key === "approved") {
-        const balance = await contract.balanceOf(walletAddress);
-        if (balance < tokenAmount) {
-          return alert("Insufficient token balance in admin wallet");
-        }
-
-        const tx = await contract.transfer(order.fromAddress, tokenAmount);
-        const receipt = await tx.wait();
-        if (!receipt.status) throw new Error("Token transfer failed");
-      } else if (key === "rejected") {
+        // ✅ Send USDT to user as payment
         const usdtContract = new Contract(usdtToken, usdtAbi, signer);
-        const refundAmount = ethers.parseUnits(order.totalAmount.toString(), 6); // USDT has 6 decimals
+        const usdtAmount = ethers.parseUnits(order.totalAmount.toString(), 6); // USDT has 6 decimals
 
-        const balance = await usdtContract.balanceOf(walletAddress);
-        if (balance < refundAmount) {
-          return alert("Insufficient USDT balance in admin wallet for refund");
+        const usdtBalance = await usdtContract.balanceOf(walletAddress);
+        if (usdtBalance < usdtAmount) {
+          return alert("Insufficient USDT balance in admin wallet");
         }
 
-        const tx = await usdtContract.transfer(order.fromAddress, refundAmount);
+        const tx = await usdtContract.transfer(order.fromAddress, usdtAmount);
         const receipt = await tx.wait();
-        if (!receipt.status) throw new Error("Refund transaction failed");
+        if (!receipt.status) throw new Error("USDT transfer failed");
+
+        alert("USDT transferred to user successfully");
+      } else if (key === "rejected") {
+        // ❌ Return user's token back
+        const tokenBalance = await tokenContract.balanceOf(walletAddress);
+        if (tokenBalance < tokenAmount) {
+          return alert("Insufficient token balance in admin wallet to refund");
+        }
+
+        const tx = await tokenContract.transfer(order.fromAddress, tokenAmount);
+        const receipt = await tx.wait();
+        if (!receipt.status) throw new Error("Token refund failed");
+
+        alert("User's tokens refunded successfully");
       }
 
       // Log order status update in backend
-      //   const payload = {
-      //     id: order.id,
-      //     userId: order.userId,
-      //     name: order.name,
-      //     email: order.email,
-      //     TokenAddress: selected.address,
-      //     from: walletAddress,
-      //     to: order.fromAddress,
-      //     TokenType: order.tokenType,
-      //     TokenQuantity: order.tokenQuantity,
-      //     tokenStatus: order.tokenStatus,
-      //     status: key,
-      //     totalAmount: totalAmount,
-      //   };
-      //   await axios.post("/api/orderDetails", payload);
+      const payload = {
+        id: order._id,
+        userId: order.userId,
+        name: order.name,
+        email: order.email,
+        TokenAddress: selected.address,
+        from: walletAddress,
+        to: order.fromAddress,
+        TokenType: order.tokenType,
+        TokenQuantity: order.tokenQuantity,
+        tokenStatus: order.tokenStatus,
+        status: key,
+        totalAmount: order.totalAmount,
+      };
+      await axios.post("/api/orderDetails", payload);
 
-      //   alert(`Order ${key} successfully`);
+      alert(`Order ${key} successfully`);
 
       // Refresh data
       setPurchaseData((prev) => prev.filter((o) => o.id !== order.id));
