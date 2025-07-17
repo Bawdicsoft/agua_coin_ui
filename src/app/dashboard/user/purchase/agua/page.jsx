@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import AutoCloseModal from "@/components/common/AutoCloseModal";
 import { useTheme } from "@/context/ThemeContext";
 import { ToastContext } from "@/context/ToastContext";
+import { fetchUserData } from "@/app/dashboard/admin/page";
 
 export default function AguaPayment() {
   const [totalAmount, setTotalAmount] = useState("");
@@ -53,7 +54,7 @@ export default function AguaPayment() {
   const OUNCE_TO_GRAM = 31.1035;
   const GOLD_WEIGHT = 0.6; // 60% gold
   const SILVER_WEIGHT = 0.4; // 40% silver
-
+  const [user, setUser] = useState(null);
   const { theme } = useTheme();
   const { showToast } = useContext(ToastContext);
 
@@ -84,6 +85,8 @@ export default function AguaPayment() {
   };
 
   useEffect(() => {
+    fetchUserData(setUser);
+    console.log("user", user);
     const fetchRates = async () => {
       try {
         setRates((prev) => ({ ...prev, loading: true }));
@@ -140,6 +143,8 @@ export default function AguaPayment() {
   const stripeCheckout = () => {
     if (!signer || !walletAddress) {
       return alert("Kindly connect your wallet first");
+    } else if (user?.status === "block") {
+      alert("You Have blocked by the admin");
     }
     console.log("clientId", clientId);
     console.log("selectedToken", selectedToken);
@@ -176,6 +181,8 @@ export default function AguaPayment() {
   const handleCryptoCheckout = async (tokenType) => {
     if (!signer || !walletAddress) {
       return alert("Kindly connect your wallet first");
+    } else if (user?.status === "block") {
+      alert("You Have blocked by the admin");
     }
     switch (tokenType) {
       case "eth":

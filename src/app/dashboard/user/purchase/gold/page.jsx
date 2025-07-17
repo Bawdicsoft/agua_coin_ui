@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import AutoCloseModal from "@/components/common/AutoCloseModal";
 import { useTheme } from "@/context/ThemeContext";
 import { ToastContext } from "@/context/ToastContext";
+import { fetchUserData } from "@/app/dashboard/admin/page";
 
 export default function Goldpayment() {
   const [totalAmount, setTotalAmount] = useState("");
@@ -45,34 +46,36 @@ export default function Goldpayment() {
 
   const { theme } = useTheme();
   const { showToast } = useContext(ToastContext);
-
+  const [user, setUser] = useState(null);
   // Fetch live gold rate
-  const providerOptions = {
-    coinbasewallet: {
-      package: CoinbaseWalletSDK,
-      options: {
-        appName: "Web3Modal Demo",
-        rpc: {
-          4002: "https://rpc.testnet.fantom.network",
-        },
-        chainId: 4002,
-        darkMode: false,
-      },
-    },
+  // const providerOptions = {
+  //   coinbasewallet: {
+  //     package: CoinbaseWalletSDK,
+  //     options: {
+  //       appName: "Web3Modal Demo",
+  //       rpc: {
+  //         4002: "https://rpc.testnet.fantom.network",
+  //       },
+  //       chainId: 4002,
+  //       darkMode: false,
+  //     },
+  //   },
 
-    walletconnect: {
-      package: WalletConnectProvider,
-      options: {
-        rpc: {
-          4002: "https://rpc.testnet.fantom.network",
-        },
-        bridge: "https://bridge.walletconnect.org",
-        qrcode: true,
-      },
-    },
-  };
+  //   walletconnect: {
+  //     package: WalletConnectProvider,
+  //     options: {
+  //       rpc: {
+  //         4002: "https://rpc.testnet.fantom.network",
+  //       },
+  //       bridge: "https://bridge.walletconnect.org",
+  //       qrcode: true,
+  //     },
+  //   },
+  // };
 
   useEffect(() => {
+    fetchUserData(setUser);
+    console.log("user", user);
     const fetchGoldRate = async () => {
       try {
         setGoldRates({ ounce: 0, gram: 0, loading: true });
@@ -119,6 +122,8 @@ export default function Goldpayment() {
   const stripeCheckout = () => {
     if (!signer || !walletAddress) {
       return alert("Kindly connect your wallet first");
+    } else if (user?.status === "block") {
+      alert("You Have blocked by the user");
     }
     console.log("clientId", clientId);
     console.log("selectedToken", selectedToken);
@@ -153,8 +158,11 @@ export default function Goldpayment() {
   // const web3ModalRef = useRef(null);
 
   const handleCryptoCheckout = async (tokenType) => {
+    console.log("user", user);
     if (!signer || !walletAddress) {
       return alert("Kindly connect your wallet first");
+    } else if (user?.status === "block") {
+      alert("You Have blocked by the user");
     }
     switch (tokenType) {
       case "eth":

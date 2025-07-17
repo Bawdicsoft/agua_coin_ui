@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
-import AuthModel from "@/models/User.model";
+import AuthModel from "../../../../models/User.model.js";
 
 export async function GET() {
   try {

@@ -76,6 +76,7 @@ export async function POST(request) {
       profilePicture: imageUrl,
       // walletAddress,
       role: role || "user",
+      status: "unblock", // Default status
     });
 
     // Remove password field from response manually
@@ -85,6 +86,7 @@ export async function POST(request) {
       email: newUser.email,
       profilePicture: newUser.profilePicture,
       role: newUser.role,
+      status: newUser.status,
     };
 
     // Generate JWT token
@@ -93,6 +95,8 @@ export async function POST(request) {
         id: newUser._id,
         email: newUser.email,
         profilePicture: newUser.profilePicture,
+        role: newUser.role,
+        status: newUser.status,
       },
       process.env.JWT_SECRET || "AguaCoinUI",
       { expiresIn: "1d" }

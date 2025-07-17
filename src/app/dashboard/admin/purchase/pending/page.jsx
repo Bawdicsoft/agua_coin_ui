@@ -106,8 +106,21 @@ const Pending = () => {
       };
       console.log("Payload for Order Status Update:", payload);
       await axios.post("/api/orderDetails", payload);
+      if (key === "approved") {
+        let message = `Admin transferred ${order.tokenQuantity} ${order.tokenType} Token successfully`;
+        axios.post("/api/message", {
+          userId: order?.userId,
+          message: message,
+        });
+      } else if (key === "rejected") {
+        let message = `Admin Rejected ${order.tokenQuantity} ${order.tokenType} Token request `;
+        axios.post("/api/message", {
+          userId: order?.userId,
+          message: message,
+        });
+      }
 
-      alert(`Order ${key} successfully`);
+      // alert(`Order ${key} successfully`);
 
       // Refresh data
       setPurchaseData((prev) => prev.filter((o) => o.id !== order.id));

@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import AutoCloseModal from "@/components/common/AutoCloseModal";
 import { useTheme } from "@/context/ThemeContext";
 import { ToastContext } from "@/context/ToastContext";
+import { fetchUserData } from "@/app/dashboard/admin/page";
 
 export default function SilverPayment() {
   const [totalAmount, setTotalAmount] = useState("");
@@ -35,8 +36,10 @@ export default function SilverPayment() {
   const [clientId, setClientId] = useState(null);
   const { theme } = useTheme();
   const { showToast } = useContext(ToastContext);
-
+  const [user, setUser] = useState(null);
   useEffect(() => {
+    fetchUserData(setUser);
+    console.log("user", user);
     const fetchSilverRate = async () => {
       try {
         setSilverRates({ ounce: 0, gram: 0, loading: true });
@@ -82,6 +85,11 @@ export default function SilverPayment() {
   }, [signer]);
 
   const stripeCheckout = () => {
+    if (!signer || !walletAddress) {
+      return alert("Kindly connect your wallet first");
+    } else if (user?.status === "block") {
+      alert("You Have blocked by the user");
+    }
     axios
       .post("/api/stripe-checkout", {
         id: clientId,

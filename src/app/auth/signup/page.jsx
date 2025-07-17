@@ -18,11 +18,11 @@ export default function SignupPage() {
   });
   const { showToast } = useContext(ToastContext);
 
-  useEffect(()=>{
-    setIsLoading(false)
-  },[])
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
-  const {isLoading, setIsLoading} = useContext(LoadingContext);
+  const { isLoading, setIsLoading } = useContext(LoadingContext);
 
   const router = useRouter();
   const handleChange = (e) => {
@@ -88,7 +88,10 @@ export default function SignupPage() {
     } catch (error) {
       setIsLoading(false);
       console.error("Signup error:", error);
-      showToast({ message: "Something went wrong during signup.", type: "error" });
+      showToast({
+        message: "Something went wrong during signup.",
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -224,7 +227,7 @@ export default function SignupPage() {
               Already have an account?
               <Link
                 href="/auth/signin"
-                 onClick={() => setIsLoading(true)}
+                onClick={() => setIsLoading(true)}
                 className="text-indigo-600 hover:underline"
               >
                 Log In

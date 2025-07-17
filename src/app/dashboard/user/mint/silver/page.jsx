@@ -8,6 +8,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { adminAddress, usdtAbi, usdtToken } from "@/content/tokendata";
 import { Contract, ethers } from "ethers";
+import { fetchUserData } from "@/app/dashboard/admin/page";
 
 export default function Silvermint() {
   const [totalAmount, setTotalAmount] = useState("");
@@ -30,6 +31,9 @@ export default function Silvermint() {
   const router = useRouter();
 
   useEffect(() => {
+    fetchUserData(setUser);
+    console.log("user", user);
+
     const fetchSilverRate = async () => {
       try {
         setSilverRates({ ounce: 0, gram: 0, loading: true });
@@ -95,6 +99,11 @@ export default function Silvermint() {
     console.log(clientId, "decodedid");
   });
   const stripeCheckout = () => {
+    if (!signer || !walletAddress) {
+      return alert("Kindly connect your wallet first");
+    } else if (user?.status === "block") {
+      alert("you have been block by the user");
+    }
     axios
       .post("/api/stripe-checkout", {
         id: clientId,
@@ -121,6 +130,8 @@ export default function Silvermint() {
   const handleCryptoCheckout = async (tokenType) => {
     if (!signer || !walletAddress) {
       return alert("Kindly connect your wallet first");
+    } else if (user?.status === "block") {
+      alert("you have been block by the user");
     }
     switch (tokenType) {
       case "eth":

@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { WalletContext } from "@/context/WalletContext";
 import { AuthContext } from "@/context/AuthContext";
 import axios from "axios";
+import { fetchUserData } from "@/app/dashboard/admin/page";
 
 export default function Goldmint() {
   const [totalAmount, setTotalAmount] = useState("");
@@ -24,8 +25,11 @@ export default function Goldmint() {
   const [selectedToken, setSelectedToken] = useState("AGUA");
 
   const OUNCE_TO_GRAM = 31.1035;
-
+  const [user, setUser] = useState(null);
   useEffect(() => {
+    fetchUserData(setUser);
+    console.log("user", user);
+
     const fetchGoldRate = async () => {
       try {
         setGoldRates({ ounce: 0, gram: 0, loading: true });
@@ -93,6 +97,8 @@ export default function Goldmint() {
   const stripeCheckout = () => {
     if (!signer || !walletAddress) {
       return alert("Kindly connect your wallet first");
+    } else if (user?.status === "block") {
+      alert("you have blocked by the admin");
     }
     console.log("clientId", clientId);
     console.log("selectedToken", selectedToken);
@@ -129,6 +135,8 @@ export default function Goldmint() {
   const handleCryptoCheckout = async (tokenType) => {
     if (!signer || !walletAddress) {
       return alert("Kindly connect your wallet first");
+    } else if (user?.status === "block") {
+      alert("you have blocked by the admin");
     }
     switch (tokenType) {
       case "eth":

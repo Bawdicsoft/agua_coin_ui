@@ -245,47 +245,47 @@ export default function AdminDashboard({ children }) {
       title: "Users Requests",
       icon: <MdPerson />,
       children: [
-        { name: "Pending", path: "/dashboard/admin/token/pending" },
-        { name: "Approved", path: "/dashboard/admin/token/approved" },
-        { name: "Blacklisted", path: "/dashboard/admin/token/rejected" },
+        { name: "Blocked", path: "/dashboard/admin/userRequest/Blocked" },
+        { name: "Unblocked", path: "/dashboard/admin/userRequest/Unblocked" },
+        // { name: "Blacklisted", path: "/dashboard/admin/userRequest/rejected" },
       ],
     },
-    {
-      title: "Notifications",
-      icon: <MdNotifications />,
-      children: [
-        { name: "Announcements", path: "/dashboard/admin/token/pending" },
-        { name: "New Notification", path: "/dashboard/admin/token/approved" },
-        {
-          name: "Notifications History",
-          path: "/dashboard/admin/token/rejected",
-        },
-      ],
-    },
+    // {
+    //   title: "Notifications",
+    //   icon: <MdNotifications />,
+    //   children: [
+    //     { name: "Announcements", path: "/dashboard/admin/token/pending" },
+    //     { name: "New Notification", path: "/dashboard/admin/token/approved" },
+    //     {
+    //       name: "Notifications History",
+    //       path: "/dashboard/admin/token/rejected",
+    //     },
+    //   ],
+    // },
     {
       title: "Reports",
       icon: <TbReport />,
       children: [
-        { name: "Announcements", path: "/dashboard/admin/token/pending" },
-        { name: "New Notification", path: "/dashboard/admin/token/approved" },
-        {
-          name: "Notifications History",
-          path: "/dashboard/admin/token/rejected",
-        },
+        { name: "History", path: "/dashboard/admin/Report/history" },
+        // { name: "New Notification", path: "/dashboard/admin/token/approved" },
+        // {
+        //   name: "Notifications History",
+        //   path: "/dashboard/admin/token/rejected",
+        // },
       ],
     },
-    {
-      title: "Payments",
-      icon: <MdOutlinePayments />,
-      children: [
-        { name: "Announcements", path: "/dashboard/admin/token/pending" },
-        { name: "New Notification", path: "/dashboard/admin/token/approved" },
-        {
-          name: "Notifications History",
-          path: "/dashboard/admin/token/rejected",
-        },
-      ],
-    },
+    // {
+    //   title: "Payments",
+    //   icon: <MdOutlinePayments />,
+    //   children: [
+    //     { name: "Announcements", path: "/dashboard/admin/token/pending" },
+    //     { name: "New Notification", path: "/dashboard/admin/token/approved" },
+    //     {
+    //       name: "Notifications History",
+    //       path: "/dashboard/admin/token/rejected",
+    //     },
+    //   ],
+    // },
   ];
 
   useEffect(() => {

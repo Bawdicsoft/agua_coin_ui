@@ -7,14 +7,13 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 
 export default function Page() {
-const { auth } = useContext(AuthContext)
-const router = useRouter();
-
+  const { auth } = useContext(AuthContext);
+  const router = useRouter();
 
   useEffect(() => {
     if (!auth?.isLoggedIn || auth?.user?.role !== "user") {
       // router.push("/unauthorized");
-        console.log("You are unauthorized person")
+      console.log("You are unauthorized person");
     }
   }, [auth]);
 

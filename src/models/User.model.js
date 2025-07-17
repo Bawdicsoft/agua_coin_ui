@@ -23,15 +23,15 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "", // Optional default profile pic URL
     },
-    walletAddress: {
-      type: String,
-      unique: true,
-      sparse: true, // ✅ This is the key to allow unique + optional
-    },
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    status: {
+      type: String,
+      enum: ["block", "unblock"],
+      default: "unblock",
     },
   },
   {

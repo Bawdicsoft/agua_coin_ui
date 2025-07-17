@@ -101,7 +101,19 @@ const Pending = () => {
         totalAmount: order.totalAmount,
       };
       await axios.post("/api/orderDetails", payload);
-
+      if (key === "approved") {
+        let message = `Admin transferred ${order?.totalAmount} of ${order?.tokenType} Token successfully`;
+        axios.post("/api/message", {
+          userId: order?.userId,
+          message: message,
+        });
+      } else if (key === "rejected") {
+        let message = `Admin Rejected Redeem ${order?.tokenQuantity} ${order?.tokenType} Token request `;
+        axios.post("/api/message", {
+          userId: order?.userId,
+          message: message,
+        });
+      }
       alert(`Order ${key} successfully`);
 
       // Refresh data
