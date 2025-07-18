@@ -6,6 +6,7 @@ import { WalletContext } from "@/context/WalletContext";
 import { Contract, ethers } from "ethers";
 import { adminAddress, auAbi, goldToken } from "@/content/tokendata";
 import { useTheme } from "@/context/ThemeContext";
+import { fetchUserData } from "@/app/dashboard/admin/page";
 
 export default function Goldredeem() {
   const [totalAmount, setTotalAmount] = useState("");
@@ -21,8 +22,10 @@ export default function Goldredeem() {
   const { signer, walletAddress } = useContext(WalletContext);
   const { theme } = useTheme();
   const OUNCE_TO_GRAM = 31.1035;
-
+  const [user, setUser] = useState(null);
   useEffect(() => {
+    fetchUserData(setUser);
+    console.log("user", user);
     const fetchGoldRate = async () => {
       try {
         setGoldRates({ ounce: 0, gram: 0, loading: true });
@@ -59,6 +62,8 @@ export default function Goldredeem() {
     e.preventDefault();
     if (!signer || !walletAddress) {
       return alert("Kindly connect your wallet first");
+    } else if (user?.status === "block") {
+      alert("you have been block by the admin");
     }
     try {
       const contract = new Contract(goldToken, auAbi, signer);

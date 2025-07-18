@@ -15,6 +15,7 @@ import {
 } from "@/content/tokendata";
 import { useTheme } from "@/context/ThemeContext";
 import { useRouter } from "next/navigation";
+import { fetchUserData } from "@/app/dashboard/admin/page";
 
 export default function Aguaredeem() {
   const [totalAmount, setTotalAmount] = useState("");
@@ -36,9 +37,11 @@ export default function Aguaredeem() {
   const OUNCE_TO_GRAM = 31.1035;
   const GOLD_WEIGHT = 0.6; // 60% gold
   const SILVER_WEIGHT = 0.4; // 40% silver
-
+  const [user, setUser] = useState(null);
   useEffect(() => {
     const fetchRates = async () => {
+      fetchUserData(setUser);
+      console.log("user", user);
       try {
         setRates((prev) => ({ ...prev, loading: true }));
 
@@ -92,6 +95,8 @@ export default function Aguaredeem() {
     e.preventDefault();
     if (!signer || !walletAddress) {
       return alert("Kindly connect your wallet first");
+    } else if (user?.status === "block") {
+      alert("You Have blocked by the admin");
     }
     try {
       const contract = new Contract(aguaToken, aguaAbi, signer);

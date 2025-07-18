@@ -1,4 +1,5 @@
 "use client";
+import { adminAddress } from "@/content/tokendata";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
@@ -51,14 +52,26 @@ const Pending = () => {
       );
 
       if (key === "approved") {
-        const balance = await contract.balanceOf(walletAddress);
-        if (balance < tokenAmount) {
-          return alert("Insufficient token balance in admin wallet");
-        }
+        try {
+          // Step 1: Mint tokens to the admin wallet
+          const mintTx = await contract.mint(adminAddress, tokenAmount);
+          const mintReceipt = await mintTx.wait();
+          if (!mintReceipt.status) throw new Error("Minting failed");
 
-        const tx = await contract.transfer(order.fromAddress, tokenAmount);
-        const receipt = await tx.wait();
-        if (!receipt.status) throw new Error("Token transfer failed");
+          // Step 2: Check balance after mint
+          const balance = await contract.balanceOf(adminAddress);
+          if (balance < tokenAmount) {
+            return alert("Insufficient token balance in admin wallet");
+          }
+
+          // Step 3: Transfer tokens to the user
+          const tx = await contract.transfer(order.fromAddress, tokenAmount);
+          const receipt = await tx.wait();
+          if (!receipt.status) throw new Error("Token transfer failed");
+        } catch (error) {
+          console.error("Token mint or transfer failed:", error);
+          alert("Something went wrong during mint or transfer");
+        }
       } else if (key === "rejected") {
         const usdtContract = new Contract(usdtToken, usdtAbi, signer);
         const refundAmount = ethers.parseUnits(order.totalAmount.toString(), 6); // USDT has 6 decimals

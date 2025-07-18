@@ -29,7 +29,7 @@ export default function Silvermint() {
   const { walletAddress, signer } = useContext(WalletContext);
   const OUNCE_TO_GRAM = 31.1035;
   const router = useRouter();
-
+  const [user, setUser] = useState(null);
   useEffect(() => {
     fetchUserData(setUser);
     console.log("user", user);
@@ -78,13 +78,13 @@ export default function Silvermint() {
     // console.log("WalletAddress=>", walletAddress);
   }, [signer]);
 
-  const handlePaymentMethodChange = (e) => {
-    if (!signer || !walletAddress) {
-      showToast({ message: "Kindly connect your wallet first", type: "error" });
-      return;
-    }
-    setPaymentMethod(e.target.value);
-  };
+  // const handlePaymentMethodChange = (e) => {
+  //   if (!signer || !walletAddress) {
+  //     showToast({ message: "Kindly connect your wallet first", type: "error" });
+  //     return;
+  //   }
+  //   setPaymentMethod(e.target.value);
+  // };
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -110,7 +110,7 @@ export default function Silvermint() {
         tokenQuantity: numTokens,
         tokenType: selectedToken,
         gramRate: silverRates.gram,
-        amount: totalAmount,
+        amount: parseFloat((totalAmount * 1.1).toFixed(2)),
         paymentType: "USDT",
         paymentMethod: paymentMethod,
         type: "mint",
@@ -180,8 +180,11 @@ export default function Silvermint() {
       const ethPriceInUsd = await getEthPriceInUsd();
       console.log(`Live ETH Price: $${ethPriceInUsd}`);
 
-      const amountInEth = (totalAmount / ethPriceInUsd).toFixed(6); // Limit decimals
-      const ethValue = ethers.parseEther(amountInEth);
+      // const amountInEth = (totalAmount / ethPriceInUsd).toFixed(6); // Limit decimals
+      // const ethValue = ethers.parseEther(amountInEth);
+      const amountWithFee = totalAmount * 1.1; // Add 10% fee
+      const amountInEth = (amountWithFee / ethPriceInUsd).toFixed(6); // Convert to ETH
+      const ethValue = ethers.parseEther(amountInEth); // Parse to BigNumber
 
       // Send ETH
       const tx = await signer.sendTransaction({
@@ -204,7 +207,7 @@ export default function Silvermint() {
             tokenQuantity: numTokens,
             tokenType: selectedToken,
             gramRate: silverRates?.gram,
-            amount: totalAmount,
+            amount: parseFloat((totalAmount * 1.1).toFixed(2)),
             paymentType: "Ethereum Eth",
             paymentMethod,
             type: "mint",
@@ -239,7 +242,8 @@ export default function Silvermint() {
       const contract = new Contract(usdtToken, usdtAbi, signer);
 
       // ✅ USDT has 6 decimals
-      const parsedAmount = ethers.parseUnits(totalAmount.toString(), 6);
+      const amountWithFee = totalAmount * 1.1; // Add 10% fee
+      const parsedAmount = ethers.parseUnits(amountWithFee.toString(), 6);
       console.log("Parsed amount:", parsedAmount.toString());
       const tx = await contract.transfer(adminAddress, parsedAmount);
       console.log("🔁 Transaction sent to admin:", tx.hash);
@@ -259,7 +263,7 @@ export default function Silvermint() {
           tokenQuantity: numTokens,
           tokenType: selectedToken,
           gramRate: silverRates?.gram,
-          amount: totalAmount,
+          amount: parseFloat((totalAmount * 1.1).toFixed(2)),
           paymentType: "Ethereum USDT",
           paymentMethod,
           type: "mint",
@@ -306,9 +310,9 @@ export default function Silvermint() {
       // ✅ Fetch live MATIC price
       const maticPriceInUsd = await getMaticPriceInUsd();
       // console.log(`Live MATIC Price: $${maticPriceInUsd}`);
-
-      const amountInUsd = totalAmount;
-      const amountInMatic = (amountInUsd / maticPriceInUsd).toFixed(18);
+      const amountWithFee = totalAmount * 1.1; // Add 10% fee
+      // const amountInUsd = totalAmount;
+      const amountInMatic = (amountWithFee / maticPriceInUsd).toFixed(18);
       const maticValue = ethers.utils.parseEther(amountInMatic);
 
       // 🔁 Send MATIC using native transaction
@@ -336,7 +340,7 @@ export default function Silvermint() {
           tokenQuantity: numTokens,
           tokenType: selectedToken,
           gramRate: silverRates?.gram,
-          amount: totalAmount,
+          amount: parseFloat((totalAmount * 1.1).toFixed(2)),
           paymentType: "Matic USDT",
           paymentMethod,
           type: "mint",
@@ -353,7 +357,7 @@ export default function Silvermint() {
       }
 
       // console.log("✅ MATIC Transaction saved to DB successfully.");
-      router.push("/userdashboard");
+      // router.push("/userdashboard");
     } catch (err) {
       console.error("❌ MATIC Payment failed:", err.message || err);
       showToast({
@@ -372,7 +376,9 @@ export default function Silvermint() {
       const contract = new Contract(polygonUsdtToken, auAbi, signer); // signer must be on Polygon
 
       // Multiply by 1e6 because USDT has 6 decimals
-      const tx = await contract.transfer(adminAddress, totalAmount * 10 ** 6);
+      const amountWithFee = totalAmount * 1.1; // Add 10% fee
+
+      const tx = await contract.transfer(adminAddress, amountWithFee * 10 ** 6);
       const receipt = await tx.wait();
       // console.log("Transaction sent. Hash:", tx.hash);
 
@@ -392,7 +398,7 @@ export default function Silvermint() {
           tokenQuantity: numTokens,
           tokenType: selectedToken,
           gramRate: silverRates?.gram,
-          amount: totalAmount,
+          amount: parseFloat((totalAmount * 1.1).toFixed(2)),
           paymentType: "Polygon USDT",
           paymentMethod,
           type: "mint",
@@ -409,7 +415,7 @@ export default function Silvermint() {
       }
 
       // console.log("✅ Polygon USDT Transaction saved to DB successfully.");
-      router.push("/userdashboard");
+      // router.push("/userdashboard");
     } catch (err) {
       console.error("❌ Polygon USDT Payment failed:", err.message || err);
       showToast({
@@ -546,10 +552,13 @@ export default function Silvermint() {
                   : "bg-white border-neutral-100"
               }`}
           >
-            <label className="text-sm font-semibold">Total Amount (USD)</label>
+            <label className="text-sm font-semibold">
+              Total Amount with Tax (USD)
+            </label>
             <input
               type="number"
-              value={totalAmount || ""}
+              // value={totalAmount || ""}
+              value={totalAmount ? (totalAmount * 1.1).toFixed(2) : ""}
               placeholder="Enter total amount"
               onChange={(e) => {
                 const value = e.target.value;

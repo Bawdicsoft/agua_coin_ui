@@ -6,6 +6,8 @@ import { WalletContext } from "@/context/WalletContext";
 import { AuthContext } from "@/context/AuthContext";
 import axios from "axios";
 import { fetchUserData } from "@/app/dashboard/admin/page";
+import { Contract, ethers } from "ethers";
+import { adminAddress } from "@/content/tokendata";
 
 export default function Goldmint() {
   const [totalAmount, setTotalAmount] = useState("");
@@ -115,7 +117,7 @@ export default function Goldmint() {
         tokenQuantity: numTokens,
         tokenType: selectedToken,
         gramRate: rates?.combinedRates,
-        amount: totalAmount,
+        amount: parseFloat((totalAmount * 1.1).toFixed(2)),
         paymentType: "USDT",
         paymentMethod: paymentMethod,
         type: "mint",
@@ -184,8 +186,9 @@ export default function Goldmint() {
       // Fetch ETH Price
       const ethPriceInUsd = await getEthPriceInUsd();
       console.log(`Live ETH Price: $${ethPriceInUsd}`);
+      const amountWithFee = totalAmount * 1.1; // Add 10% fee
 
-      const amountInEth = (totalAmount / ethPriceInUsd).toFixed(6); // Limit decimals
+      const amountInEth = (amountWithFee / ethPriceInUsd).toFixed(6); // Limit decimals
       const ethValue = ethers.parseEther(amountInEth);
 
       // Send ETH
@@ -209,7 +212,7 @@ export default function Goldmint() {
             tokenQuantity: numTokens,
             tokenType: selectedToken,
             gramRate: rates?.combinedRates,
-            amount: totalAmount,
+            amount: parseFloat((totalAmount * 1.1).toFixed(2)),
             paymentType: "Ethereum Eth",
             paymentMethod,
             type: "mint",
@@ -244,7 +247,9 @@ export default function Goldmint() {
       const contract = new Contract(usdtToken, usdtAbi, signer);
 
       // ✅ USDT has 6 decimals
-      const parsedAmount = ethers.parseUnits(totalAmount.toString(), 6);
+      const amountWithFee = totalAmount * 1.1; // Add 10% fee
+
+      const parsedAmount = ethers.parseUnits(amountWithFee.toString(), 6);
       console.log("Parsed amount:", parsedAmount.toString());
       const tx = await contract.transfer(adminAddress, parsedAmount);
       console.log("🔁 Transaction sent to admin:", tx.hash);
@@ -264,7 +269,7 @@ export default function Goldmint() {
           tokenQuantity: numTokens,
           tokenType: selectedToken,
           gramRate: rates?.combinedRates,
-          amount: totalAmount,
+          amount: parseFloat((totalAmount * 1.1).toFixed(2)),
           paymentType: "Ethereum USDT",
           paymentMethod,
           type: "mint",
@@ -312,9 +317,11 @@ export default function Goldmint() {
       const maticPriceInUsd = await getMaticPriceInUsd();
       // console.log(`Live MATIC Price: $${maticPriceInUsd}`);
 
-      const amountInUsd = totalAmount;
-      const amountInMatic = (amountInUsd / maticPriceInUsd).toFixed(18);
-      const maticValue = ethers.utils.parseEther(amountInMatic);
+      // const amountInUsd = totalAmount;
+      const amountWithFee = totalAmount * 1.1; // Add 10% fee
+
+      const amountInMatic = (amountWithFee / maticPriceInUsd).toFixed(18);
+      const maticValue = ethers.parseEther(amountInMatic);
 
       // 🔁 Send MATIC using native transaction
       const tx = await signer.sendTransaction({
@@ -341,7 +348,7 @@ export default function Goldmint() {
           tokenQuantity: numTokens,
           tokenType: selectedToken,
           gramRate: rates?.combinedRates,
-          amount: totalAmount,
+          amount: parseFloat((totalAmount * 1.1).toFixed(2)),
           paymentType: "Matic USDT",
           paymentMethod,
           type: "mint",
@@ -376,7 +383,9 @@ export default function Goldmint() {
       const contract = new Contract(polygonUsdtToken, auAbi, signer); // signer must be on Polygon
 
       // Multiply by 1e6 because USDT has 6 decimals
-      const tx = await contract.transfer(adminAddress, totalAmount * 10 ** 6);
+      const amountWithFee = totalAmount * 1.1; // Add 10% fee
+
+      const tx = await contract.transfer(adminAddress, amountWithFee * 10 ** 6);
       const receipt = await tx.wait();
       // console.log("Transaction sent. Hash:", tx.hash);
 
@@ -396,7 +405,7 @@ export default function Goldmint() {
           tokenQuantity: numTokens,
           tokenType: selectedToken,
           gramRate: rates?.combinedRates,
-          amount: totalAmount,
+          amount: parseFloat((totalAmount * 1.1).toFixed(2)),
           paymentType: "Polygon USDT",
           paymentMethod,
           type: "mint",
@@ -545,10 +554,12 @@ export default function Goldmint() {
                   : "bg-white border-neutral-100"
               }`}
           >
-            <label className="text-sm font-semibold">Total Amount (USD)</label>
+            <label className="text-sm font-semibold">
+              Total Amount with Tax (USD)
+            </label>
             <input
               type="number"
-              value={totalAmount || ""}
+              value={totalAmount ? (totalAmount * 1.1).toFixed(2) : ""}
               placeholder="Enter total amount"
               onChange={(e) => {
                 const value = e.target.value;
