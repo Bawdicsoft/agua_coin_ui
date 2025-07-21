@@ -9,8 +9,8 @@ import { coreIntroductionParagraph, coreIntroductionfeatures, tableData, whatIsA
 
 export default function CoreIntroduction() {
   return (
-    <div className="relative mt-20  lg:px-20 overflow-hidden">
-      <div className="relative z-10 flex flex-col text-black">
+    <div className="relative pt-20 bg-white lg:px-20 overflow-hidden">
+      <div className="relative z-10 flex flex-col text-black bg-white ">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
           {/* Left Side */}
           <div className="flex flex-col justify-center px-6 sm:px-10  rounded-lg w-full">
