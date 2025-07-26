@@ -91,7 +91,7 @@ export async function POST(request) {
     );
     await connectDB();
 
-    const user = await AuthModel.findById(id);
+    const user = await AuthModel.findById({ _id: id });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -111,22 +111,7 @@ export async function POST(request) {
       transactionHash: hash || "no hash for stripe",
       fromAddress: from,
     });
-    console.log(
-      "data After posting",
-      userId,
-      name,
-      email,
-      tokenType,
-      tokenQuantity,
-      gramRate,
-      totalAmount,
-      paymentMethod,
-      paymentType,
-      tokenStatus,
-      status,
-      transactionHash,
-      fromAddress
-    );
+    console.log("data After posting", paymentDetail);
     return NextResponse.json(
       { message: "Payment saved successfully", paymentDetail },
       { status: 201 }

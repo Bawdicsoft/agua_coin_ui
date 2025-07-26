@@ -149,7 +149,7 @@ export default function AguaPayment() {
     console.log("clientId", clientId);
     console.log("selectedToken", selectedToken);
     console.log("numTokens", numTokens);
-    console.log("gramRate", rates?.combinedRates);
+    console.log("gramRate", rates?.combinedRate);
     console.log("totalAmount", totalAmount);
     console.log("paymentMethod", paymentMethod);
     console.log("paymentType", "USD");
@@ -160,7 +160,7 @@ export default function AguaPayment() {
         id: clientId,
         tokenQuantity: numTokens,
         tokenType: selectedToken,
-        gramRate: rates?.combinedRates,
+        gramRate: rates?.combinedRate,
         amount: totalAmount,
         paymentType: "USDT",
         paymentMethod: paymentMethod,

@@ -20,22 +20,22 @@ const Pending = () => {
 
   const { walletAddress, setWalletAddress, signer, setSigner } =
     useContext(WalletContext);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("/api/get-paymentDetail");
+      const result = response.data;
+      const ordersArray = result.getPaymentDetail || [];
+      // setPurchaseData(ordersArray);
+      const PurchaseOrders = ordersArray.filter(
+        (u) => u.status === "pending" && u.tokenStatus === "purchase"
+      );
+      setPurchaseData(PurchaseOrders);
+      console.log("Fetched orders:", ordersArray);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("/api/get-paymentDetail");
-        const result = response.data;
-        const ordersArray = result.getPaymentDetail || [];
-        // setPurchaseData(ordersArray);
-        const PurchaseOrders = ordersArray.filter(
-          (u) => u.status === "pending" && u.tokenStatus === "purchase"
-        );
-        setPurchaseData(PurchaseOrders);
-        console.log("Fetched orders:", ordersArray);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
     fetchData();
   }, []);
 
@@ -45,7 +45,7 @@ const Pending = () => {
       return alert("Kindly connect your wallet first");
     }
 
-    setLoadingId(order.id); // Disable buttons while processing
+    setLoadingId(order._id); // Disable buttons while processing
 
     try {
       const tokenMap = {
@@ -123,7 +123,8 @@ const Pending = () => {
       // alert(`Order ${key} successfully`);
 
       // Refresh data
-      setPurchaseData((prev) => prev.filter((o) => o.id !== order.id));
+      fetchData();
+      setPurchaseData((prev) => prev.filter((o) => o.id !== order._id));
     } catch (err) {
       console.error("Error processing order:", err);
       alert(
@@ -139,6 +140,7 @@ const Pending = () => {
       <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
         <thead className="bg-gray-300 text-gray-700">
           <tr>
+            <th className="py-3 px-4 text-left">S.No</th>
             <th className="py-3 px-4 text-left">User</th>
             <th className="py-3 px-4 text-left">Email</th>
             <th className="py-3 px-4 text-left">Wallet Address</th>
@@ -157,11 +159,12 @@ const Pending = () => {
               </td>
             </tr>
           ) : (
-            purchaseData.map((order) => (
+            purchaseData.map((order, index) => (
               <tr
-                key={order.id}
+                key={order._id}
                 className="border-b hover:bg-gray-50 transition-all"
               >
+                <td className="py-3 px-4 text-sm text-gray-600">{index + 1}</td>
                 <td className="py-3 px-4 text-sm text-gray-600">
                   {order.name}
                 </td>
@@ -184,16 +187,16 @@ const Pending = () => {
                     <button
                       className="bg-green-200 hover:bg-green-600 text-gray-700 hover:text-white text-sm font-semibold px-3 py-1 rounded-full"
                       onClick={() => OrderStatus(order, "approved")}
-                      disabled={loadingId === order.id}
+                      disabled={loadingId === order._id}
                     >
-                      {loadingId === order.id ? "Processing..." : "Accept"}
+                      {loadingId === order._id ? "Processing..." : "Accept"}
                     </button>
                     <button
                       className="bg-red-300 hover:bg-red-600 text-gray-700 hover:text-white text-sm font-semibold px-3 py-1 rounded-full"
                       onClick={() => OrderStatus(order, "rejected")}
-                      disabled={loadingId === order.id}
+                      disabled={loadingId === order._id}
                     >
-                      {loadingId === order.id ? "Processing..." : "Reject"}
+                      {loadingId === order._id ? "Processing..." : "Reject"}
                     </button>
                   </div>
                 </td>

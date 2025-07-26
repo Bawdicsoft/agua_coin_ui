@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { MdSearch, MdFilterList, MdSort } from "react-icons/md";
 import axios from "axios";
 
-export default function TokenTable({ type }) {
+export default function PendingTokenTable({ type }) {
   const { theme } = useTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -12,46 +12,14 @@ export default function TokenTable({ type }) {
   const [redeemData, setRedeemData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get("/api/getOrderDetails");
-  //       const result = response.data;
-  //       const ordersArray = result.getOrders || [];
-  //       const filteredTokens = ordersArray.filter(
-  //         (order) => order.status === type
-  //       );
-  //       setPaymentData(filteredTokens);
-  //       console.log("Fetched payment data:", filteredTokens);
-  //     } catch (error) {
-  //       console.error("Error fetching payment data:", error);
-  //     }
-  //   };
-
-  //   // const fetchRedeemData = async () => {
-  //   //   try {
-  //   //     const response = await axios.get("/api/getRedeemTokens");
-  //   //     const result = response.data;
-  //   //     const redeemsArray = result.RedeemDetail || [];
-  //   //     setRedeemData(redeemsArray);
-  //   //   } catch (error) {
-  //   //     console.error("Error fetching redeem data:", error);
-  //   //   } finally {
-  //   //     setIsLoading(false);
-  //   //   }
-  //   // };
-
-  //   // fetchRedeemData();
-  //   fetchData();
-  // }, [type]);
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true); // Start loader
 
       try {
-        const response = await axios.get("/api/getOrderDetails");
+        const response = await axios.get("/api/get-paymentDetail");
         const result = response.data;
-        const ordersArray = result.getOrders || [];
+        const ordersArray = result.getPaymentDetail || [];
         const filteredTokens = ordersArray.filter(
           (order) => order.status === type
         );
@@ -63,11 +31,25 @@ export default function TokenTable({ type }) {
         setIsLoading(false); // Stop loader
       }
     };
+    const fetchRedeemData = async () => {
+      try {
+        const response = await axios.get("/api/getRedeemTokens");
+        const result = response.data;
+        const redeemsArray = result.RedeemDetail || [];
+        setRedeemData(redeemsArray);
+      } catch (error) {
+        console.error("Error fetching redeem data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRedeemData();
 
     fetchData();
   }, [type]);
 
-  const allData = [...paymentData];
+  const allData = [...paymentData, ...redeemData];
 
   const filteredData = allData.filter((item) =>
     Object.values(item).some((value) =>
@@ -220,9 +202,9 @@ export default function TokenTable({ type }) {
                     <MdSort size={16} />
                   </div>
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                {/* <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   TokenAddress
-                </th>
+                </th> */}
               </tr>
             </thead>
             <tbody
@@ -263,14 +245,14 @@ export default function TokenTable({ type }) {
                         theme === "dark" ? "text-gray-300" : "text-gray-700"
                       }`}
                     >
-                      {item.TokenType}
+                      {item.tokenType}
                     </td>
                     <td
                       className={`px-6 py-4 whitespace-nowrap text-sm ${
                         theme === "dark" ? "text-gray-300" : "text-gray-700"
                       }`}
                     >
-                      {item.quantity}
+                      {item.tokenQuantity}
                     </td>
                     <td
                       className={`px-6 py-4 whitespace-nowrap text-sm ${
@@ -295,7 +277,7 @@ export default function TokenTable({ type }) {
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    {/* <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         className={`${
                           theme === "dark"
@@ -305,7 +287,7 @@ export default function TokenTable({ type }) {
                       >
                         {item.tokenAddress}
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))
               )}

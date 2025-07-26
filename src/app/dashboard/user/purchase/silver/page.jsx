@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { Contract } from "ethers";
+import { Contract, ethers } from "ethers";
 // import { auAbi, adminAddress, token } from "../../../../../constant/data";
 // import { WalletContext } from "@/context/WalletContext";
 import { adminAddress, usdtToken, usdtAbi } from "@/content/tokendata";
@@ -90,6 +90,7 @@ export default function SilverPayment() {
     } else if (user?.status === "block") {
       alert("You Have blocked by the user");
     }
+    console.log("paymentMethod", paymentMethod);
     axios
       .post("/api/stripe-checkout", {
         id: clientId,
@@ -197,14 +198,13 @@ export default function SilverPayment() {
             hash: tx.hash,
           }),
         });
-      }
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to save transaction.");
+        }
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to save transaction.");
+        console.log("✅ ETH Transaction saved to DB successfully.");
       }
-
-      console.log("✅ ETH Transaction saved to DB successfully.");
     } catch (err) {
       console.error("❌ ETH Payment failed:", err.message || err);
       showToast({

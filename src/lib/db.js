@@ -9,10 +9,9 @@ const connectDB = async () => {
   }
 
   try {
-    const connectionInstance = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const connectionInstance = await mongoose.connect(
+      "mongodb+srv://SeemalKhan:IedNFYf6gK3ZbthA@emadcluster.nhb8az1.mongodb.net/AguaCoin?retryWrites=true&w=majority"
+    );
 
     isConnected = true;
 

@@ -244,14 +244,12 @@ export default function Goldpayment() {
             hash: tx.hash,
           }),
         });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to save transaction.");
+        }
+        console.log("✅ ETH Transaction saved to DB successfully.");
       }
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to save transaction.");
-      }
-
-      console.log("✅ ETH Transaction saved to DB successfully.");
     } catch (err) {
       console.error("❌ ETH Payment failed:", err.message || err);
       showToast({
@@ -291,7 +289,7 @@ export default function Goldpayment() {
           tokenType: selectedToken,
           gramRate: goldRates?.gram,
           amount: totalAmount,
-          paymentType: "Ethereum USDT",
+          paymentType: "Ethereum USD",
           paymentMethod,
           type: "purchase",
           status: "pending",

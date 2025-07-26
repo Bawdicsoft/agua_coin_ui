@@ -1,6 +1,7 @@
 "use client";
-import TokenTable from "@/components/common/TokenTable";
+import PendingTokenTable from "@/components/common/PendingToken";
+// import TokenTable from "@/components/common/TokenTable";
 
 export default function PendingTokens() {
-  return <TokenTable type="pending" />;
+  return <PendingTokenTable type="pending" />;
 }
