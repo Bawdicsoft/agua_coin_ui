@@ -75,7 +75,20 @@ export async function POST(request) {
       hash,
       from,
     } = await request.json();
-
+    console.log(
+      "initial Data",
+      id,
+      gramRate,
+      amount,
+      paymentMethod,
+      tokenQuantity,
+      tokenType,
+      type,
+      paymentType,
+      status,
+      hash,
+      from
+    );
     await connectDB();
 
     const user = await AuthModel.findById(id);
@@ -98,7 +111,22 @@ export async function POST(request) {
       transactionHash: hash || "no hash for stripe",
       fromAddress: from,
     });
-
+    console.log(
+      "data After posting",
+      userId,
+      name,
+      email,
+      tokenType,
+      tokenQuantity,
+      gramRate,
+      totalAmount,
+      paymentMethod,
+      paymentType,
+      tokenStatus,
+      status,
+      transactionHash,
+      fromAddress
+    );
     return NextResponse.json(
       { message: "Payment saved successfully", paymentDetail },
       { status: 201 }
