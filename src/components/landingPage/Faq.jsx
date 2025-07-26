@@ -13,7 +13,7 @@ function Faq() {
   };
 
   return (
-    <section className=" flex flex-col items-center text-center px-4 pt-12 md:py-20 text-gray-800">
+    <section className=" flex flex-col items-center bg-white  text-center px-4 pt-12 md:py-20 text-gray-800">
       {/* Header */}
       <div className="max-w-3xl space-y-4 md:space-y-6 ">
         <h1 className="text-2xl md:text-3xl font-bold text-black">Frequently Asked Questions</h1>
@@ -46,7 +46,7 @@ function Faq() {
             </div>
 
             <div
-              className={`overflow-hidden transition-all duration-300 text-gray-600 text-sm md:text-base ${
+              className={`overflow-hidden transition-all duration-300 text-gray-600 text-sm text-start md:text-base ${
                 activeIndex === index ? "max-h-40 mt-2" : "max-h-0"
               }`}
             >
