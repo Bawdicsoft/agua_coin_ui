@@ -81,14 +81,14 @@ export default function Silverredeem() {
         id: clientId,
         TokenAddress: silverToken,
         from: walletAddress,
-        to: adminAddress,
         TokenType: selectedToken,
         TotalQuantity: numTokens,
         totalAmount: totalAmount,
-        tokenStatus: "pending",
+        tokenStatus: "redeem",
         currentRate: silverRates.gram,
         transactionHash: tx.hash,
-        paymentMethod: "MetaMask",
+        status: "pending",
+        
       };
 
       const response = await axios.post("/api/redeemTokens", payload);

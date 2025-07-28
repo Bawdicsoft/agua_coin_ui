@@ -82,14 +82,13 @@ export default function Goldredeem() {
         id: clientId,
         TokenAddress: goldToken,
         from: walletAddress,
-        to: adminAddress,
         TokenType: selectedToken,
         TotalQuantity: numTokens,
         totalAmount: totalAmount,
-        tokenStatus: "pending",
+        tokenStatus: "redeem",
         currentRate: goldRates.gram,
         transactionHash: tx.hash,
-        paymentMethod: "MetaMask",
+        status: "pending",
       };
 
       const response = await axios.post("/api/redeemTokens", payload);

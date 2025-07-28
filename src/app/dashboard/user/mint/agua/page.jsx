@@ -7,14 +7,15 @@ import { AuthContext } from "@/context/AuthContext";
 import axios from "axios";
 import { fetchUserData } from "@/app/dashboard/admin/page";
 import { Contract, ethers } from "ethers";
-import { adminAddress } from "@/content/tokendata";
+import { adminAddress, usdtAbi, usdtToken } from "@/content/tokendata";
+import { useRouter } from "next/navigation";
 
 export default function Goldmint() {
   const [totalAmount, setTotalAmount] = useState("");
   const [numTokens, setNumTokens] = useState("");
   // const totalAmount = numTokens ? (numTokens * goldRates.gram).toFixed(2) : 0;
   const { auth, setAuth } = useContext(AuthContext);
-
+  const router = useRouter();
   const [goldRates, setGoldRates] = useState({
     ounce: 0,
     gram: 0,
@@ -105,7 +106,7 @@ export default function Goldmint() {
     console.log("clientId", clientId);
     console.log("selectedToken", selectedToken);
     console.log("numTokens", numTokens);
-    console.log("gramRate", rates?.combinedRates);
+    console.log("gramRate", goldRates?.gram);
     console.log("totalAmount", totalAmount);
     console.log("paymentMethod", paymentMethod);
     console.log("paymentType", "USD");
@@ -116,7 +117,7 @@ export default function Goldmint() {
         id: clientId,
         tokenQuantity: numTokens,
         tokenType: selectedToken,
-        gramRate: rates?.combinedRates,
+        gramRate: goldRates?.gram,
         amount: parseFloat((totalAmount * 1.1).toFixed(2)),
         paymentType: "USDT",
         paymentMethod: paymentMethod,
@@ -211,7 +212,7 @@ export default function Goldmint() {
             id: clientId,
             tokenQuantity: numTokens,
             tokenType: selectedToken,
-            gramRate: rates?.combinedRates,
+            gramRate: goldRates?.gram,
             amount: parseFloat((totalAmount * 1.1).toFixed(2)),
             paymentType: "Ethereum Eth",
             paymentMethod,
@@ -221,14 +222,13 @@ export default function Goldmint() {
             hash: tx.hash,
           }),
         });
-      }
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to save transaction.");
+        }
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to save transaction.");
+        console.log("✅ ETH Transaction saved to DB successfully.");
       }
-
-      console.log("✅ ETH Transaction saved to DB successfully.");
     } catch (err) {
       console.error("❌ ETH Payment failed:", err.message || err);
       showToast({
@@ -268,7 +268,7 @@ export default function Goldmint() {
           id: clientId,
           tokenQuantity: numTokens,
           tokenType: selectedToken,
-          gramRate: rates?.combinedRates,
+          gramRate: goldRates?.gram,
           amount: parseFloat((totalAmount * 1.1).toFixed(2)),
           paymentType: "Ethereum USDT",
           paymentMethod,
@@ -347,7 +347,7 @@ export default function Goldmint() {
           id: clientId,
           tokenQuantity: numTokens,
           tokenType: selectedToken,
-          gramRate: rates?.combinedRates,
+          gramRate: goldRates?.gram,
           amount: parseFloat((totalAmount * 1.1).toFixed(2)),
           paymentType: "Matic USDT",
           paymentMethod,
@@ -404,7 +404,7 @@ export default function Goldmint() {
           id: clientId,
           tokenQuantity: numTokens,
           tokenType: selectedToken,
-          gramRate: rates?.combinedRates,
+          gramRate: goldRates?.gram,
           amount: parseFloat((totalAmount * 1.1).toFixed(2)),
           paymentType: "Polygon USDT",
           paymentMethod,

@@ -3,6 +3,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useState, useEffect } from "react";
 import { MdSearch, MdFilterList, MdSort } from "react-icons/md";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export default function TokenTable({ type }) {
   const { theme } = useTheme();
@@ -14,6 +15,8 @@ export default function TokenTable({ type }) {
 
   // useEffect(() => {
   //   const fetchData = async () => {
+  //     setIsLoading(true); // Start loader
+
   //     try {
   //       const response = await axios.get("/api/getOrderDetails");
   //       const result = response.data;
@@ -25,36 +28,38 @@ export default function TokenTable({ type }) {
   //       console.log("Fetched payment data:", filteredTokens);
   //     } catch (error) {
   //       console.error("Error fetching payment data:", error);
+  //     } finally {
+  //       setIsLoading(false); // Stop loader
   //     }
   //   };
 
-  //   // const fetchRedeemData = async () => {
-  //   //   try {
-  //   //     const response = await axios.get("/api/getRedeemTokens");
-  //   //     const result = response.data;
-  //   //     const redeemsArray = result.RedeemDetail || [];
-  //   //     setRedeemData(redeemsArray);
-  //   //   } catch (error) {
-  //   //     console.error("Error fetching redeem data:", error);
-  //   //   } finally {
-  //   //     setIsLoading(false);
-  //   //   }
-  //   // };
-
-  //   // fetchRedeemData();
   //   fetchData();
   // }, [type]);
   useEffect(() => {
+    // setClientId(userId);
+
     const fetchData = async () => {
       setIsLoading(true); // Start loader
-
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        console.warn("No authToken found in localStorage.");
+        return null;
+      }
+      // // console.log(token);
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken?.id;
       try {
-        const response = await axios.get("/api/getOrderDetails");
+        const response = await axios.get("/api/getSingleUserTokenDetail", {
+          params: { userId }, // 👈 send userId as query param
+        });
+
         const result = response.data;
         const ordersArray = result.getOrders || [];
+
         const filteredTokens = ordersArray.filter(
           (order) => order.status === type
         );
+
         setPaymentData(filteredTokens);
         console.log("Fetched payment data:", filteredTokens);
       } catch (error) {
@@ -64,9 +69,8 @@ export default function TokenTable({ type }) {
       }
     };
 
-    fetchData();
+    fetchData(); // Only fetch if userId exists
   }, [type]);
-
   const allData = [...paymentData];
 
   const filteredData = allData.filter((item) =>
@@ -175,6 +179,9 @@ export default function TokenTable({ type }) {
           <table className="w-full">
             <thead>
               <tr className={theme === "dark" ? "bg-gray-800" : "bg-gray-200"}>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                  S.No
+                </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => requestSort("tokenType")}
@@ -258,6 +265,13 @@ export default function TokenTable({ type }) {
                         : "hover:bg-gray-200 bg-gray-100"
                     }`}
                   >
+                    <td
+                      className={`px-6 py-4 whitespace-nowrap text-sm ${
+                        theme === "dark" ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
+                      {index + 1}
+                    </td>
                     <td
                       className={`px-6 py-4 whitespace-nowrap text-sm ${
                         theme === "dark" ? "text-gray-300" : "text-gray-700"

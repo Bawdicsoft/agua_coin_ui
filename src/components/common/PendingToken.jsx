@@ -3,6 +3,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useState, useEffect } from "react";
 import { MdSearch, MdFilterList, MdSort } from "react-icons/md";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export default function PendingTokenTable({ type }) {
   const { theme } = useTheme();
@@ -16,13 +17,32 @@ export default function PendingTokenTable({ type }) {
     const fetchData = async () => {
       setIsLoading(true); // Start loader
 
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        console.warn("No authToken found in localStorage.");
+        return null;
+      }
+      // // console.log(token);
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken?.id;
       try {
-        const response = await axios.get("/api/get-paymentDetail");
+        const response = await axios.get("/api/getSingleUserPaymentDetail", {
+          params: { userId }, // 👈 send userId as query param
+        });
         const result = response.data;
-        const ordersArray = result.getPaymentDetail || [];
+        const ordersArray = result.getPayment || [];
         const filteredTokens = ordersArray.filter(
           (order) => order.status === type
         );
+        const response2 = await axios.get(
+          "/api/getSingleUserRedeemTokenDetail",
+          {
+            params: { userId }, // 👈 send userId as query param
+          }
+        );
+        const result2 = response2.data;
+        const redeemsArray = result2.getRedeem || [];
+        setRedeemData(redeemsArray);
         setPaymentData(filteredTokens);
         console.log("Fetched payment data:", filteredTokens);
       } catch (error) {
@@ -31,20 +51,20 @@ export default function PendingTokenTable({ type }) {
         setIsLoading(false); // Stop loader
       }
     };
-    const fetchRedeemData = async () => {
-      try {
-        const response = await axios.get("/api/getRedeemTokens");
-        const result = response.data;
-        const redeemsArray = result.RedeemDetail || [];
-        setRedeemData(redeemsArray);
-      } catch (error) {
-        console.error("Error fetching redeem data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // const fetchRedeemData = async () => {
+    //   try {
+    //     const response = await axios.get("/api/getRedeemTokens");
+    //     const result = response.data;
+    //     const redeemsArray = result.RedeemDetail || [];
+    //     setRedeemData(redeemsArray);
+    //   } catch (error) {
+    //     console.error("Error fetching redeem data:", error);
+    //   } finally {
+    //     setIsLoading(false);
+    //   }
+    // };
 
-    fetchRedeemData();
+    // fetchRedeemData();
 
     fetchData();
   }, [type]);
@@ -159,6 +179,15 @@ export default function PendingTokenTable({ type }) {
               <tr className={theme === "dark" ? "bg-gray-800" : "bg-gray-200"}>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                  // onClick={() => requestSort("tokenType")}
+                >
+                  <div className="flex items-center gap-2">
+                    S.No
+                    <MdSort size={16} />
+                  </div>
+                </th>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => requestSort("tokenType")}
                 >
                   <div className="flex items-center gap-2">
@@ -175,6 +204,16 @@ export default function PendingTokenTable({ type }) {
                     <MdSort size={16} />
                   </div>
                 </th>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                  onClick={() => requestSort("tokenStatus")}
+                >
+                  <div className="flex items-center gap-2">
+                    TokenStatus
+                    <MdSort size={16} />
+                  </div>
+                </th>
+
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => requestSort("totalAmount")}
@@ -245,6 +284,13 @@ export default function PendingTokenTable({ type }) {
                         theme === "dark" ? "text-gray-300" : "text-gray-700"
                       }`}
                     >
+                      {index + 1}
+                    </td>
+                    <td
+                      className={`px-6 py-4 whitespace-nowrap text-sm ${
+                        theme === "dark" ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
                       {item.tokenType}
                     </td>
                     <td
@@ -253,6 +299,13 @@ export default function PendingTokenTable({ type }) {
                       }`}
                     >
                       {item.tokenQuantity}
+                    </td>
+                    <td
+                      className={`px-6 py-4 whitespace-nowrap text-sm ${
+                        theme === "dark" ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
+                      {item.tokenStatus || "N/A"}
                     </td>
                     <td
                       className={`px-6 py-4 whitespace-nowrap text-sm ${

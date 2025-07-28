@@ -215,14 +215,13 @@ export default function Goldmint() {
             hash: tx.hash,
           }),
         });
-      }
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to save transaction.");
+        }
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to save transaction.");
+        console.log("✅ ETH Transaction saved to DB successfully.");
       }
-
-      console.log("✅ ETH Transaction saved to DB successfully.");
     } catch (err) {
       console.error("❌ ETH Payment failed:", err.message || err);
       showToast({

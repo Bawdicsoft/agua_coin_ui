@@ -10,19 +10,15 @@ const RedeemSchema = new mongoose.Schema(
     email: {
       type: String,
     },
-    from: {
+    fromAddress: {
       type: String,
       // required: [true, "Wallet address is required"],
     },
-    to: {
-      type: String,
-      // required: [true, "Wallet address is required"],
-    },
-    TokenType: {
+    tokenType: {
       type: String,
       // required: true,
     },
-    TokenQuantity: {
+    tokenQuantity: {
       type: String,
       // required: true,
     },
@@ -41,7 +37,7 @@ const RedeemSchema = new mongoose.Schema(
     transactionHash: {
       type: String,
     },
-    paymentMethod: {
+    status: {
       type: String,
     },
   },

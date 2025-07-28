@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import AuthModel from "@/model/User.model";
-import RedeemModel from "@/model/redeemToken.model";
+import AuthModel from "../../../models/User.model";
+import RedeemModel from "../../../models/redeemToken.model";
 import connectDB from "@/lib/db";
 
 export async function POST(request) {
@@ -9,14 +9,12 @@ export async function POST(request) {
       id,
       TokenAddress,
       from,
-      to,
       TokenType,
       TotalQuantity,
       totalAmount,
       tokenStatus,
       currentRate,
       transactionHash,
-      paymentMethod,
       status,
     } = await request.json();
 
@@ -24,14 +22,12 @@ export async function POST(request) {
       id,
       TokenAddress,
       from,
-      to,
       TokenType,
       TotalQuantity,
       totalAmount,
       tokenStatus,
       currentRate,
       transactionHash,
-      paymentMethod,
       status,
     });
 
@@ -47,17 +43,15 @@ export async function POST(request) {
       userId: id,
       name: User.name,
       email: User.email,
-      from: from,
-      to: to,
-      TokenType: TokenType,
-      TokenQuantity: TotalQuantity,
+      fromAddress: from,
+      tokenType: TokenType,
+      tokenQuantity: TotalQuantity,
       //   tokenRate: tokenRate,
       totalAmount: totalAmount,
       TokenAddress: TokenAddress,
       tokenStatus: tokenStatus,
       currentRate: currentRate,
       transactionHash: transactionHash,
-      paymentMethod: paymentMethod,
       status: status,
     });
 

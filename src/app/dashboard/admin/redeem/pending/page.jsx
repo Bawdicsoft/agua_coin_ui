@@ -1,18 +1,33 @@
 "use client";
+import {
+  agAbi,
+  aguaAbi,
+  aguaToken,
+  auAbi,
+  goldToken,
+  silverToken,
+  usdtAbi,
+  usdtToken,
+} from "@/content/tokendata";
+import { WalletContext } from "@/context/WalletContext";
 import axios from "axios";
 import { Contract, ethers } from "ethers";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 const Pending = () => {
   const [purchaseData, setPurchaseData] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
+  const { walletAddress, setWalletAddress, signer, setSigner } =
+    useContext(WalletContext);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get("/api/getRedeemTokens");
         const result = response.data;
-        const ordersArray = result.getPaymentDetail || [];
-        // setPurchaseData(ordersArray);
+        const ordersArray = result.RedeemDetail || [];
+        setPurchaseData(ordersArray);
+        console.log("result", result);
         const PurchaseOrders = ordersArray.filter(
           (u) => u.status === "pending" && u.tokenStatus === "redeem"
         );
@@ -31,7 +46,7 @@ const Pending = () => {
       return alert("Kindly connect your wallet first");
     }
 
-    setLoadingId(order.id);
+    setLoadingId(order._id);
 
     try {
       const tokenMap = {
@@ -62,6 +77,7 @@ const Pending = () => {
         const usdtAmount = ethers.parseUnits(order.totalAmount.toString(), 6); // USDT has 6 decimals
 
         const usdtBalance = await usdtContract.balanceOf(walletAddress);
+        console.log("usdtBalance", usdtBalance);
         if (usdtBalance < usdtAmount) {
           return alert("Insufficient USDT balance in admin wallet");
         }
@@ -87,6 +103,18 @@ const Pending = () => {
 
       // Log order status update in backend
       const payload = {
+        // id: order._id,
+        // userId: order.userId,
+        // name: order.name,
+        // email: order.email,
+        // TokenAddress: selected.address,
+        // from: walletAddress,
+        // to: order.fromAddress,
+        // TokenType: order.tokenType,
+        // TokenQuantity: order.tokenQuantity,
+        // tokenStatus: order.tokenStatus,
+        // status: key,
+        // totalAmount: order.totalAmount,
         id: order._id,
         userId: order.userId,
         name: order.name,
@@ -114,10 +142,10 @@ const Pending = () => {
           message: message,
         });
       }
-      alert(`Order ${key} successfully`);
+      // alert(`Order ${key} successfully`);
 
       // Refresh data
-      setPurchaseData((prev) => prev.filter((o) => o.id !== order.id));
+      setPurchaseData((prev) => prev.filter((o) => o._id !== order._id));
     } catch (err) {
       console.error("Error processing order:", err);
       alert(
@@ -152,7 +180,7 @@ const Pending = () => {
           ) : (
             purchaseData.map((order) => (
               <tr
-                key={order.id}
+                key={order._id}
                 className="border-b hover:bg-gray-50 transition-all"
               >
                 <td className="py-3 px-4 text-sm text-gray-600">
@@ -177,16 +205,16 @@ const Pending = () => {
                     <button
                       className="bg-green-200 hover:bg-green-600 text-gray-700 hover:text-white text-sm font-semibold px-3 py-1 rounded-full"
                       onClick={() => OrderStatus(order, "approved")}
-                      disabled={loadingId === order.id}
+                      disabled={loadingId === order._id}
                     >
-                      {loadingId === order.id ? "Processing..." : "Accept"}
+                      {loadingId === order._id ? "Processing..." : "Accept"}
                     </button>
                     <button
                       className="bg-red-300 hover:bg-red-600 text-gray-700 hover:text-white text-sm font-semibold px-3 py-1 rounded-full"
                       onClick={() => OrderStatus(order, "rejected")}
-                      disabled={loadingId === order.id}
+                      disabled={loadingId === order._id}
                     >
-                      {loadingId === order.id ? "Processing..." : "Reject"}
+                      {loadingId === order._id ? "Processing..." : "Reject"}
                     </button>
                   </div>
                 </td>

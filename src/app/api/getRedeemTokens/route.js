@@ -9,7 +9,7 @@ export async function GET() {
 
     // Fetch all users
     const RedeemDetail = await RedeemModel.find({});
-
+    console.log("RedeemDetail", RedeemDetail);
     // Return users
     return NextResponse.json(
       { message: "Redeem Detail retrieved successfully", RedeemDetail },
