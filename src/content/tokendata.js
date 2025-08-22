@@ -6,7 +6,8 @@ export const aguaToken = "0x4c24AA47D8571Dd49C1FCB7eD47A24037Be9d1Ee";
 export const goldToken = "0xe0629763bf94711aAE6921247a30eE4926187B8c";
 export const silverToken = "0x06BB8C8920B11515f4646662E5A56edb3Edc24E3";
 
-export const adminAddress = "0x8722764D675C2b965a6130881984a76b0dF57885";
+// export const adminAddress = "0x8722764D675C2b965a6130881984a76b0dF57885";
+export const adminAddress = "0xA9FC9e9579C8D0982FcE1831EaA5Df7ABf307b72";
 
 //   // Assuming you have signer from web3Modal or injected provider
 // const recipient = "0xRecipientAddressHere";
