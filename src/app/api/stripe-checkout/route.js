@@ -36,7 +36,7 @@ export async function POST(req) {
 
   const session = await stripe.checkout.sessions.create({
     success_url:
-      "http://localhost:3000/dashboard/user/success?session_id={CHECKOUT_SESSION_ID}",
+      "https://agua-coin-ui.vercel.app/dashboard/user/success?session_id={CHECKOUT_SESSION_ID}",
     cancel_url: "http://example.com/cancel",
     line_items: [
       {
