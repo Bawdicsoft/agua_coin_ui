@@ -48,6 +48,7 @@ export default function Goldpayment() {
   const { theme } = useTheme();
   const { showToast } = useContext(ToastContext);
   const [user, setUser] = useState(null);
+  const [goldTokens, setGoldTokens] = useState(0);
   // Fetch live gold rate
   // const providerOptions = {
   //   coinbasewallet: {
@@ -98,7 +99,39 @@ export default function Goldpayment() {
         setGoldRates({ milligram: 0, gram: 0, loading: false });
       }
     };
+    const userData = async () => {
+      const response = await axios.get("/api/getSingleUserTokenDetail", {
+        params: { userId },
+      });
 
+      const result = response.data;
+      const details = result.getOrders || [];
+
+      let silverTotal = 0;
+
+      details.forEach((order) => {
+        if (order.status === "approved" && order.TokenType === "AU") {
+          const qty = parseFloat(order.quantity);
+          if (!isNaN(qty)) {
+            silverTotal += qty;
+          }
+        }
+      });
+
+      // ✅ Helper function for unit formatting
+      const formatValue = (valueInGram) => {
+        if (valueInGram >= 1) {
+          return `${valueInGram.toFixed(3)} g`;
+        } else {
+          return `${(valueInGram * 1000).toFixed(2)} mg`;
+        }
+      };
+
+      console.log("Total Gold (AU):", formatValue(silverTotal));
+      setGoldTokens(formatValue(silverTotal));
+      // return formatValue(silverTotal);
+    };
+    userData();
     fetchGoldRate();
     const token = localStorage.getItem("authToken");
     if (!token) {
@@ -486,8 +519,8 @@ export default function Goldpayment() {
             theme={theme}
           />
           <InfoCard
-            label="Token Rate (per milligram)"
-            value={goldRates.loading ? "Loading..." : `$${goldRates.milligram}`}
+            label="Your Tokens"
+            value={goldRates.loading ? "Loading..." : `${goldTokens}`}
             theme={theme}
           />
           <InfoCard

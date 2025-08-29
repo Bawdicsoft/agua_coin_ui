@@ -362,6 +362,204 @@
 //     </>
 //   );
 // }
+// "use client";
+// import React, { useEffect, useState, useContext } from "react";
+// import { Contract, ethers } from "ethers";
+// import { useTheme } from "@/context/ThemeContext";
+// import { WalletContext } from "@/context/WalletContext";
+// import {
+//   goldToken,
+//   silverToken,
+//   aguaToken,
+//   auAbi,
+//   agAbi,
+//   aguaAbi,
+// } from "@/content/tokendata";
+// import { jwtDecode } from "jwt-decode";
+// import axios from "axios";
+
+// const OUNCE_TO_GRAM = 31.1035;
+// const GOLD_WEIGHT = 0.6;
+// const SILVER_WEIGHT = 0.4;
+
+// export default function SummaryCardsForUser() {
+//   const { theme } = useTheme();
+//   const { walletAddress, signer } = useContext(WalletContext);
+//   const [rates, setRates] = useState({ gold: null, silver: null, agua: null });
+//   const [balances, setBalances] = useState({ gold: 0, silver: 0, agua: 0 });
+//   const [totals, setTotals] = useState({ AGUA: 0, AU: 0, AG: 0 });
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     async function fetchRates() {
+//       const token = localStorage.getItem("authToken");
+//       if (!token) {
+//         console.warn("No authToken found in localStorage.");
+//         return;
+//       }
+
+//       const decodedToken = jwtDecode(token);
+//       const userId = decodedToken?.id;
+
+//       try {
+//         const response = await axios.get("/api/getSingleUserTokenDetail", {
+//           params: { userId },
+//         });
+//         const result = response.data;
+//         const details = result.getOrders || [];
+
+//         const tokenTotals = { AGUA: 0, AU: 0, AG: 0 };
+
+//         details.forEach((order) => {
+//           if (order.status === "approved") {
+//             const qty = parseFloat(order.quantity);
+//             if (!isNaN(qty)) {
+//               tokenTotals[order.TokenType] += qty;
+//             }
+//           }
+//         });
+
+//         setTotals(tokenTotals);
+
+//         const goldRes = await fetch("https://api.gold-api.com/price/XAU");
+//         const goldData = await goldRes.json();
+//         const goldOunce = goldData.price;
+//         const goldGram = goldOunce / OUNCE_TO_GRAM;
+
+//         const silverRes = await fetch("https://api.gold-api.com/price/XAG");
+//         const silverData = await silverRes.json();
+//         const silverOunce = silverData.price;
+//         const silverGram = silverOunce / OUNCE_TO_GRAM;
+
+//         const aguaOunce = goldOunce * GOLD_WEIGHT + silverOunce * SILVER_WEIGHT;
+//         const aguaGram = goldGram * GOLD_WEIGHT + silverGram * SILVER_WEIGHT;
+
+//         setRates({
+//           gold: { ounce: goldOunce, gram: goldGram },
+//           silver: { ounce: silverOunce, gram: silverGram },
+//           agua: { ounce: aguaOunce, gram: aguaGram },
+//         });
+//       } catch (e) {
+//         console.error("Error fetching data:", e);
+//         setRates({
+//           gold: { ounce: 0, gram: 0 },
+//           silver: { ounce: 0, gram: 0 },
+//           agua: { ounce: 0, gram: 0 },
+//         });
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+
+//     fetchRates();
+//   }, []);
+
+//   useEffect(() => {
+//     async function fetchBalances() {
+//       if (!walletAddress || !signer) return;
+
+//       try {
+//         const goldContract = new Contract(goldToken, auAbi, signer);
+//         const silverContract = new Contract(silverToken, agAbi, signer);
+//         const aguaContract = new Contract(aguaToken, aguaAbi, signer);
+
+//         const [goldBal, silverBal, aguaBal] = await Promise.all([
+//           goldContract.balanceOf(walletAddress),
+//           silverContract.balanceOf(walletAddress),
+//           aguaContract.balanceOf(walletAddress),
+//         ]);
+
+//         setBalances({
+//           gold: Number(ethers.formatUnits(goldBal, 18)),
+//           silver: Number(ethers.formatUnits(silverBal, 18)),
+//           agua: Number(ethers.formatUnits(aguaBal, 18)),
+//         });
+//       } catch (e) {
+//         console.error("Error fetching balances:", e);
+//         setBalances({ gold: 0, silver: 0, agua: 0 });
+//       }
+//     }
+
+//     fetchBalances();
+//   }, [walletAddress, signer]);
+
+//   const cards = [
+//     {
+//       type: "gold",
+//       title: "Gold",
+//       symbol: "(AU)",
+//       marketRate: rates.gold?.ounce,
+//       tokenRate: rates.gold?.gram,
+//       balance: totals.AG,
+//     },
+//     {
+//       type: "silver",
+//       title: "Silver",
+//       symbol: "(AG)",
+//       marketRate: rates.silver?.ounce,
+//       tokenRate: rates.silver?.gram,
+//       balance: totals.AU,
+//     },
+//     {
+//       type: "agua",
+//       title: "Agua",
+//       symbol: "(AGUA)",
+//       marketRate: rates.agua?.ounce,
+//       tokenRate: rates.agua?.gram,
+//       balance: totals.AGUA,
+//     },
+//   ];
+
+//   return (
+//     <div
+//       className="grid gap-3"
+//       style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}
+//     >
+//       {cards.map((card, idx) => (
+//         <div
+//           key={idx}
+//           className="rounded-xl p-3"
+//           style={{
+//             background:
+//               theme === "dark"
+//                 ? "linear-gradient(135deg, #23272e, #18181b)"
+//                 : "linear-gradient(135deg, #f8fafc, #e2e8f0)",
+//             border: `1px solid ${theme === "dark" ? "#23272e" : "#e5e7eb"}`,
+//             boxShadow:
+//               theme === "dark"
+//                 ? "0 2px 12px rgba(0,0,0,0.32), 0 1.5px 4px rgba(0,0,0,0.18)"
+//                 : "0 2px 12px rgba(0,0,0,0.10), 0 1.5px 4px rgba(0,0,0,0.06)",
+//           }}
+//         >
+//           <div className="flex flex-col items-center mb-1">
+//             <span className="font-semibold text-sm flex items-center">
+//               {card.title}{" "}
+//               <span className="ml-1 text-xs text-gray-500">{card.symbol}</span>
+//             </span>
+//             {/* <span className="text-xs text-gray-400">
+//     {loading || !card.marketRate
+//       ? "Loading..."
+//       : `Rate: $${card.marketRate.toFixed(2)}/oz`}
+//   </span> */}
+//           </div>
+
+//           <div className="flex justify-between text-sm border-b border-gray-300 pb-1">
+//             <span className="text-gray-500">Token Rate:</span>
+//             <span className="font-medium text-right">
+//               ${card.tokenRate ? card.tokenRate.toFixed(2) : "0.00"}
+//             </span>
+//           </div>
+//           <div className="flex justify-between text-sm pt-1">
+//             <span className="text-gray-500">No. of Tokens:</span>
+//             <span className="font-semibold text-right">
+//               {card.balance ? card.balance.toFixed(4) : "0.0000"}
+//             </span>
+//           </div>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// }
 "use client";
 import React, { useEffect, useState, useContext } from "react";
 import { Contract, ethers } from "ethers";
@@ -386,15 +584,25 @@ export default function SummaryCardsForUser() {
   const { theme } = useTheme();
   const { walletAddress, signer } = useContext(WalletContext);
   const [rates, setRates] = useState({ gold: null, silver: null, agua: null });
-  const [balances, setBalances] = useState({ gold: 0, silver: 0, agua: 0 });
   const [totals, setTotals] = useState({ AGUA: 0, AU: 0, AG: 0 });
   const [loading, setLoading] = useState(true);
+
+  // ✅ Helper function: show g or mg
+  const formatTokenValue = (valueInGram) => {
+    if (!valueInGram || isNaN(valueInGram)) return "0.00 g";
+    if (valueInGram >= 1) {
+      return `${valueInGram.toFixed(3)} g`;
+    } else {
+      return `${(valueInGram * 1000).toFixed(2)} mg`;
+    }
+  };
 
   useEffect(() => {
     async function fetchRates() {
       const token = localStorage.getItem("authToken");
       if (!token) {
         console.warn("No authToken found in localStorage.");
+        setLoading(false);
         return;
       }
 
@@ -409,10 +617,10 @@ export default function SummaryCardsForUser() {
         const details = result.getOrders || [];
 
         const tokenTotals = { AGUA: 0, AU: 0, AG: 0 };
-
         details.forEach((order) => {
           if (order.status === "approved") {
             const qty = parseFloat(order.quantity);
+            console.log("qty", qty);
             if (!isNaN(qty)) {
               tokenTotals[order.TokenType] += qty;
             }
@@ -454,35 +662,6 @@ export default function SummaryCardsForUser() {
     fetchRates();
   }, []);
 
-  useEffect(() => {
-    async function fetchBalances() {
-      if (!walletAddress || !signer) return;
-
-      try {
-        const goldContract = new Contract(goldToken, auAbi, signer);
-        const silverContract = new Contract(silverToken, agAbi, signer);
-        const aguaContract = new Contract(aguaToken, aguaAbi, signer);
-
-        const [goldBal, silverBal, aguaBal] = await Promise.all([
-          goldContract.balanceOf(walletAddress),
-          silverContract.balanceOf(walletAddress),
-          aguaContract.balanceOf(walletAddress),
-        ]);
-
-        setBalances({
-          gold: Number(ethers.formatUnits(goldBal, 18)),
-          silver: Number(ethers.formatUnits(silverBal, 18)),
-          agua: Number(ethers.formatUnits(aguaBal, 18)),
-        });
-      } catch (e) {
-        console.error("Error fetching balances:", e);
-        setBalances({ gold: 0, silver: 0, agua: 0 });
-      }
-    }
-
-    fetchBalances();
-  }, [walletAddress, signer]);
-
   const cards = [
     {
       type: "gold",
@@ -490,7 +669,7 @@ export default function SummaryCardsForUser() {
       symbol: "(AU)",
       marketRate: rates.gold?.ounce,
       tokenRate: rates.gold?.gram,
-      balance: totals.AG,
+      balanceGram: totals.AU,
     },
     {
       type: "silver",
@@ -498,7 +677,7 @@ export default function SummaryCardsForUser() {
       symbol: "(AG)",
       marketRate: rates.silver?.ounce,
       tokenRate: rates.silver?.gram,
-      balance: totals.AU,
+      balanceGram: totals.AG,
     },
     {
       type: "agua",
@@ -506,9 +685,11 @@ export default function SummaryCardsForUser() {
       symbol: "(AGUA)",
       marketRate: rates.agua?.ounce,
       tokenRate: rates.agua?.gram,
-      balance: totals.AGUA,
+      balanceGram: totals.AGUA,
     },
   ];
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div
@@ -536,11 +717,6 @@ export default function SummaryCardsForUser() {
               {card.title}{" "}
               <span className="ml-1 text-xs text-gray-500">{card.symbol}</span>
             </span>
-            {/* <span className="text-xs text-gray-400">
-    {loading || !card.marketRate
-      ? "Loading..."
-      : `Rate: $${card.marketRate.toFixed(2)}/oz`}
-  </span> */}
           </div>
 
           <div className="flex justify-between text-sm border-b border-gray-300 pb-1">
@@ -549,10 +725,11 @@ export default function SummaryCardsForUser() {
               ${card.tokenRate ? card.tokenRate.toFixed(2) : "0.00"}
             </span>
           </div>
+
           <div className="flex justify-between text-sm pt-1">
-            <span className="text-gray-500">No. of Tokens:</span>
+            <span className="text-gray-500">Your Tokens:</span>
             <span className="font-semibold text-right">
-              {card.balance ? card.balance.toFixed(4) : "0.0000"}
+              {formatTokenValue(card.balanceGram)}
             </span>
           </div>
         </div>

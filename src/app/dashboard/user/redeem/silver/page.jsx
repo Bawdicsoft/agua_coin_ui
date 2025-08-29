@@ -24,6 +24,7 @@ export default function Silverredeem() {
   const OUNCE_TO_GRAM = 31.1035;
   const OUNCE_TO_MG = 31103.5;
   const [user, setUser] = useState(null);
+  const [silverTokens, setSilverTokens] = useState(0);
   useEffect(() => {
     fetchUserData(setUser);
     console.log("user", user);
@@ -54,6 +55,39 @@ export default function Silverredeem() {
     }
     const decodedToken = jwtDecode(token);
     setClientId(decodedToken?.id);
+    const userData = async () => {
+      const response = await axios.get("/api/getSingleUserTokenDetail", {
+        params: { userId: decodedToken?.id },
+      });
+
+      const result = response.data;
+      const details = result.getOrders || [];
+
+      let silverTotal = 0;
+
+      details.forEach((order) => {
+        if (order.status === "approved" && order.TokenType === "AG") {
+          const qty = parseFloat(order.quantity);
+          if (!isNaN(qty)) {
+            silverTotal += qty;
+          }
+        }
+      });
+
+      // ✅ Helper function for unit formatting
+      const formatValue = (valueInGram) => {
+        if (valueInGram >= 1) {
+          return `${valueInGram.toFixed(3)} g`;
+        } else {
+          return `${(valueInGram * 1000).toFixed(2)} mg`;
+        }
+      };
+
+      console.log("Total Silver (AG):", formatValue(silverTotal));
+      setSilverTokens(formatValue(silverTotal));
+      // return formatValue(silverTotal);
+    };
+    userData();
   }, []);
 
   const handlePaymentMethodChange = (e) => {
@@ -133,10 +167,8 @@ export default function Silverredeem() {
             theme={theme}
           />
           <InfoCard
-            label="Token Rate (per milligram)"
-            value={
-              silverRates.loading ? "Loading..." : `$${silverRates.milligram}`
-            }
+            label="Your Tokens"
+            value={silverRates.loading ? "Loading..." : `${silverTokens}`}
             theme={theme}
           />
           <InfoCard

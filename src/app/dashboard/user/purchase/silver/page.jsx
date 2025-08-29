@@ -38,6 +38,7 @@ export default function SilverPayment() {
   const { theme } = useTheme();
   const { showToast } = useContext(ToastContext);
   const [user, setUser] = useState(null);
+  const [silverTokens, setSilverTokens] = useState(0);
   useEffect(() => {
     fetchUserData(setUser);
     console.log("user", user);
@@ -72,10 +73,44 @@ export default function SilverPayment() {
       console.warn("No authToken found in localStorage.");
       return null;
     }
+    const userData = async () => {
+      const response = await axios.get("/api/getSingleUserTokenDetail", {
+        params: { userId },
+      });
+
+      const result = response.data;
+      const details = result.getOrders || [];
+
+      let silverTotal = 0;
+
+      details.forEach((order) => {
+        if (order.status === "approved" && order.TokenType === "AG") {
+          const qty = parseFloat(order.quantity);
+          if (!isNaN(qty)) {
+            silverTotal += qty;
+          }
+        }
+      });
+
+      // ✅ Helper function for unit formatting
+      const formatValue = (valueInGram) => {
+        if (valueInGram >= 1) {
+          return `${valueInGram.toFixed(3)} g`;
+        } else {
+          return `${(valueInGram * 1000).toFixed(2)} mg`;
+        }
+      };
+
+      console.log("Total Silver (AG):", formatValue(silverTotal));
+      setSilverTokens(formatValue(silverTotal));
+      // return formatValue(silverTotal);
+    };
+
     // // console.log(token);
     const decodedToken = jwtDecode(token);
     const userId = decodedToken?.id;
     setClientId(userId);
+    userData();
     // // console.log("decodedToken=>", decodedToken);
     setAuth((prev) => ({
       ...prev,
@@ -443,10 +478,8 @@ export default function SilverPayment() {
             theme={theme}
           />
           <InfoCard
-            label="Token Rate (per milligram)"
-            value={
-              silverRates.loading ? "Loading..." : `$${silverRates.milligram}`
-            }
+            label="Your Tokens"
+            value={silverRates.loading ? "Loading..." : `${silverTokens}`}
             theme={theme}
           />
           <InfoCard
