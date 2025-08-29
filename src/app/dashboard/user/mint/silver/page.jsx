@@ -17,7 +17,7 @@ export default function Silvermint() {
   const { auth, setAuth } = useContext(AuthContext);
 
   const [silverRates, setSilverRates] = useState({
-    ounce: 0,
+    milligram: 0,
     gram: 0,
     loading: true,
   });
@@ -28,6 +28,7 @@ export default function Silvermint() {
 
   const { walletAddress, signer } = useContext(WalletContext);
   const OUNCE_TO_GRAM = 31.1035;
+  const OUNCE_TO_MG = 31103.5;
   const router = useRouter();
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -36,7 +37,7 @@ export default function Silvermint() {
 
     const fetchSilverRate = async () => {
       try {
-        setSilverRates({ ounce: 0, gram: 0, loading: true });
+        setSilverRates({ milligram: 0, gram: 0, loading: true });
 
         const res = await fetch("https://api.gold-api.com/price/XAG");
         console.log("res=>", res);
@@ -45,9 +46,10 @@ export default function Silvermint() {
         const data = await res.json();
         const ouncePrice = data.price;
         const gramPrice = ouncePrice / OUNCE_TO_GRAM;
+        const milligramPrice = ouncePrice / OUNCE_TO_MG;
 
         setSilverRates({
-          ounce: ouncePrice.toFixed(2),
+          milligram: milligramPrice.toFixed(6),
           gram: gramPrice.toFixed(2),
           loading: false,
         });
@@ -459,8 +461,10 @@ export default function Silvermint() {
             theme={theme}
           />
           <InfoCard
-            label="Current AG Rate oz"
-            value={silverRates.loading ? "Loading..." : `$${silverRates.ounce}`}
+            label="Token Rate (per milligram)"
+            value={
+              silverRates.loading ? "Loading..." : `$${silverRates.milligram}`
+            }
             theme={theme}
           />
           <InfoCard

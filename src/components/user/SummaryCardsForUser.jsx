@@ -531,17 +531,18 @@ export default function SummaryCardsForUser() {
                 : "0 2px 12px rgba(0,0,0,0.10), 0 1.5px 4px rgba(0,0,0,0.06)",
           }}
         >
-          <div className="flex justify-between mb-1">
+          <div className="flex flex-col items-center mb-1">
             <span className="font-semibold text-sm flex items-center">
               {card.title}{" "}
               <span className="ml-1 text-xs text-gray-500">{card.symbol}</span>
             </span>
-            <span className="text-xs text-right text-gray-400">
-              {loading || !card.marketRate
-                ? "Loading..."
-                : `Rate: $${card.marketRate.toFixed(2)}/oz`}
-            </span>
+            {/* <span className="text-xs text-gray-400">
+    {loading || !card.marketRate
+      ? "Loading..."
+      : `Rate: $${card.marketRate.toFixed(2)}/oz`}
+  </span> */}
           </div>
+
           <div className="flex justify-between text-sm border-b border-gray-300 pb-1">
             <span className="text-gray-500">Token Rate:</span>
             <span className="font-medium text-right">

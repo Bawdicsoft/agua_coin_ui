@@ -12,7 +12,7 @@ export default function Goldredeem() {
   const [totalAmount, setTotalAmount] = useState("");
   const [numTokens, setNumTokens] = useState("");
   const [goldRates, setGoldRates] = useState({
-    ounce: 0,
+    milligram: 0,
     gram: 0,
     loading: true,
   });
@@ -22,20 +22,21 @@ export default function Goldredeem() {
   const { signer, walletAddress } = useContext(WalletContext);
   const { theme } = useTheme();
   const OUNCE_TO_GRAM = 31.1035;
+  const OUNCE_TO_MG = 31103.5;
   const [user, setUser] = useState(null);
   useEffect(() => {
     fetchUserData(setUser);
     console.log("user", user);
     const fetchGoldRate = async () => {
       try {
-        setGoldRates({ ounce: 0, gram: 0, loading: true });
+        setGoldRates({ milligram: 0, gram: 0, loading: true });
         const goldRes = await fetch("https://api.gold-api.com/price/XAU");
         if (!goldRes.ok) throw new Error("Failed to fetch gold rate");
         const goldData = await goldRes.json();
         const ouncePrice = goldData.price;
         const gramPrice = ouncePrice / OUNCE_TO_GRAM;
         setGoldRates({
-          ounce: ouncePrice.toFixed(2),
+          milligram: ouncePrice.toFixed(2),
           gram: gramPrice.toFixed(2),
           loading: false,
         });
@@ -132,8 +133,8 @@ export default function Goldredeem() {
             theme={theme}
           />
           <InfoCard
-            label="Current AU Rate oz"
-            value={goldRates.loading ? "Loading..." : `$${goldRates.ounce}`}
+            label="Token Rate (per milligram)"
+            value={goldRates.loading ? "Loading..." : `$${goldRates.milligram}`}
             theme={theme}
           />
           <InfoCard

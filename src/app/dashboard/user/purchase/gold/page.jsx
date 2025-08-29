@@ -31,7 +31,7 @@ export default function Goldpayment() {
   });
 
   const [goldRates, setGoldRates] = useState({
-    ounce: 0,
+    milligram: 0,
     gram: 0,
     loading: true,
   });
@@ -43,6 +43,7 @@ export default function Goldpayment() {
   const { auth, setAuth } = useContext(AuthContext);
   const [clientId, setClientId] = useState(null);
   const OUNCE_TO_GRAM = 31.1035;
+  const OUNCE_TO_MG = 31103.5;
 
   const { theme } = useTheme();
   const { showToast } = useContext(ToastContext);
@@ -78,7 +79,7 @@ export default function Goldpayment() {
     console.log("user", user);
     const fetchGoldRate = async () => {
       try {
-        setGoldRates({ ounce: 0, gram: 0, loading: true });
+        setGoldRates({ milligram: 0, gram: 0, loading: true });
 
         const goldRes = await fetch("https://api.gold-api.com/price/XAU");
         if (!goldRes.ok) throw new Error("Failed to fetch gold rate");
@@ -86,15 +87,15 @@ export default function Goldpayment() {
         const goldData = await goldRes.json();
         const ouncePrice = goldData.price;
         const gramPrice = ouncePrice / OUNCE_TO_GRAM;
-
+        const milligramPrice = ouncePrice / OUNCE_TO_MG;
         setGoldRates({
-          ounce: ouncePrice.toFixed(2),
+          milligram: milligramPrice.toFixed(6),
           gram: gramPrice.toFixed(2),
           loading: false,
         });
       } catch (error) {
         console.error("Error fetching gold rates:", error);
-        setGoldRates({ ounce: 0, gram: 0, loading: false });
+        setGoldRates({ milligram: 0, gram: 0, loading: false });
       }
     };
 
@@ -485,8 +486,8 @@ export default function Goldpayment() {
             theme={theme}
           />
           <InfoCard
-            label="Current AU Rate oz"
-            value={goldRates.loading ? "Loading..." : `$${goldRates.ounce}`}
+            label="Token Rate (per milligram)"
+            value={goldRates.loading ? "Loading..." : `$${goldRates.milligram}`}
             theme={theme}
           />
           <InfoCard
