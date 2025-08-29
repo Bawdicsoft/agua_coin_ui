@@ -36,7 +36,7 @@ export default function SummaryCardsForAdmin() {
         const silverOunce = silverData.price;
         const silverGram = silverOunce / OUNCE_TO_GRAM;
         // AGUA: weighted average for both per oz and per gram
-        const aguaOunce = (goldData.price * 0.6) + (silverData.price * 0.4);
+        const aguaOunce = goldData.price * 0.6 + silverData.price * 0.4;
         const aguaGram = goldGram * GOLD_WEIGHT + silverGram * SILVER_WEIGHT;
         setRates({
           gold: { ounce: goldOunce, gram: goldGram },
@@ -44,7 +44,11 @@ export default function SummaryCardsForAdmin() {
           agua: { ounce: aguaOunce, gram: aguaGram },
         });
       } catch (e) {
-        setRates({ gold: { ounce: 0, gram: 0 }, silver: { ounce: 0, gram: 0 }, agua: { ounce: 0, gram: 0 } });
+        setRates({
+          gold: { ounce: 0, gram: 0 },
+          silver: { ounce: 0, gram: 0 },
+          agua: { ounce: 0, gram: 0 },
+        });
       }
     }
     fetchRates();
@@ -82,12 +86,14 @@ export default function SummaryCardsForAdmin() {
   }, [walletAddress, signer]);
 
   // 3D card backgrounds
-  const cardBg = theme === "dark"
-    ? "linear-gradient(135deg, #23272e 0%, #18181b 100%)"
-    : "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)";
-  const cardShadow = theme === "dark"
-    ? "0 2px 12px 0 rgba(0,0,0,0.32), 0 1.5px 4px 0 rgba(0,0,0,0.18)"
-    : "0 2px 12px 0 rgba(0,0,0,0.10), 0 1.5px 4px 0 rgba(0,0,0,0.06)";
+  const cardBg =
+    theme === "dark"
+      ? "linear-gradient(135deg, #23272e 0%, #18181b 100%)"
+      : "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)";
+  const cardShadow =
+    theme === "dark"
+      ? "0 2px 12px 0 rgba(0,0,0,0.32), 0 1.5px 4px 0 rgba(0,0,0,0.18)"
+      : "0 2px 12px 0 rgba(0,0,0,0.10), 0 1.5px 4px 0 rgba(0,0,0,0.06)";
   const borderColor = theme === "dark" ? "#23272e" : "#e5e7eb";
   const textColor = theme === "dark" ? "#f3f4f6" : "#22292f";
   const labelColor = theme === "dark" ? "#cbd5e1" : "#64748b";
@@ -135,9 +141,10 @@ export default function SummaryCardsForAdmin() {
     fontWeight: 500,
     fontSize: "0.75rem",
     color: labelColor,
-    textShadow: theme === "dark"
-      ? "0 1px 2px #000, 0 0.5px 0.5px #23272e"
-      : "0 1px 2px #e2e8f0, 0 0.5px 0.5px #fff",
+    textShadow:
+      theme === "dark"
+        ? "0 1px 2px #000, 0 0.5px 0.5px #23272e"
+        : "0 1px 2px #e2e8f0, 0 0.5px 0.5px #fff",
     marginLeft: 8,
     minWidth: 60,
     textAlign: "right",
@@ -247,11 +254,18 @@ export default function SummaryCardsForAdmin() {
         {cards.map((card, idx) => (
           <div key={idx} className="summary-cards-admin-card" style={cardStyle}>
             <div style={topRowStyle}>
-              <span className="summary-cards-admin-title" style={titleStyle}>{card.title} <span style={{ fontWeight: 400, fontSize: "0.8rem", color: labelColor, marginLeft: 4 }}>{card.symbol}</span></span>
-              <span style={shadowTextStyle}>
-                {card.marketRate === "Loading..."
-                  ? "Loading..."
-                  : `Current Rate: $${card.marketRate !== null ? Number(card.marketRate).toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0"}/oz`}
+              <span className="summary-cards-admin-title" style={titleStyle}>
+                {card.title}{" "}
+                <span
+                  style={{
+                    fontWeight: 400,
+                    fontSize: "0.8rem",
+                    color: labelColor,
+                    marginLeft: 4,
+                  }}
+                >
+                  {card.symbol}
+                </span>
               </span>
             </div>
             <div style={rowStyle}>
@@ -261,18 +275,25 @@ export default function SummaryCardsForAdmin() {
                 {card.tokenRate === "Loading..."
                   ? "Loading..."
                   : card.tokenRate !== null
-                    ? `${Number(card.tokenRate).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
-                    : "0"}
+                  ? `${Number(card.tokenRate).toLocaleString(undefined, {
+                      maximumFractionDigits: 2,
+                    })}`
+                  : "0"}
               </span>
             </div>
             <div style={lastRowStyle}>
               <span style={labelStyle}>No. of Tokens:</span>
-              <span className="summary-cards-admin-token-value" style={tokenValueStyle}>
+              <span
+                className="summary-cards-admin-token-value"
+                style={tokenValueStyle}
+              >
                 {card.balance === "Loading..."
                   ? "Loading..."
                   : card.balance !== null && card.balance !== undefined
-                    ? Number(card.balance).toLocaleString(undefined, { maximumFractionDigits: 4 })
-                    : "0"}
+                  ? Number(card.balance).toLocaleString(undefined, {
+                      maximumFractionDigits: 4,
+                    })
+                  : "0"}
               </span>
             </div>
           </div>
