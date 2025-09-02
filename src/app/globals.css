@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@plugin "daisyui";
 /* :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -164,7 +164,7 @@
 }
 
 [data-theme="dark"] {
-  --background: #121212;
+  --background: #f4f4f5;
   --foreground: #f4f4f5;
 
   --header-bg: #1a1a1a;
@@ -282,7 +282,7 @@ body.theme-transition {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #fff;
     --foreground: #ededed;
   }
 }

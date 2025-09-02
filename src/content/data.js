@@ -1,25 +1,26 @@
 export const navLinks = [
-  { name: "About", href: "#" },
-  { name: "Whitepaper", href: "#" },
-  { name: "Roadmap", href: "#" },
-  { name: "DAO", href: "#" },
-  { name: "FAQ", href: "#" },
-  { name: "Support", href: "#" },
+  { name: "About", href: "#about" },
+  { name: "Protocol", href: "#protocol" },
+  { name: "Mining", href: "#mining" },
+  { name: "DAO", href: "#dao" },
+  { name: "Roadmap", href: "#roadmap" },
+  { name: "FAQ", href: "#faq" },
+  { name: "Community", href: "#community" },
 ];
 
 export const whatIsAgua = " WHAT IS AGUA?-Core Introduction";
 
 export const coreIntroductionParagraph =
-  "AGUA is a decentralized, asset-backed digital currency designed to deliver long-term financial security and real value. Unlike unstable cryptocurrencies or inflation-prone fiat, AGUA is directly backed by physical gold and silver — combining stability with the potential for growth in a fairer financial system.";
+  "AGUA is a DAO token and platform which offers stable coin SAG, SAU- Silver and gold respectively. asset-backed digital currency that brings financial stability to everyday users. Unlike unstable cryptocurrencies or inflation-prone fiat money, SAG, SAU’s value is tied directly to physical gold and silver, ensuring long-term security and reliability.";
 
 export const coreIntroductionfeatures = [
   {
     title: "Backed by Real Assets",
-    text: "Each AGUA token is fully collateralized by reserves of physical silver and gold, ensuring true value.",
+    text: "Each SAG and SAU token is collateralized by physical silver and gold.",
   },
   {
     title: "Stability Meets Growth",
-    text: "While gold provides a reliable store of value, silver introduces greater growth potential.",
+    text: "Gold offers security, silver brings potential upside, Every Stable token is empowering AGUA DAO",
   },
   {
     title: "Accessible to Everyone",
@@ -30,17 +31,18 @@ export const coreIntroductionfeatures = [
 export const tableData = [
   { type: "Flat", inflation: "High", control: "Centralized" },
   { type: "Crypto", inflation: "Low", control: "Decentralized" },
-  { type: "Agua", inflation: "Stable", control: "Decentralized" },
+  { type: "SAG", inflation: "Stable", control: "Decentralized" },
+  { type: "SAU", inflation: "Stable", control: "Decentralized" },
 ];
 
 export const steps = [
   {
     title: "Acquire AGUA",
-    description: "Buy AGUA on exchanges or via our platform.",
+    description: "Buy AGUA SAG, SAU on decentralized exchanges, exchanges or via our platform.",
   },
   {
     title: "Precious Metal Reserves",
-    description: "AGUA is backed by physical gold & silver stored securely.",
+    description: "SAG, SAU is backed by physical gold & silver stored securely in vault.",
   },
   {
     title: "Blockchain Transparency",
@@ -48,7 +50,7 @@ export const steps = [
   },
   {
     title: "Real Utility",
-    description: "Use AGUA for transactions, staking, or wealth preservation.",
+    description: "Use SAG and SAU for transactions, staking, Holding, E-commerce and so on.",
   },
   {
     title: "Community Governance",
