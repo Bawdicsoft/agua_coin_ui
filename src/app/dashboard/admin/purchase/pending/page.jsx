@@ -10,6 +10,7 @@ import {
   usdtToken,
 } from "@/content/tokendata";
 import { WalletContext } from "@/context/WalletContext";
+import { useTheme } from "@/context/ThemeContext";
 import axios from "axios";
 import { Contract, ethers } from "ethers";
 import React, { useContext, useEffect, useState } from "react";
@@ -38,7 +39,7 @@ const Pending = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
+  const { theme } = useTheme();
   const OrderStatus = async (order, key) => {
     console.log("order", order, key);
     if (!signer || !walletAddress) {
@@ -137,8 +138,20 @@ const Pending = () => {
 
   return (
     <div className="p-6 overflow-x-auto">
-      <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
-        <thead className="bg-gray-300 text-gray-700">
+      <table
+        className={`min-w-full shadow-lg rounded-lg overflow-hidden
+        ${theme === "dark" ? "bg-[#1F1F1F]" : "bg-white"}
+      `}
+      >
+        <thead
+          className={`
+          ${
+            theme === "dark"
+              ? "bg-[#262626] text-gray-200"
+              : "bg-gray-300 text-gray-700"
+          }
+          `}
+        >
           <tr>
             <th className="py-3 px-4 text-left">S.No</th>
             <th className="py-3 px-4 text-left">User</th>
@@ -162,37 +175,31 @@ const Pending = () => {
             purchaseData.map((order, index) => (
               <tr
                 key={order._id}
-                className="border-b hover:bg-gray-50 transition-all"
+                className={`border-b transition-all
+                  ${theme === "dark" ? "text-gray-300" : "text-gray-600"}
+               `}
               >
-                <td className="py-3 px-4 text-sm text-gray-600">{index + 1}</td>
-                <td className="py-3 px-4 text-sm text-gray-600">
-                  {order.name}
-                </td>
-                <td className="py-3 px-4 text-sm text-gray-600">
-                  {order.email}
-                </td>
-                <td className="py-3 px-4 text-sm font-mono text-gray-500">
+                <td className="py-3 px-4 text-sm">{index + 1}</td>
+                <td className="py-3 px-4 text-sm">{order.name}</td>
+                <td className="py-3 px-4 text-sm">{order.email}</td>
+                <td className="py-3 px-4 text-sm font-mono">
                   {order.fromAddress}
                 </td>
-                <td className="py-3 px-4 text-gray-600">{order.tokenType}</td>
-                <td className="py-3 px-4 text-gray-700">
-                  {order.tokenQuantity}
-                </td>
-                <td className="py-3 px-4 text-gray-700">
-                  {order.totalAmount || "N/A"}
-                </td>
-                <td className="py-3 px-4 text-gray-700">{order.status}</td>
+                <td className="py-3 px-4">{order.tokenType}</td>
+                <td className="py-3 px-4">{order.tokenQuantity}</td>
+                <td className="py-3 px-4">{order.totalAmount || "N/A"}</td>
+                <td className="py-3 px-4">{order.status}</td>
                 <td className="py-3 px-4 text-center">
                   <div className="flex items-center justify-center space-x-2">
                     <button
-                      className="bg-green-200 hover:bg-green-600 text-gray-700 hover:text-white text-sm font-semibold px-3 py-1 rounded-full"
+                      className="bg-green-200 hover:bg-green-600 hover:text-white text-sm font-semibold px-3 py-1 rounded-full"
                       onClick={() => OrderStatus(order, "approved")}
                       disabled={loadingId === order._id}
                     >
                       {loadingId === order._id ? "Processing..." : "Accept"}
                     </button>
                     <button
-                      className="bg-red-300 hover:bg-red-600 text-gray-700 hover:text-white text-sm font-semibold px-3 py-1 rounded-full"
+                      className="bg-red-300 hover:bg-red-600 hover:text-white text-sm font-semibold px-3 py-1 rounded-full"
                       onClick={() => OrderStatus(order, "rejected")}
                       disabled={loadingId === order._id}
                     >

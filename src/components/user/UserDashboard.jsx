@@ -343,13 +343,7 @@ export default function UserDashboard({ children }) {
       >
         <div style={styles.logo}>
           <span style={styles.logoIcon}>
-            <Image
-              src="/Agua-logo1.png"
-              alt="logo"
-              width={96}
-              height={96}
-
-            />
+            <Image src="/Agua-logo1.png" alt="logo" width={96} height={96} />
           </span>
           {/* {!collapsed && <span style={styles.logoText}>AGUA</span>} */}
         </div>
@@ -553,6 +547,8 @@ export default function UserDashboard({ children }) {
                 />
               </div>
             )}
+
+           
           </div>
         </header>
 

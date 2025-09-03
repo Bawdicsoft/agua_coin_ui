@@ -143,115 +143,227 @@ function ChangePasswordModal({ open, onClose }) {
   );
 }
 
+// export default function AvatarMenu({
+//   auth,
+//   walletAddress,
+//   disconnectWallet,
+//   onLogout,
+// }) {
+//   const { setBreadcrumb } = useBreadcrumb();
+//   const router = useRouter();
+//   const { theme } = useTheme();
+//   const [showProfile, setShowProfile] = useState(false);
+//   const [showChangePassword, setShowChangePassword] = useState(false);
+
+//   return (
+//     <div className="dropdown dropdown-end relative">
+//       <button
+//         tabIndex={0}
+//         className="avatar cursor-pointer border-0 bg-transparent p-0 m-0 flex items-center justify-center"
+//         aria-label="User menu"
+//         style={{ boxShadow: "none", width: "32px", height: "32px" }}
+//       >
+//       </button>
+//       <div
+//         tabIndex={0}
+//         className={`dropdown-content z-50 min-w-44 border rounded-xl p-3 space-y-2 ${
+//           theme === "dark"
+//             ? "bg-neutral-900 text-neutral-100 border-neutral-700"
+//             : "bg-white text-gray-900 border-gray-200"
+//         }`}
+//         style={{
+//           minWidth: "180px",
+//           maxWidth: "200px",
+//           marginTop: -20,
+//           marginRight: 25,
+//           boxShadow: "none",
+//         }}
+//       >
+//         <div className="flex items-center gap-2">
+//           <div
+//             className={`w-9 h-9 rounded-full border-2 border-yellow-400 overflow-hidden ${
+//               theme === "dark" ? "bg-neutral-800" : "bg-white"
+//             }`}
+//           >
+//             <img
+//               src={auth?.user?.profilePicture || "https://www.shutterstock.com/image-vector/profile-picture-vector-260nw-404138239.jpg"}
+//               alt="User avatar"
+//               className="object-cover w-full h-full"
+//             />
+//           </div>
+//           <div>
+//             <h3 className="text-sm font-semibold truncate">
+//               {auth?.user?.name || "User"}
+//             </h3>
+//             <p className="text-xs text-gray-500 truncate">
+//               {auth?.user?.email || "-"}
+//             </p>
+//           </div>
+//         </div>
+//         <div className="text-xs text-gray-600 space-y-1 mb-1">
+//           <p>
+//             <span className="font-medium">Wallet:</span>{" "}
+//             {walletAddress
+//               ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+//               : "Not connected"}
+//           </p>
+//         </div>
+//         <button
+//           className={`w-full py-1 rounded-md font-semibold text-xs transition ${
+//             theme === "dark"
+//               ? "bg-neutral-800 hover:bg-neutral-700 text-neutral-100"
+//               : "bg-gray-200 hover:bg-gray-300 text-gray-900"
+//           }`}
+//           style={{ fontSize: "0.84rem" }}
+//           onClick={() => setShowProfile(true)}
+//         >
+//           Profile
+//         </button>
+//         <button
+//           className={`w-full py-1 rounded-md font-semibold text-xs transition ${
+//             theme === "dark"
+//               ? "bg-neutral-800 hover:bg-neutral-700 text-neutral-100"
+//               : "bg-gray-200 hover:bg-gray-300 text-gray-900"
+//           }`}
+//           style={{ fontSize: "0.84rem" }}
+//           onClick={() => setShowChangePassword(true)}
+//         >
+//           Change Password
+//         </button>
+//         <button
+//           className={`w-full py-1 rounded-md font-semibold text-xs transition ${
+//             theme === "dark"
+//               ? "bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white"
+//               : "bg-yellow-400 hover:bg-yellow-500 text-white"
+//           }`}
+//           style={{ fontSize: "0.84rem" }}
+//           onClick={() => {
+//             localStorage.removeItem("authToken");
+//             disconnectWallet();
+//             if (onLogout) onLogout();
+//             router.push("/");
+//           }}
+//         >
+//           Logout
+//         </button>
+//       </div>
+//       <ProfileModal
+//         open={showProfile}
+//         onClose={() => setShowProfile(false)}
+//         user={auth?.user}
+//       />
+//       <ChangePasswordModal
+//         open={showChangePassword}
+//         onClose={() => setShowChangePassword(false)}
+//       />
+//     </div>
+//   );
+// }
+
+
+
+// Remove DaisyUI classes and make it a simple menu component
 export default function AvatarMenu({
   auth,
   walletAddress,
   disconnectWallet,
   onLogout,
 }) {
-  const { setBreadcrumb } = useBreadcrumb();
-  const router = useRouter();
   const { theme } = useTheme();
   const [showProfile, setShowProfile] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
   return (
-    <div className="dropdown dropdown-end relative">
-      <button
-        tabIndex={0}
-        className="avatar cursor-pointer border-0 bg-transparent p-0 m-0 flex items-center justify-center"
-        aria-label="User menu"
-        style={{ boxShadow: "none", width: "32px", height: "32px" }}
-      >
-      </button>
-      <div
-        tabIndex={0}
-        className={`dropdown-content z-50 min-w-44 border rounded-xl p-3 space-y-2 ${
-          theme === "dark"
-            ? "bg-neutral-900 text-neutral-100 border-neutral-700"
-            : "bg-white text-gray-900 border-gray-200"
-        }`}
-        style={{
-          minWidth: "180px",
-          maxWidth: "200px",
-          marginTop: -20,
-          marginRight: 25,
-          boxShadow: "none",
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <div
-            className={`w-9 h-9 rounded-full border-2 border-yellow-400 overflow-hidden ${
-              theme === "dark" ? "bg-neutral-800" : "bg-white"
-            }`}
-          >
-            <img
-              src={auth?.user?.profilePicture || "https://www.shutterstock.com/image-vector/profile-picture-vector-260nw-404138239.jpg"}
-              alt="User avatar"
-              className="object-cover w-full h-full"
-            />
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold truncate">
-              {auth?.user?.name || "User"}
-            </h3>
-            <p className="text-xs text-gray-500 truncate">
-              {auth?.user?.email || "-"}
-            </p>
-          </div>
+    <div
+      className={`border rounded-xl p-3 space-y-2 ${
+        theme === "dark"
+          ? "bg-neutral-900 text-neutral-100 border-neutral-700"
+          : "bg-white text-gray-900 border-gray-200"
+      }`}
+      style={{
+        minWidth: "180px",
+        maxWidth: "200px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+      }}
+    >
+      <div className="flex items-center gap-2">
+        <div
+          className={`w-9 h-9 rounded-full border-2 border-yellow-400 overflow-hidden ${
+            theme === "dark" ? "bg-neutral-800" : "bg-white"
+          }`}
+        >
+          <img
+            src={auth?.user?.profilePicture || "https://www.shutterstock.com/image-vector/profile-picture-vector-260nw-404138239.jpg"}
+            alt="User avatar"
+            className="object-cover w-full h-full"
+          />
         </div>
-        <div className="text-xs text-gray-600 space-y-1 mb-1">
-          <p>
-            <span className="font-medium">Wallet:</span>{" "}
-            {walletAddress
-              ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
-              : "Not connected"}
+        <div>
+          <h3 className="text-sm font-semibold truncate">
+            {auth?.user?.name || "User"}
+          </h3>
+          <p className="text-xs text-gray-500 truncate">
+            {auth?.user?.email || "-"}
           </p>
         </div>
-        <button
-          className={`w-full py-1 rounded-md font-semibold text-xs transition ${
-            theme === "dark"
-              ? "bg-neutral-800 hover:bg-neutral-700 text-neutral-100"
-              : "bg-gray-200 hover:bg-gray-300 text-gray-900"
-          }`}
-          style={{ fontSize: "0.84rem" }}
-          onClick={() => setShowProfile(true)}
-        >
-          Profile
-        </button>
-        <button
-          className={`w-full py-1 rounded-md font-semibold text-xs transition ${
-            theme === "dark"
-              ? "bg-neutral-800 hover:bg-neutral-700 text-neutral-100"
-              : "bg-gray-200 hover:bg-gray-300 text-gray-900"
-          }`}
-          style={{ fontSize: "0.84rem" }}
-          onClick={() => setShowChangePassword(true)}
-        >
-          Change Password
-        </button>
-        <button
-          className={`w-full py-1 rounded-md font-semibold text-xs transition ${
-            theme === "dark"
-              ? "bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white"
-              : "bg-yellow-400 hover:bg-yellow-500 text-white"
-          }`}
-          style={{ fontSize: "0.84rem" }}
-          onClick={() => {
-            localStorage.removeItem("authToken");
-            disconnectWallet();
-            if (onLogout) onLogout();
-            router.push("/");
-          }}
-        >
-          Logout
-        </button>
       </div>
+      
+      <div className="text-xs text-gray-600 space-y-1 mb-1">
+        <p>
+          <span className="font-medium">Wallet:</span>{" "}
+          {walletAddress
+            ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+            : "Not connected"}
+        </p>
+      </div>
+      
+      <button
+        className={`w-full py-1 rounded-md font-semibold text-xs transition ${
+          theme === "dark"
+            ? "bg-neutral-800 hover:bg-neutral-700 text-neutral-100"
+            : "bg-gray-200 hover:bg-gray-300 text-gray-900"
+        }`}
+        style={{ fontSize: "0.84rem" }}
+        onClick={() => setShowProfile(true)}
+      >
+        Profile
+      </button>
+      
+      <button
+        className={`w-full py-1 rounded-md font-semibold text-xs transition ${
+          theme === "dark"
+            ? "bg-neutral-800 hover:bg-neutral-700 text-neutral-100"
+            : "bg-gray-200 hover:bg-gray-300 text-gray-900"
+        }`}
+        style={{ fontSize: "0.84rem" }}
+        onClick={() => setShowChangePassword(true)}
+      >
+        Change Password
+      </button>
+      
+      <button
+        className={`w-full py-1 rounded-md font-semibold text-xs transition ${
+          theme === "dark"
+            ? "bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white"
+            : "bg-yellow-400 hover:bg-yellow-500 text-white"
+        }`}
+        style={{ fontSize: "0.84rem" }}
+        onClick={() => {
+          localStorage.removeItem("authToken");
+          disconnectWallet();
+          if (onLogout) onLogout();
+          router.push("/");
+        }}
+      >
+        Logout
+      </button>
+
       <ProfileModal
         open={showProfile}
         onClose={() => setShowProfile(false)}
         user={auth?.user}
       />
+      
       <ChangePasswordModal
         open={showChangePassword}
         onClose={() => setShowChangePassword(false)}

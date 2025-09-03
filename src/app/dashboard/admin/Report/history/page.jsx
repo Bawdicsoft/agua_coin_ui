@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
+import { useTheme } from "@/context/ThemeContext";
 
 const Page = () => {
   const [allData, setAllData] = useState([]);
@@ -19,6 +20,7 @@ const Page = () => {
 
     fetchAllData();
   }, []);
+  const { theme } = useTheme();
 
   const handleExcelDownload = () => {
     const worksheet = XLSX.utils.json_to_sheet(allData);
@@ -374,8 +376,16 @@ const Page = () => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-200">
-          <thead className="bg-gray-100">
+        <table className={`min-w-full shadow-lg rounded-lg overflow-hidden
+        ${theme === "dark" ? "bg-[#1F1F1F]" : "bg-white"}
+      `}>
+          <thead className={`
+          ${
+            theme === "dark"
+              ? "bg-[#262626] text-gray-200"
+              : "bg-gray-300 text-gray-700"
+          }
+          `}>
             <tr>
               <th className="py-2 px-4 border">User</th>
               <th className="py-2 px-4 border">Email</th>

@@ -113,7 +113,7 @@ function CoreIntroduction() {
                     className="card bg-white text-black shadow-sm border border-gray-300 w-full sm:w-96 p-4 rounded-lg"
                   >
                     <h2 className="text-lg font-semibold">{item.title}</h2>
-                    <p className="text-gray-500 font-light text-md">
+                    <p className="text-gray-500 font-light text-sm">
                       {item.text}
                     </p>
                   </div>

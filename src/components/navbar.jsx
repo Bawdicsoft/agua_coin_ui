@@ -215,7 +215,6 @@
 
 
 
-
 import { MdArrowOutward } from "react-icons/md";
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -223,7 +222,6 @@ import { useRouter, usePathname } from "next/navigation";
 function Navbar() {
   const [account, setAccount] = useState(null);
   const [activeSection, setActiveSection] = useState("");
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const menuRef = useRef(null);
@@ -231,8 +229,8 @@ function Navbar() {
   // Map your nav items to section IDs
   const sectionMap = {
     "About": "about",
-    "Metals":"metals",
-    "Protocol":"protocol",
+    "Metals": "metals",
+    "Protocol": "protocol",
     "Mining": "mining", 
     "DAO": "dao",
     "Roadmap": "roadmap",
@@ -242,8 +240,6 @@ function Navbar() {
 
   // Function to handle smooth scrolling to sections
   const scrollToSection = (sectionId, isMobile = false) => {
-    if (isMobile) setIsMenuOpen(false);
-    
     // If we're not on the home page, navigate to home first with hash
     if (pathname !== '/') {
       router.push(`/#${sectionId}`);
@@ -312,23 +308,9 @@ function Navbar() {
     };
   }, [pathname]);
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMenuOpen]);
-
   // Render navigation links
   const renderNavLinks = (isMobile = false) => {
-    const navItems = ["About","Metals","Protocol", "Mining", "DAO", "Roadmap", "FAQ", "Community"];
+    const navItems = ["About", "Metals", "Protocol", "Mining", "DAO", "Roadmap", "FAQ", "Community"];
     
     return navItems.map((item) => {
       const sectionId = sectionMap[item];
@@ -336,16 +318,20 @@ function Navbar() {
       
       return (
         <li key={item}>
-          <button
-            onClick={() => scrollToSection(sectionId, isMobile)}
+          <a
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection(sectionId, isMobile);
+            }}
             className={`px-3 py-2 rounded font-medium transition ${
               isActive 
                 ? "text-blue-900 font-bold bg-white/20" 
                 : "text-white hover:bg-white/10"
             } ${isMobile ? "w-full text-left" : ""}`}
+            style={{ cursor: 'pointer' }}
           >
             {item}
-          </button>
+          </a>
         </li>
       );
     });
@@ -353,14 +339,13 @@ function Navbar() {
 
   return (
     <>
-      <div className="navbar">
+      <div className="navbar text-white">
         <div className="navbar-start">
           <div className="dropdown">
             <div
               tabIndex={0}
               role="button"
               className="btn btn-ghost hover:bg-[#207CFF] hover:border-transparent lg:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -378,18 +363,15 @@ function Navbar() {
               </svg>
             </div>
             
-            {isMenuOpen && (
-              <ul
-                ref={menuRef}
-                tabIndex={0}
-                className="menu menu-sm border border-white dropdown-content bg-[#207CFF] rounded-box z-50 mt-3 w-52 p-2 shadow"
-              >
-                {renderNavLinks(true)}
-              </ul>
-            )}
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content bg-[#207CFF] rounded-box z-50 mt-3 w-52 p-2 shadow border border-white"
+            >
+              {renderNavLinks(true)}
+            </ul>
           </div>
 
-          <img className="w-8 h-8" src="/Agua-newlogo.png" />
+          <img className="w-10 h-10" src="/Agua-newlogo.png" alt="Agua Logo" />
           
           <a 
             className="btn btn-ghost text-xl hover:bg-transparent hover:border-transparent hover:shadow-none"
@@ -435,7 +417,7 @@ const ButtonWrapper = () => {
     //   >
     //     Login/SignUp
     //   </button>
-      // <NeumorphismButton />
+    //   <NeumorphismButton />
     // </div>
     <></>
   );

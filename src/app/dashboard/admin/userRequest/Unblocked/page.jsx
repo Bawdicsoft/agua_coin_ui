@@ -2,6 +2,7 @@
 import axios from "axios";
 import { Contract, ethers } from "ethers";
 import React, { useEffect, useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
 import Image from "next/image"; // ✅ Add this line
 const Pending = () => {
   const [userData, setUserData] = useState([]);
@@ -25,6 +26,7 @@ const Pending = () => {
     };
     fetchData();
   }, []);
+  const { theme } = useTheme();
   const UserStatus = async (user, status) => {
     console.log(user, status);
     try {
@@ -41,8 +43,20 @@ const Pending = () => {
   };
   return (
     <div className="p-6 overflow-x-auto">
-      <table className="min-w-full bg-white shadow-lg rounded-lg overflow-hidden">
-        <thead className="bg-gray-300 text-gray-700">
+      <table
+        className={`min-w-full shadow-lg rounded-lg overflow-hidden
+        ${theme === "dark" ? "bg-[#1F1F1F]" : "bg-white"}
+      `}
+      >
+        <thead
+          className={`
+          ${
+            theme === "dark"
+              ? "bg-[#262626] text-gray-200"
+              : "bg-gray-300 text-gray-700"
+          }
+          `}
+        >
           <tr>
             <th className="py-3 px-4 text-left">S.No</th>
             <th className="py-3 px-4 text-left">Profile</th>
@@ -66,10 +80,12 @@ const Pending = () => {
             userData.map((user, index) => (
               <tr
                 key={user._id}
-                className="border-b hover:bg-gray-50 transition-all"
+                className={`border-b transition-all
+                  ${theme === "dark" ? "text-gray-300" : "text-gray-600"}
+               `}
               >
-                <td className="py-3 px-4 text-sm text-gray-600">{index + 1}</td>
-                <td className="py-3 px-4 text-sm text-gray-600">
+                <td className="py-3 px-4 text-sm">{index + 1}</td>
+                <td className="py-3 px-4 text-sm">
                   <Image
                     src={user.profilePicture}
                     alt="User Image"
@@ -78,11 +94,9 @@ const Pending = () => {
                     className="rounded-full object-cover"
                   />
                 </td>
-                <td className="py-3 px-4 text-sm text-gray-600">{user.name}</td>
-                <td className="py-3 px-4 text-sm text-gray-600">
-                  {user.email}
-                </td>
-                <td className="py-3 px-4 text-gray-700">{user.role}</td>
+                <td className="py-3 px-4 text-sm">{user.name}</td>
+                <td className="py-3 px-4 text-sm">{user.email}</td>
+                <td className="py-3 px-4">{user.role}</td>
 
                 {/* <td className="py-3 px-4 text-center">
                   <div className="flex items-center justify-center space-x-2">
@@ -117,7 +131,7 @@ const Pending = () => {
                       </button>
                     ) : (
                       <button
-                        className="bg-gray-300 text-gray-500 text-sm font-semibold px-3 py-1 rounded-full cursor-not-allowed"
+                        className="bg-gray-300 text-sm font-semibold px-3 py-1 rounded-full cursor-not-allowed"
                         disabled
                       >
                         Blocked

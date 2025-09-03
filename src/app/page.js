@@ -74,6 +74,7 @@ export default function Home() {
   return (
     <>
       {/* <Navbar isLoading={isLoading} setIsLoading={setIsLoading} /> */}
+      <div className="bg-white">
       <Herosection />
       <Swiperpage />
       <CoreIntroduction />
@@ -85,6 +86,7 @@ export default function Home() {
       <Faq />
       <Community />
       <Footer />
+      </div>
     </>
   );
 }
